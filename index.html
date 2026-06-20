@@ -18,70 +18,145 @@
     --white: #FFFFFF;
     --yellow: #E8C840;
     --yellow-dim: rgba(232,200,64,0.15);
-    --yellow-glow: rgba(232,200,64,0.3);
     --red: #E84040;
     --green: #40C880;
     --muted: #888;
   }
 
-  body {
-    background: var(--black);
-    color: var(--chalk);
-    font-family: 'Barlow', sans-serif;
-    min-height: 100vh;
-  }
+  body { background: var(--black); color: var(--chalk); font-family: 'Barlow', sans-serif; min-height: 100vh; }
 
-  /* ── HEADER ── */
-  header {
-    padding: 2rem 2rem 1.5rem;
-    border-bottom: 1px solid var(--steel);
+  /* ── LOGIN SCREEN ── */
+  #login-screen {
+    min-height: 100vh;
     display: flex;
-    align-items: baseline;
-    gap: 1.5rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 2rem;
   }
-  .logo {
+  .login-box {
+    background: var(--charcoal);
+    border: 1px solid var(--steel);
+    border-radius: 16px;
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  .login-logo {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
-    font-size: 2.4rem;
+    font-size: 3rem;
     letter-spacing: 0.05em;
-    line-height: 1;
     color: var(--white);
+    margin-bottom: 0.3rem;
   }
-  .logo span { color: var(--yellow); }
-  .tagline {
-    font-size: 0.8rem;
+  .login-logo span { color: var(--yellow); }
+  .login-tagline {
+    font-size: 0.75rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--muted);
+    margin-bottom: 2.5rem;
+  }
+  .btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+    background: var(--white);
+    color: #1a1a1a;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .btn-google:hover { background: #f0f0f0; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+  .btn-google svg { width: 20px; height: 20px; flex-shrink: 0; }
+  .login-note {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 1.2rem;
+    line-height: 1.6;
   }
 
-  /* ── TABS ── */
-  .tabs {
+  /* ── LOADING ── */
+  #loading-screen {
+    min-height: 100vh;
     display: flex;
-    padding: 1.5rem 2rem 0;
-    gap: 0.5rem;
-    border-bottom: 1px solid var(--steel);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
   }
-  .tab-btn {
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--steel);
+    border-top-color: var(--yellow);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+
+  /* ── APP ── */
+  #app-screen { display: none; }
+
+  /* ── HEADER ── */
+  header {
+    padding: 1.2rem 2rem;
+    border-bottom: 1px solid var(--steel);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .header-left { display: flex; align-items: baseline; gap: 1rem; }
+  .logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2rem; letter-spacing: 0.05em; line-height: 1; color: var(--white); }
+  .logo span { color: var(--yellow); }
+  .tagline { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+
+  .user-area { display: flex; align-items: center; gap: 0.8rem; }
+  .user-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 2px solid var(--steel);
+    object-fit: cover;
+  }
+  .user-name { font-size: 0.85rem; color: var(--chalk); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .btn-signout {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 0.12em;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 0.6rem 1.4rem;
+    padding: 0.35rem 0.8rem;
     background: transparent;
     color: var(--muted);
-    border: none;
+    border: 1px solid var(--iron);
+    border-radius: 4px;
     cursor: pointer;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -1px;
-    transition: color 0.2s, border-color 0.2s;
+    transition: all 0.15s;
   }
-  .tab-btn.active {
-    color: var(--yellow);
-    border-bottom-color: var(--yellow);
+  .btn-signout:hover { color: var(--red); border-color: var(--red); }
+
+  /* ── TABS ── */
+  .tabs { display: flex; padding: 1.2rem 2rem 0; gap: 0.5rem; border-bottom: 1px solid var(--steel); }
+  .tab-btn {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem;
+    letter-spacing: 0.12em; text-transform: uppercase; padding: 0.6rem 1.4rem;
+    background: transparent; color: var(--muted); border: none; cursor: pointer;
+    border-bottom: 3px solid transparent; margin-bottom: -1px; transition: color 0.2s, border-color 0.2s;
   }
+  .tab-btn.active { color: var(--yellow); border-bottom-color: var(--yellow); }
   .tab-btn:hover:not(.active) { color: var(--chalk); }
 
   /* ── MAIN ── */
@@ -90,573 +165,205 @@
   .tab-panel.active { display: block; }
 
   /* ── SECTION HEADER ── */
-  .section-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .section-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 1.6rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .section-title small {
-    display: block;
-    font-size: 0.7rem;
-    font-weight: 400;
-    letter-spacing: 0.2em;
-    color: var(--muted);
-    margin-top: 2px;
-  }
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+  .section-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.6rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .section-title small { display: block; font-size: 0.7rem; font-weight: 400; letter-spacing: 0.2em; color: var(--muted); margin-top: 2px; }
 
   /* ── BUTTONS ── */
-  .btn {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.6rem 1.2rem;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .btn-primary {
-    background: var(--yellow);
-    color: var(--black);
-  }
+  .btn { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem 1.2rem; border-radius: 4px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--yellow); color: var(--black); }
   .btn-primary:hover { background: #f0d040; transform: translateY(-1px); }
-  .btn-ghost {
-    background: transparent;
-    color: var(--chalk);
-    border: 1px solid var(--iron);
-  }
+  .btn-ghost { background: transparent; color: var(--chalk); border: 1px solid var(--iron); }
   .btn-ghost:hover { border-color: var(--muted); }
-  .btn-danger {
-    background: transparent;
-    color: var(--red);
-    border: 1px solid transparent;
-    font-size: 0.8rem;
-    padding: 0.3rem 0.6rem;
-  }
+  .btn-danger { background: transparent; color: var(--red); border: 1px solid transparent; font-size: 0.8rem; padding: 0.3rem 0.6rem; }
   .btn-danger:hover { border-color: var(--red); }
   .btn-sm { padding: 0.35rem 0.8rem; font-size: 0.8rem; }
 
-  /* ── CATEGORY FILTER ── */
-  .filters {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
-  }
-  .filter-chip {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.35rem 0.9rem;
-    border-radius: 100px;
-    border: 1px solid var(--iron);
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .filter-chip.active, .filter-chip:hover {
-    border-color: var(--yellow);
-    color: var(--yellow);
-    background: var(--yellow-dim);
-  }
+  /* ── FILTERS ── */
+  .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .filter-chip { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.35rem 0.9rem; border-radius: 100px; border: 1px solid var(--iron); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+  .filter-chip.active, .filter-chip:hover { border-color: var(--yellow); color: var(--yellow); background: var(--yellow-dim); }
 
   /* ── EXERCISE GRID ── */
-  .exercise-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
-  }
+  .exercise-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
 
   /* ── EXERCISE CARD ── */
-  .ex-card {
-    background: var(--charcoal);
-    border: 1px solid var(--steel);
-    border-radius: 8px;
-    padding: 1.2rem;
-    transition: border-color 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .ex-card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: var(--yellow);
-    border-radius: 4px 0 0 4px;
-  }
+  .ex-card { background: var(--charcoal); border: 1px solid var(--steel); border-radius: 8px; padding: 1.2rem; transition: border-color 0.2s; position: relative; overflow: hidden; }
+  .ex-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--yellow); border-radius: 4px 0 0 4px; }
   .ex-card:hover { border-color: var(--iron); }
-
-  .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-  }
-  .ex-name {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    line-height: 1.2;
-  }
-  .ex-category {
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 3px;
-  }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+  .ex-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.05em; text-transform: uppercase; line-height: 1.2; }
+  .ex-category { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
   .card-actions { display: flex; gap: 0.3rem; }
+  .card-date { font-size: 0.7rem; color: var(--muted); }
 
-  .stats-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.8rem;
-    margin-bottom: 1rem;
-  }
-  .stat-box {
-    background: var(--steel);
-    border-radius: 6px;
-    padding: 0.7rem 0.9rem;
-  }
-  .stat-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 3px;
-  }
-  .stat-value {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 1.6rem;
-    line-height: 1;
-    color: var(--white);
-  }
-  .stat-value.highlight { color: var(--yellow); }
-  .stat-unit {
-    font-size: 0.75rem;
-    color: var(--muted);
-    margin-left: 2px;
-  }
-
-  .progress-bar-wrap {
-    background: var(--steel);
-    border-radius: 100px;
-    height: 4px;
-    overflow: hidden;
-    margin-bottom: 0.5rem;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--yellow), #f0d040);
-    border-radius: 100px;
-    transition: width 0.5s ease;
-  }
-  .card-date {
-    font-size: 0.7rem;
-    color: var(--muted);
-    text-align: right;
-  }
-
-  /* history list */
-  .history-toggle {
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    margin-top: 0.6rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    transition: color 0.15s;
-  }
-  .history-toggle:hover { color: var(--chalk); }
-  .history-list {
-    display: none;
-    margin-top: 0.8rem;
-    border-top: 1px solid var(--steel);
-    padding-top: 0.8rem;
-  }
-  .history-list.open { display: block; }
-  .history-entry {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.3rem 0;
-    font-size: 0.82rem;
-    border-bottom: 1px solid var(--iron);
-  }
-  .history-entry:last-child { border-bottom: none; }
-  .history-val { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
-  .history-date { color: var(--muted); font-size: 0.72rem; }
-
-  /* ── HYROX SECTION ── */
-  .hyrox-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
-  }
-
-  .hyrox-card {
-    background: var(--charcoal);
-    border: 1px solid var(--steel);
-    border-radius: 8px;
-    padding: 1.2rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .hyrox-card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: var(--red);
-    border-radius: 4px 0 0 4px;
-  }
-  .hyrox-card.pb::before { background: var(--green); }
-
-  .hx-station {
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--red);
-    margin-bottom: 4px;
-    font-weight: 600;
-  }
-  .hx-name {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 1.2rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-bottom: 0.2rem;
-  }
-  .hx-meta {
-    font-size: 0.75rem;
-    color: var(--muted);
-    margin-bottom: 1rem;
-  }
-
-  .time-display {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 2.4rem;
-    line-height: 1;
-    color: var(--white);
-    letter-spacing: 0.02em;
-    margin-bottom: 0.3rem;
-  }
-  .time-display .best-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--green);
-    display: block;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .pb-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    background: rgba(64,200,128,0.15);
-    border: 1px solid var(--green);
-    color: var(--green);
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 0.2rem 0.5rem;
-    border-radius: 100px;
-    margin-left: 0.5rem;
-    vertical-align: middle;
-  }
-
-  /* ── MODAL ── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-    padding: 1rem;
-    backdrop-filter: blur(4px);
-  }
-  .modal-overlay.hidden { display: none; }
-  .modal {
-    background: var(--charcoal);
-    border: 1px solid var(--iron);
-    border-radius: 12px;
-    padding: 2rem;
-    width: 100%;
-    max-width: 480px;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  .modal-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 1.4rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    color: var(--white);
-  }
-  .modal-title span { color: var(--yellow); }
-
-  .form-group { margin-bottom: 1rem; }
-  .form-label {
-    display: block;
-    font-size: 0.72rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.4rem;
-  }
-  .form-input, .form-select {
-    width: 100%;
-    padding: 0.7rem 0.9rem;
-    background: var(--steel);
-    border: 1px solid var(--iron);
-    border-radius: 6px;
-    color: var(--chalk);
-    font-family: 'Barlow', sans-serif;
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .form-input:focus, .form-select:focus { border-color: var(--yellow); }
-  .form-select option { background: var(--charcoal); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-
-  .modal-actions {
-    display: flex;
-    gap: 0.8rem;
-    margin-top: 1.5rem;
-    justify-content: flex-end;
-  }
-
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--muted);
-  }
-  .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
-  .empty-state p { font-size: 0.9rem; line-height: 1.6; }
-
-  /* ── SUMMARY STATS ── */
-  .summary-bar {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-  }
-  .summary-item {
-    display: flex;
-    flex-direction: column;
-  }
-  .summary-val {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 2rem;
-    color: var(--yellow);
-    line-height: 1;
-  }
-  .summary-lbl {
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-  .summary-divider {
-    width: 1px;
-    background: var(--steel);
-    align-self: stretch;
-  }
-
-  /* ── REC TYPE SELECTOR ── */
-  .rec-type-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
-  }
-  .rec-type-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0.7rem 0.4rem;
-    background: var(--steel);
-    border: 2px solid transparent;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: var(--chalk);
-    font-family: 'Barlow', sans-serif;
-  }
-  .rec-type-btn:hover { border-color: var(--iron); }
-  .rec-type-btn.active {
-    border-color: var(--yellow);
-    background: var(--yellow-dim);
-  }
-  .rec-type-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 1.3rem;
-    color: var(--white);
-    line-height: 1;
-  }
-  .rec-type-btn.active .rec-type-label { color: var(--yellow); }
-  .rec-type-sub {
-    font-size: 0.6rem;
-    letter-spacing: 0.05em;
-    color: var(--muted);
-    margin-top: 4px;
-    text-align: center;
-    line-height: 1.3;
-  }
-
-  /* ── RM STATS en tarjeta ── */
-  .rm-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem;
-    margin-bottom: 0.8rem;
-  }
-  .rm-box {
-    background: var(--steel);
-    border-radius: 6px;
-    padding: 0.6rem 0.8rem;
-    border: 1px solid transparent;
-  }
-  .rm-box.is-pr {
-    border-color: var(--yellow);
-    background: rgba(232,200,64,0.08);
-  }
-  .rm-tag {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 0.68rem;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 2px;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
+  /* ── RM GRID ── */
+  .rm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.8rem; }
+  .rm-box { background: var(--steel); border-radius: 6px; padding: 0.6rem 0.8rem; border: 1px solid transparent; }
+  .rm-box.is-pr { border-color: var(--yellow); background: rgba(232,200,64,0.08); }
+  .rm-tag { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 0.68rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; margin-bottom: 2px; display: flex; align-items: center; gap: 0.3rem; }
   .rm-box.is-pr .rm-tag { color: var(--yellow); }
-  .rm-val {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 1.45rem;
-    line-height: 1;
-    color: var(--white);
-  }
+  .rm-val { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.45rem; line-height: 1; color: var(--white); }
   .rm-box.is-pr .rm-val { color: var(--yellow); }
   .rm-unit { font-size: 0.72rem; color: var(--muted); margin-left: 2px; }
   .rm-date { font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
 
+  /* ── HISTORY ── */
+  .history-toggle { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); background: none; border: none; cursor: pointer; padding: 0; margin-top: 0.6rem; display: flex; align-items: center; gap: 0.4rem; transition: color 0.15s; }
+  .history-toggle:hover { color: var(--chalk); }
+  .history-list { display: none; margin-top: 0.8rem; border-top: 1px solid var(--steel); padding-top: 0.8rem; }
+  .history-list.open { display: block; }
+  .history-entry { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; font-size: 0.82rem; border-bottom: 1px solid var(--iron); }
+  .history-entry:last-child { border-bottom: none; }
+  .history-val { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
+  .history-date { color: var(--muted); font-size: 0.72rem; }
+
+  /* ── SUMMARY BAR ── */
+  .summary-bar { display: flex; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .summary-item { display: flex; flex-direction: column; }
+  .summary-val { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2rem; color: var(--yellow); line-height: 1; }
+  .summary-lbl { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+  .summary-divider { width: 1px; background: var(--steel); align-self: stretch; }
+
+  /* ── HYROX ── */
+  .hyrox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+  .hyrox-card { background: var(--charcoal); border: 1px solid var(--steel); border-radius: 8px; padding: 1.2rem; position: relative; overflow: hidden; }
+  .hyrox-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--red); border-radius: 4px 0 0 4px; }
+  .hyrox-card.pb::before { background: var(--green); }
+  .hx-station { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 4px; font-weight: 600; }
+  .hx-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.2rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.2rem; }
+  .hx-meta { font-size: 0.75rem; color: var(--muted); margin-bottom: 1rem; }
+  .time-display { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2.4rem; line-height: 1; color: var(--white); letter-spacing: 0.02em; margin-bottom: 0.3rem; }
+  .time-display .best-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green); display: block; font-weight: 600; margin-bottom: 4px; }
+  .pb-badge { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(64,200,128,0.15); border: 1px solid var(--green); color: var(--green); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 100px; margin-left: 0.5rem; vertical-align: middle; }
+
+  /* ── REC TYPE SELECTOR ── */
+  .rec-type-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+  .rec-type-btn { display: flex; flex-direction: column; align-items: center; padding: 0.7rem 0.4rem; background: var(--steel); border: 2px solid transparent; border-radius: 8px; cursor: pointer; transition: all 0.15s; color: var(--chalk); font-family: 'Barlow', sans-serif; }
+  .rec-type-btn:hover { border-color: var(--iron); }
+  .rec-type-btn.active { border-color: var(--yellow); background: var(--yellow-dim); }
+  .rec-type-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.3rem; color: var(--white); line-height: 1; }
+  .rec-type-btn.active .rec-type-label { color: var(--yellow); }
+  .rec-type-sub { font-size: 0.6rem; letter-spacing: 0.05em; color: var(--muted); margin-top: 4px; text-align: center; line-height: 1.3; }
+
+  /* ── MODAL ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 1rem; backdrop-filter: blur(4px); }
+  .modal-overlay.hidden { display: none; }
+  .modal { background: var(--charcoal); border: 1px solid var(--iron); border-radius: 12px; padding: 2rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+  .modal-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.4rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1.5rem; color: var(--white); }
+  .modal-title span { color: var(--yellow); }
+  .form-group { margin-bottom: 1rem; }
+  .form-label { display: block; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+  .form-input, .form-select { width: 100%; padding: 0.7rem 0.9rem; background: var(--steel); border: 1px solid var(--iron); border-radius: 6px; color: var(--chalk); font-family: 'Barlow', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.15s; }
+  .form-input:focus, .form-select:focus { border-color: var(--yellow); }
+  .form-select option { background: var(--charcoal); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  .modal-actions { display: flex; gap: 0.8rem; margin-top: 1.5rem; justify-content: flex-end; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+  .empty-state p { font-size: 0.9rem; line-height: 1.6; }
+
+  /* ── SAVING INDICATOR ── */
+  .save-toast {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    background: var(--charcoal); border: 1px solid var(--green); color: var(--green);
+    font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.6rem 1.2rem; border-radius: 6px;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none; z-index: 9999;
+  }
+  .save-toast.show { opacity: 1; }
+
   @media (max-width: 600px) {
     main { padding: 1rem; }
     .form-row { grid-template-columns: 1fr; }
-    .stats-row { grid-template-columns: 1fr 1fr; }
     .time-display { font-size: 2rem; }
     .rec-type-grid { grid-template-columns: repeat(2, 1fr); }
     .rm-grid { grid-template-columns: 1fr 1fr; }
+    header { padding: 1rem; }
+    .user-name { display: none; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">GYM<span>LOG</span></div>
-  <div class="tagline">PR · RM · Hyrox Tracker</div>
-</header>
-
-<div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('gym')">🏋️ Gym — PRs & RMs</button>
-  <button class="tab-btn" onclick="switchTab('hyrox')">🔥 Hyrox</button>
+<!-- ══ LOADING ══ -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <div class="loading-text">Cargando…</div>
 </div>
 
-<main>
+<!-- ══ LOGIN ══ -->
+<div id="login-screen" style="display:none">
+  <div class="login-box">
+    <div class="login-logo">GYM<span>LOG</span></div>
+    <div class="login-tagline">PR · RM · Hyrox Tracker</div>
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Continuar con Google
+    </button>
+    <p class="login-note">Tus datos se guardan en la nube.<br>Cada usuario tiene su propio espacio privado.</p>
+  </div>
+</div>
 
-  <!-- ══ GYM TAB ══ -->
-  <div id="tab-gym" class="tab-panel active">
-    <div class="section-head">
-      <div class="section-title">
-        Ejercicios
-        <small>Peso máximo (PR) y repeticiones máximas (RM)</small>
-      </div>
-      <button class="btn btn-primary" onclick="openExerciseModal()">+ Nuevo ejercicio</button>
+<!-- ══ APP ══ -->
+<div id="app-screen">
+  <header>
+    <div class="header-left">
+      <div class="logo">GYM<span>LOG</span></div>
+      <div class="tagline">PR · RM · Hyrox</div>
     </div>
-
-    <div id="gym-summary" class="summary-bar"></div>
-
-    <div class="filters" id="gym-filters">
-      <button class="filter-chip active" data-cat="all" onclick="filterGym(this, 'all')">Todos</button>
+    <div class="user-area">
+      <img id="user-avatar" class="user-avatar" src="" alt="" style="display:none">
+      <span id="user-name" class="user-name"></span>
+      <button class="btn-signout" onclick="signOut()">Salir</button>
     </div>
+  </header>
 
-    <div class="exercise-grid" id="exercise-grid">
-      <div class="empty-state">
-        <div class="icon">🏋️</div>
-        <p>Sin ejercicios aún.<br>Añade tu primer ejercicio para empezar a trackear tus PRs.</p>
-      </div>
-    </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('gym', this)">🏋️ Gym — PRs & RMs</button>
+    <button class="tab-btn" onclick="switchTab('hyrox', this)">🔥 Hyrox</button>
   </div>
 
-  <!-- ══ HYROX TAB ══ -->
-  <div id="tab-hyrox" class="tab-panel">
-    <div class="section-head">
-      <div class="section-title">
-        Hyrox
-        <small>Tests por estación y tiempos</small>
+  <main>
+    <!-- GYM TAB -->
+    <div id="tab-gym" class="tab-panel active">
+      <div class="section-head">
+        <div class="section-title">Ejercicios<small>Peso máximo (PR) y repeticiones máximas (RM)</small></div>
+        <button class="btn btn-primary" onclick="openExerciseModal()">+ Nuevo ejercicio</button>
       </div>
-      <button class="btn btn-primary" onclick="openHyroxModal()">+ Nuevo test</button>
-    </div>
-
-    <div id="hyrox-summary" class="summary-bar"></div>
-
-    <div class="hyrox-grid" id="hyrox-grid">
-      <div class="empty-state">
-        <div class="icon">🔥</div>
-        <p>Sin tests aún.<br>Registra tu primer test Hyrox.</p>
+      <div id="gym-summary" class="summary-bar"></div>
+      <div class="filters" id="gym-filters"></div>
+      <div class="exercise-grid" id="exercise-grid">
+        <div class="empty-state"><div class="icon">🏋️</div><p>Cargando ejercicios…</p></div>
       </div>
     </div>
-  </div>
 
-</main>
+    <!-- HYROX TAB -->
+    <div id="tab-hyrox" class="tab-panel">
+      <div class="section-head">
+        <div class="section-title">Hyrox<small>Tests por estación y tiempos</small></div>
+        <button class="btn btn-primary" onclick="openHyroxModal()">+ Nuevo test</button>
+      </div>
+      <div id="hyrox-summary" class="summary-bar"></div>
+      <div class="hyrox-grid" id="hyrox-grid">
+        <div class="empty-state"><div class="icon">🔥</div><p>Cargando tests…</p></div>
+      </div>
+    </div>
+  </main>
+</div>
 
 <!-- ══ MODAL: EJERCICIO ══ -->
 <div class="modal-overlay hidden" id="exercise-modal">
   <div class="modal">
-    <div class="modal-title" id="ex-modal-title">Nuevo <span>ejercicio</span></div>
+    <div class="modal-title">Nuevo <span>ejercicio</span></div>
     <div class="form-group">
       <label class="form-label">Nombre del ejercicio</label>
       <input class="form-input" id="ex-name" placeholder="Ej: Sentadilla, Press banca…">
@@ -690,30 +397,25 @@
   </div>
 </div>
 
-<!-- ══ MODAL: REGISTRO (PR/RM) ══ -->
+<!-- ══ MODAL: REGISTRO ══ -->
 <div class="modal-overlay hidden" id="record-modal">
   <div class="modal">
     <div class="modal-title">Nuevo <span>registro</span></div>
     <div id="record-ex-name" style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1.2rem;"></div>
-    <!-- Tipo selector: botones visuales -->
     <div class="form-group">
       <label class="form-label">Tipo de registro</label>
       <div class="rec-type-grid" id="rec-type-grid">
         <button class="rec-type-btn active" data-type="PR" onclick="selectRecType(this,'PR')">
-          <span class="rec-type-label">PR</span>
-          <span class="rec-type-sub">Peso máximo · 1 rep</span>
+          <span class="rec-type-label">PR</span><span class="rec-type-sub">Peso máximo · 1 rep</span>
         </button>
         <button class="rec-type-btn" data-type="1RM" onclick="selectRecType(this,'1RM')">
-          <span class="rec-type-label">1RM</span>
-          <span class="rec-type-sub">1 repetición</span>
+          <span class="rec-type-label">1RM</span><span class="rec-type-sub">1 repetición</span>
         </button>
         <button class="rec-type-btn" data-type="3RM" onclick="selectRecType(this,'3RM')">
-          <span class="rec-type-label">3RM</span>
-          <span class="rec-type-sub">3 repeticiones</span>
+          <span class="rec-type-label">3RM</span><span class="rec-type-sub">3 repeticiones</span>
         </button>
         <button class="rec-type-btn" data-type="5RM" onclick="selectRecType(this,'5RM')">
-          <span class="rec-type-label">5RM</span>
-          <span class="rec-type-sub">5 repeticiones</span>
+          <span class="rec-type-label">5RM</span><span class="rec-type-sub">5 repeticiones</span>
         </button>
       </div>
     </div>
@@ -755,23 +457,16 @@
         <option value="Otro">Otro</option>
       </select>
     </div>
-    <!-- Distancia (SkiErg, RowErg, Running) -->
     <div class="form-group" id="hx-dist-group">
       <label class="form-label" id="hx-dist-label">Distancia (m)</label>
-      <select class="form-select" id="hx-dist-preset" onchange="onDistPresetChange()">
-        <!-- populated by JS -->
-      </select>
+      <select class="form-select" id="hx-dist-preset" onchange="onDistPresetChange()"></select>
       <input class="form-input" id="hx-dist-custom" type="number" placeholder="metros" min="1" style="margin-top:.5rem;display:none">
     </div>
-    <!-- Peso (Sled, Farmer's, Sandbag, Wall Balls) -->
     <div class="form-group" id="hx-weight-group" style="display:none">
       <label class="form-label" id="hx-weight-label">Peso (kg)</label>
-      <select class="form-select" id="hx-weight-preset" onchange="onWeightPresetChange()">
-        <!-- populated by JS -->
-      </select>
+      <select class="form-select" id="hx-weight-preset" onchange="onWeightPresetChange()"></select>
       <input class="form-input" id="hx-weight-custom" type="number" placeholder="kg" min="0" step="0.5" style="margin-top:.5rem;display:none">
     </div>
-    <!-- Nombre personalizado -->
     <div class="form-group" id="hx-custom-group" style="display:none">
       <label class="form-label">Nombre personalizado</label>
       <input class="form-input" id="hx-custom" placeholder="Nombre del ejercicio">
@@ -801,28 +496,103 @@
   </div>
 </div>
 
-<script>
-// ══════════════════════════════
-//  STATE — localStorage
-// ══════════════════════════════
-function load(key) {
-  try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; }
+<div class="save-toast" id="save-toast">✓ Guardado</div>
+
+<!-- ══ FIREBASE ══ -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, onSnapshot, query, orderBy }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ── CONFIG ──
+const firebaseConfig = {
+  apiKey: "AIzaSyAPpI8pRCQeaKa8M4lfTwsknxk9iPHsjQ8",
+  authDomain: "gym-tracker-5d1c0.firebaseapp.com",
+  projectId: "gym-tracker-5d1c0",
+  storageBucket: "gym-tracker-5d1c0.firebasestorage.app",
+  messagingSenderId: "728320121583",
+  appId: "1:728320121583:web:d7888d1a195825f52d191a"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── STATE ──
+let currentUser = null;
+let exercises   = [];   // [{id (firestoreId), name, category, unit, records:[]}]
+let hyroxData   = [];
+let unsubExercises = null;
+let unsubHyrox     = null;
+
+// ── AUTH ──
+window.signInWithGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  try { await signInWithPopup(auth, provider); }
+  catch(e) { console.error(e); alert('Error al iniciar sesión: ' + e.message); }
+};
+
+window.signOut = async () => {
+  if (unsubExercises) unsubExercises();
+  if (unsubHyrox) unsubHyrox();
+  await fbSignOut(auth);
+};
+
+onAuthStateChanged(auth, user => {
+  document.getElementById('loading-screen').style.display = 'none';
+  if (user) {
+    currentUser = user;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    document.getElementById('user-name').textContent = user.displayName || user.email;
+    if (user.photoURL) {
+      const av = document.getElementById('user-avatar');
+      av.src = user.photoURL;
+      av.style.display = 'block';
+    }
+    subscribeToData();
+  } else {
+    currentUser = null;
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app-screen').style.display = 'none';
+    exercises = []; hyroxData = [];
+  }
+});
+
+// ── FIRESTORE PATHS ──
+function exCol()   { return collection(db, 'users', currentUser.uid, 'exercises'); }
+function hxCol()   { return collection(db, 'users', currentUser.uid, 'hyrox'); }
+function recCol(exId) { return collection(db, 'users', currentUser.uid, 'exercises', exId, 'records'); }
+
+// ── REALTIME LISTENERS ──
+function subscribeToData() {
+  // Exercises
+  unsubExercises = onSnapshot(query(exCol(), orderBy('createdAt')), async snap => {
+    exercises = [];
+    for (const d of snap.docs) {
+      const ex = { id: d.id, ...d.data(), records: [] };
+      // load records subcollection
+      const recSnap = await getDocs(query(recCol(d.id), orderBy('date', 'desc')));
+      ex.records = recSnap.docs.map(r => ({ id: r.id, ...r.data() }));
+      exercises.push(ex);
+    }
+    renderGym();
+  });
+
+  // Hyrox
+  unsubHyrox = onSnapshot(query(hxCol(), orderBy('date', 'desc')), snap => {
+    hyroxData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderHyrox();
+  });
 }
-function save(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 
-let exercises = load('gymlog_exercises'); // [{id, name, category, unit, records:[{id,type,value,date,note}]}]
-let hyroxData = load('gymlog_hyrox');     // [{id, station, meta, totalSec, date, note}]
-
-// ══════════════════════════════
-//  TABS
-// ══════════════════════════════
-function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelector(`#tab-${tab}`).classList.add('active');
-  event.currentTarget.classList.add('active');
-  if (tab === 'gym') renderGym();
-  else renderHyrox();
+// ── TOAST ──
+function showToast() {
+  const t = document.getElementById('save-toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
 }
 
 // ══════════════════════════════
@@ -844,19 +614,18 @@ function renderFilters() {
   ).join('');
 }
 
-function filterGym(btn, cat) {
+window.filterGym = (btn, cat) => {
   activeFilter = cat;
   document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderGrid();
-}
+};
 
 function renderGrid() {
   const grid = document.getElementById('exercise-grid');
   const list = activeFilter === 'all' ? exercises : exercises.filter(e => e.category === activeFilter);
-
   if (!list.length) {
-    grid.innerHTML = `<div class="empty-state"><div class="icon">🏋️</div><p>Sin ejercicios en esta categoría.</p></div>`;
+    grid.innerHTML = `<div class="empty-state"><div class="icon">🏋️</div><p>Sin ejercicios aún.<br>Añade tu primer ejercicio.</p></div>`;
     return;
   }
   grid.innerHTML = list.map(ex => exerciseCardHTML(ex)).join('');
@@ -868,13 +637,12 @@ function renderGymSummary() {
   document.getElementById('gym-summary').innerHTML = `
     <div class="summary-item"><div class="summary-val">${exercises.length}</div><div class="summary-lbl">Ejercicios</div></div>
     <div class="summary-divider"></div>
-    <div class="summary-item"><div class="summary-val">${totalPR}</div><div class="summary-lbl">PRs registrados</div></div>
+    <div class="summary-item"><div class="summary-val">${totalPR}</div><div class="summary-lbl">PRs</div></div>
     <div class="summary-divider"></div>
-    <div class="summary-item"><div class="summary-val">${totalRM}</div><div class="summary-lbl">RMs registrados</div></div>
+    <div class="summary-item"><div class="summary-val">${totalRM}</div><div class="summary-lbl">RMs</div></div>
   `;
 }
 
-// Best record per type (PR, 1RM, 3RM, 5RM) — highest weight
 function bestOfType(ex, type) {
   const recs = ex.records.filter(r => r.type === type);
   if (!recs.length) return null;
@@ -882,37 +650,33 @@ function bestOfType(ex, type) {
 }
 
 function exerciseCardHTML(ex) {
-  const pr   = bestOfType(ex, 'PR');
-  const rm1  = bestOfType(ex, '1RM');
-  const rm3  = bestOfType(ex, '3RM');
-  const rm5  = bestOfType(ex, '5RM');
-  const lastDate = ex.records.length ? [...ex.records].sort((a,b) => b.date.localeCompare(a.date))[0].date : null;
+  const pr  = bestOfType(ex, 'PR');
+  const rm1 = bestOfType(ex, '1RM');
+  const rm3 = bestOfType(ex, '3RM');
+  const rm5 = bestOfType(ex, '5RM');
+  const lastDate = ex.records.length ? ex.records[0].date : null;
 
-  // Build RM boxes: always show PR + the 3 RMs
   const boxes = [
-    { label: 'PR', sub: '1 rep máx.', rec: pr, isPR: true },
-    { label: '1RM', sub: '1 rep', rec: rm1, isPR: false },
-    { label: '3RM', sub: '3 reps', rec: rm3, isPR: false },
-    { label: '5RM', sub: '5 reps', rec: rm5, isPR: false },
+    { label: 'PR',  sub: '1 rep máx.', rec: pr,  isPR: true },
+    { label: '1RM', sub: '1 rep',      rec: rm1, isPR: false },
+    { label: '3RM', sub: '3 reps',     rec: rm3, isPR: false },
+    { label: '5RM', sub: '5 reps',     rec: rm5, isPR: false },
   ];
 
   const rmHTML = `<div class="rm-grid">${boxes.map(b => `
     <div class="rm-box ${b.isPR ? 'is-pr' : ''}">
       <div class="rm-tag">${b.isPR ? '👑 ' : ''}${b.label} <span style="font-weight:400;font-size:.6rem;color:var(--muted)">${b.sub}</span></div>
       ${b.rec
-        ? `<div class="rm-val">${b.rec.value}<span class="rm-unit">${ex.unit}</span></div>
-           <div class="rm-date">${formatDate(b.rec.date)}</div>`
-        : `<div class="rm-val" style="color:var(--iron)">—</div>`
-      }
-    </div>
-  `).join('')}</div>`;
+        ? `<div class="rm-val">${b.rec.value}<span class="rm-unit">${ex.unit}</span></div><div class="rm-date">${formatDate(b.rec.date)}</div>`
+        : `<div class="rm-val" style="color:var(--iron)">—</div>`}
+    </div>`).join('')}</div>`;
 
   const histHTML = ex.records.length ? `
     <button class="history-toggle" onclick="toggleHistory('hist-${ex.id}', this)">
       <span>▸</span> Historial (${ex.records.length})
     </button>
     <div class="history-list" id="hist-${ex.id}">
-      ${[...ex.records].sort((a,b) => b.date.localeCompare(a.date)).map(r => `
+      ${ex.records.map(r => `
         <div class="history-entry">
           <span>
             <span style="color:var(--yellow);font-size:.65rem;font-weight:700;margin-right:.4rem">${r.type}</span>
@@ -923,82 +687,71 @@ function exerciseCardHTML(ex) {
             <span class="history-date">${formatDate(r.date)}</span>
             <button class="btn-danger" onclick="deleteRecord('${ex.id}','${r.id}')">✕</button>
           </span>
-        </div>
-      `).join('')}
-    </div>
-  ` : '';
+        </div>`).join('')}
+    </div>` : '';
 
   return `
     <div class="ex-card" id="card-${ex.id}">
       <div class="card-top">
-        <div>
-          <div class="ex-name">${ex.name}</div>
-          <div class="ex-category">${ex.category}</div>
-        </div>
+        <div><div class="ex-name">${ex.name}</div><div class="ex-category">${ex.category}</div></div>
         <div class="card-actions">
           <button class="btn btn-primary btn-sm" onclick="openRecordModal('${ex.id}')">+ Registro</button>
           <button class="btn btn-danger" onclick="deleteExercise('${ex.id}')">✕</button>
         </div>
       </div>
       ${rmHTML}
-      ${lastDate ? `<div class="card-date">Último registro: ${formatDate(lastDate)}</div>` : ''}
+      ${lastDate ? `<div class="card-date" style="margin-top:.3rem">Último registro: ${formatDate(lastDate)}</div>` : ''}
       ${histHTML}
-    </div>
-  `;
+    </div>`;
 }
 
-function toggleHistory(id, btn) {
+window.toggleHistory = (id, btn) => {
   const list = document.getElementById(id);
   list.classList.toggle('open');
   btn.querySelector('span').textContent = list.classList.contains('open') ? '▾' : '▸';
-}
+};
 
-// ══════════════════════════════
-//  EXERCISE MODAL
-// ══════════════════════════════
-function openExerciseModal() {
+// ── EXERCISE MODAL ──
+window.openExerciseModal = () => {
   document.getElementById('ex-name').value = '';
   document.getElementById('exercise-modal').classList.remove('hidden');
   document.getElementById('ex-name').focus();
-}
-function closeExerciseModal() {
-  document.getElementById('exercise-modal').classList.add('hidden');
-}
-function saveExercise() {
+};
+window.closeExerciseModal = () => document.getElementById('exercise-modal').classList.add('hidden');
+
+window.saveExercise = async () => {
   const name = document.getElementById('ex-name').value.trim();
   if (!name) { alert('Escribe el nombre del ejercicio'); return; }
-  const ex = {
-    id: Date.now().toString(),
+  await addDoc(exCol(), {
     name,
     category: document.getElementById('ex-category').value,
     unit: document.getElementById('ex-unit').value,
-    records: []
-  };
-  exercises.push(ex);
-  save('gymlog_exercises', exercises);
+    createdAt: new Date().toISOString()
+  });
+  showToast();
   closeExerciseModal();
-  renderGym();
-}
-function deleteExercise(id) {
-  if (!confirm('¿Eliminar este ejercicio y todos sus registros?')) return;
-  exercises = exercises.filter(e => e.id !== id);
-  save('gymlog_exercises', exercises);
-  renderGym();
-}
+};
 
-// ══════════════════════════════
-//  RECORD MODAL
-// ══════════════════════════════
-let currentExId = null;
+window.deleteExercise = async (id) => {
+  if (!confirm('¿Eliminar este ejercicio y todos sus registros?')) return;
+  // delete records subcollection first
+  const recSnap = await getDocs(recCol(id));
+  for (const r of recSnap.docs) await deleteDoc(r.ref);
+  await deleteDoc(doc(db, 'users', currentUser.uid, 'exercises', id));
+  showToast();
+};
+
+// ── RECORD MODAL ──
+let currentExId  = null;
 let currentRecType = 'PR';
 
-function selectRecType(btn, type) {
+window.selectRecType = (btn, type) => {
   currentRecType = type;
   document.querySelectorAll('.rec-type-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-}
+};
 
-function openRecordModal(exId) {
+window.openRecordModal = (exId) => {
   currentExId = exId;
   currentRecType = 'PR';
   const ex = exercises.find(e => e.id === exId);
@@ -1007,67 +760,53 @@ function openRecordModal(exId) {
   document.getElementById('rec-note').value = '';
   document.getElementById('rec-date').value = today();
   document.getElementById('rec-val-label').textContent = `Peso (${ex.unit})`;
-  // reset type buttons
-  document.querySelectorAll('.rec-type-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.type === 'PR');
-  });
+  document.querySelectorAll('.rec-type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === 'PR'));
   document.getElementById('record-modal').classList.remove('hidden');
   document.getElementById('rec-value').focus();
-}
-function closeRecordModal() { document.getElementById('record-modal').classList.add('hidden'); }
+};
+window.closeRecordModal = () => document.getElementById('record-modal').classList.add('hidden');
 
-function saveRecord() {
+window.saveRecord = async () => {
   const val = parseFloat(document.getElementById('rec-value').value);
   if (!val) { alert('Introduce el peso'); return; }
-  const rec = {
-    id: Date.now().toString(),
+  await addDoc(recCol(currentExId), {
     type: currentRecType,
     value: val,
     date: document.getElementById('rec-date').value || today(),
     note: document.getElementById('rec-note').value.trim()
-  };
-  const ex = exercises.find(e => e.id === currentExId);
-  ex.records.push(rec);
-  save('gymlog_exercises', exercises);
+  });
+  showToast();
   closeRecordModal();
-  renderGym();
-}
-function deleteRecord(exId, recId) {
-  const ex = exercises.find(e => e.id === exId);
-  ex.records = ex.records.filter(r => r.id !== recId);
-  save('gymlog_exercises', exercises);
-  renderGym();
-}
-
-// ══════════════════════════════
-//  HYROX — STATION CONFIG
-// ══════════════════════════════
-// type: 'distance' | 'weight' | 'none'
-const STATION_CONFIG = {
-  'SkiErg':           { type: 'distance', presets: [500, 1000, 2000], unit: 'm' },
-  'RowErg':           { type: 'distance', presets: [500, 1000, 2000], unit: 'm' },
-  'Running':          { type: 'distance', presets: [400, 1000, 5000], unit: 'm' },
-  'Sled Push':        { type: 'weight',   presets: [60, 80, 102, 125, 152], unit: 'kg' },
-  'Sled Pull':        { type: 'weight',   presets: [60, 80, 102, 125, 152], unit: 'kg' },
-  "Farmer's Carry":   { type: 'weight',   presets: [16, 20, 24, 32], unit: 'kg/mano' },
-  'Sandbag Lunges':   { type: 'weight',   presets: [10, 15, 20, 24, 30], unit: 'kg' },
-  'Wall Balls':       { type: 'weight',   presets: [4, 6, 9, 10], unit: 'kg' },
-  'Burpee Broad Jump':{ type: 'none' },
-  'Otro':             { type: 'none' },
 };
 
-function getStationCfg(station) {
-  return STATION_CONFIG[station] || { type: 'none' };
-}
+window.deleteRecord = async (exId, recId) => {
+  await deleteDoc(doc(db, 'users', currentUser.uid, 'exercises', exId, 'records', recId));
+  showToast();
+};
 
-// key used for grouping cards: "station|param"
+// ══════════════════════════════
+//  HYROX
+// ══════════════════════════════
+const STATION_CONFIG = {
+  'SkiErg':            { type: 'distance', presets: [500, 1000, 2000], unit: 'm' },
+  'RowErg':            { type: 'distance', presets: [500, 1000, 2000], unit: 'm' },
+  'Running':           { type: 'distance', presets: [400, 1000, 5000], unit: 'm' },
+  'Sled Push':         { type: 'weight',   presets: [60, 80, 102, 125, 152], unit: 'kg' },
+  'Sled Pull':         { type: 'weight',   presets: [60, 80, 102, 125, 152], unit: 'kg' },
+  "Farmer's Carry":    { type: 'weight',   presets: [16, 20, 24, 32], unit: 'kg/mano' },
+  'Sandbag Lunges':    { type: 'weight',   presets: [10, 15, 20, 24, 30], unit: 'kg' },
+  'Wall Balls':        { type: 'weight',   presets: [4, 6, 9, 10], unit: 'kg' },
+  'Burpee Broad Jump': { type: 'none' },
+  'Otro':              { type: 'none' },
+};
+
+function getStationCfg(s) { return STATION_CONFIG[s] || { type: 'none' }; }
 function entryGroupKey(h) {
   const cfg = getStationCfg(h.station);
   if (cfg.type === 'distance') return `${h.station}|${h.param}m`;
   if (cfg.type === 'weight')   return `${h.station}|${h.param}${cfg.unit}`;
   return h.station;
 }
-
 function entryParamLabel(h) {
   const cfg = getStationCfg(h.station);
   if (cfg.type === 'distance') return `${h.param} m`;
@@ -1075,218 +814,155 @@ function entryParamLabel(h) {
   return '';
 }
 
-// ══════════════════════════════
-//  HYROX RENDER
-// ══════════════════════════════
 function renderHyrox() {
   const grid = document.getElementById('hyrox-grid');
   if (!hyroxData.length) {
     grid.innerHTML = `<div class="empty-state"><div class="icon">🔥</div><p>Sin tests Hyrox aún.<br>Registra tu primer test.</p></div>`;
-    renderHyroxSummary();
-    return;
+    renderHyroxSummary(); return;
   }
-
-  // Group by station+param
   const groups = {};
   hyroxData.forEach(h => {
     const key = entryGroupKey(h);
     if (!groups[key]) groups[key] = { station: h.station, param: h.param, entries: [] };
     groups[key].entries.push(h);
   });
-
-  // Order: by station name then param ascending
-  const ordered = Object.values(groups).sort((a, b) => {
-    if (a.station !== b.station) return a.station.localeCompare(b.station);
-    return (parseFloat(a.param) || 0) - (parseFloat(b.param) || 0);
-  });
-
+  const ordered = Object.values(groups).sort((a, b) =>
+    a.station !== b.station ? a.station.localeCompare(b.station) : (parseFloat(a.param)||0) - (parseFloat(b.param)||0)
+  );
   grid.innerHTML = ordered.map(({ station, param, entries }) => {
     const cfg = getStationCfg(station);
     const sorted = [...entries].sort((a, b) => a.totalSec - b.totalSec);
     const best = sorted[0];
     const hasPB = entries.length > 1;
-    const cardId = `hx-hist-${(station + param).replace(/[\s\/]/g, '_')}`;
+    const cardId = `hx-hist-${(station + (param||'')).replace(/[\s\/]/g, '_')}`;
     const paramLabel = entryParamLabel(best);
-
-    // improvement: first entry vs best
     const firstEntry = [...entries].sort((a, b) => a.date.localeCompare(b.date))[0];
     const improvement = firstEntry.totalSec - best.totalSec;
-
     return `
       <div class="hyrox-card ${hasPB ? 'pb' : ''}">
         <div class="hx-station">Hyrox · ${station}</div>
         <div class="hx-name">${station}${hasPB ? '<span class="pb-badge">✓ PB</span>' : ''}</div>
         ${paramLabel ? `<div class="hx-meta">${cfg.type === 'distance' ? '📏' : '🏋️'} ${paramLabel}</div>` : ''}
-        <div class="time-display">
-          <span class="best-label">Mejor marca</span>
-          ${formatTime(best.totalSec)}
-        </div>
-        ${hasPB && improvement > 0 ? `
-          <div class="card-date" style="margin-top:.5rem;color:var(--green)">
-            ↓ Mejora: ${formatTime(improvement)} · ${entries.length} tests
-          </div>` : `<div class="card-date" style="margin-top:.5rem">${entries.length} test${entries.length>1?'s':''}</div>`}
-        <button class="history-toggle" onclick="toggleHistory('${cardId}', this)">
-          <span>▸</span> Historial (${entries.length})
-        </button>
+        <div class="time-display"><span class="best-label">Mejor marca</span>${formatTime(best.totalSec)}</div>
+        ${hasPB && improvement > 0
+          ? `<div class="card-date" style="margin-top:.5rem;color:var(--green)">↓ Mejora: ${formatTime(improvement)} · ${entries.length} tests</div>`
+          : `<div class="card-date" style="margin-top:.5rem">${entries.length} test${entries.length>1?'s':''}</div>`}
+        <button class="history-toggle" onclick="toggleHistory('${cardId}', this)"><span>▸</span> Historial (${entries.length})</button>
         <div class="history-list" id="${cardId}">
           ${sorted.map(h => `
             <div class="history-entry">
               <span class="history-val">${formatTime(h.totalSec)}</span>
               <span>
-                <span class="history-date">${formatDate(h.date)}${h.note ? ' · ' + h.note : ''}</span>
+                <span class="history-date">${formatDate(h.date)}${h.note ? ' · '+h.note : ''}</span>
                 <button class="btn-danger" onclick="deleteHyrox('${h.id}')">✕</button>
               </span>
-            </div>
-          `).join('')}
+            </div>`).join('')}
         </div>
-      </div>
-    `;
+      </div>`;
   }).join('');
-
   renderHyroxSummary();
 }
 
 function renderHyroxSummary() {
-  const total = hyroxData.length;
+  const total    = hyroxData.length;
   const stations = new Set(hyroxData.map(h => h.station)).size;
-  const groups = new Set(hyroxData.map(h => entryGroupKey(h))).size;
+  const groups   = new Set(hyroxData.map(h => entryGroupKey(h))).size;
   document.getElementById('hyrox-summary').innerHTML = `
     <div class="summary-item"><div class="summary-val">${total}</div><div class="summary-lbl">Tests totales</div></div>
     <div class="summary-divider"></div>
     <div class="summary-item"><div class="summary-val">${stations}</div><div class="summary-lbl">Estaciones</div></div>
     <div class="summary-divider"></div>
-    <div class="summary-item"><div class="summary-val">${groups}</div><div class="summary-lbl">Combis distintas</div></div>
-  `;
+    <div class="summary-item"><div class="summary-val">${groups}</div><div class="summary-lbl">Combis distintas</div></div>`;
 }
 
-// ══════════════════════════════
-//  HYROX MODAL
-// ══════════════════════════════
-function openHyroxModal() {
+window.openHyroxModal = () => {
   document.getElementById('hx-min').value = '';
   document.getElementById('hx-sec').value = '';
   document.getElementById('hx-note').value = '';
   document.getElementById('hx-date').value = today();
   document.getElementById('hyrox-modal').classList.remove('hidden');
   onStationChange();
-}
-function closeHyroxModal() { document.getElementById('hyrox-modal').classList.add('hidden'); }
+};
+window.closeHyroxModal = () => document.getElementById('hyrox-modal').classList.add('hidden');
 
-function onStationChange() {
+window.onStationChange = () => {
   const station = document.getElementById('hx-station').value;
   const cfg = getStationCfg(station);
-
-  // dist group
-  const distGroup = document.getElementById('hx-dist-group');
-  const weightGroup = document.getElementById('hx-weight-group');
-  const customGroup = document.getElementById('hx-custom-group');
-
-  distGroup.style.display = 'none';
-  weightGroup.style.display = 'none';
-  customGroup.style.display = 'none';
-
+  document.getElementById('hx-dist-group').style.display   = 'none';
+  document.getElementById('hx-weight-group').style.display = 'none';
+  document.getElementById('hx-custom-group').style.display = 'none';
   if (cfg.type === 'distance') {
-    distGroup.style.display = 'block';
+    document.getElementById('hx-dist-group').style.display = 'block';
     document.getElementById('hx-dist-label').textContent = `Distancia (${cfg.unit})`;
-    const presets = cfg.presets.map(p => `<option value="${p}">${p} ${cfg.unit}</option>`).join('');
-    document.getElementById('hx-dist-preset').innerHTML = presets + '<option value="otro">Otra distancia…</option>';
+    document.getElementById('hx-dist-preset').innerHTML =
+      cfg.presets.map(p => `<option value="${p}">${p} ${cfg.unit}</option>`).join('') + '<option value="otro">Otra distancia…</option>';
     document.getElementById('hx-dist-custom').style.display = 'none';
     document.getElementById('hx-dist-custom').value = '';
   } else if (cfg.type === 'weight') {
-    weightGroup.style.display = 'block';
+    document.getElementById('hx-weight-group').style.display = 'block';
     document.getElementById('hx-weight-label').textContent = `Peso (${cfg.unit})`;
-    const presets = cfg.presets.map(p => `<option value="${p}">${p} ${cfg.unit}</option>`).join('');
-    document.getElementById('hx-weight-preset').innerHTML = presets + '<option value="otro">Otro peso…</option>';
+    document.getElementById('hx-weight-preset').innerHTML =
+      cfg.presets.map(p => `<option value="${p}">${p} ${cfg.unit}</option>`).join('') + '<option value="otro">Otro peso…</option>';
     document.getElementById('hx-weight-custom').style.display = 'none';
     document.getElementById('hx-weight-custom').value = '';
   } else if (station === 'Otro') {
-    customGroup.style.display = 'block';
+    document.getElementById('hx-custom-group').style.display = 'block';
   }
-}
+};
 
-function onDistPresetChange() {
-  const val = document.getElementById('hx-dist-preset').value;
-  document.getElementById('hx-dist-custom').style.display = val === 'otro' ? 'block' : 'none';
-}
-function onWeightPresetChange() {
-  const val = document.getElementById('hx-weight-preset').value;
-  document.getElementById('hx-weight-custom').style.display = val === 'otro' ? 'block' : 'none';
-}
+window.onDistPresetChange   = () => { document.getElementById('hx-dist-custom').style.display   = document.getElementById('hx-dist-preset').value   === 'otro' ? 'block' : 'none'; };
+window.onWeightPresetChange = () => { document.getElementById('hx-weight-custom').style.display = document.getElementById('hx-weight-preset').value === 'otro' ? 'block' : 'none'; };
 
-function saveHyroxEntry() {
+window.saveHyroxEntry = async () => {
   let station = document.getElementById('hx-station').value;
-  if (station === 'Otro') {
-    station = document.getElementById('hx-custom').value.trim() || 'Otro';
-  }
+  if (station === 'Otro') station = document.getElementById('hx-custom').value.trim() || 'Otro';
   const cfg = getStationCfg(document.getElementById('hx-station').value);
-
   let param = null;
   if (cfg.type === 'distance') {
     const preset = document.getElementById('hx-dist-preset').value;
-    param = preset === 'otro'
-      ? parseFloat(document.getElementById('hx-dist-custom').value)
-      : parseFloat(preset);
+    param = preset === 'otro' ? parseFloat(document.getElementById('hx-dist-custom').value) : parseFloat(preset);
     if (!param) { alert('Introduce la distancia'); return; }
   } else if (cfg.type === 'weight') {
     const preset = document.getElementById('hx-weight-preset').value;
-    param = preset === 'otro'
-      ? parseFloat(document.getElementById('hx-weight-custom').value)
-      : parseFloat(preset);
+    param = preset === 'otro' ? parseFloat(document.getElementById('hx-weight-custom').value) : parseFloat(preset);
     if (!param && param !== 0) { alert('Introduce el peso'); return; }
   }
-
   const min = parseInt(document.getElementById('hx-min').value) || 0;
   const sec = parseInt(document.getElementById('hx-sec').value) || 0;
   if (!min && !sec) { alert('Introduce el tiempo'); return; }
-
-  const entry = {
-    id: Date.now().toString(),
-    station,
-    param,   // number or null
+  await addDoc(hxCol(), {
+    station, param,
     totalSec: min * 60 + sec,
     date: document.getElementById('hx-date').value || today(),
     note: document.getElementById('hx-note').value.trim()
-  };
-  hyroxData.push(entry);
-  save('gymlog_hyrox', hyroxData);
+  });
+  showToast();
   closeHyroxModal();
-  renderHyrox();
-}
+};
 
-function deleteHyrox(id) {
+window.deleteHyrox = async (id) => {
   if (!confirm('¿Eliminar este test?')) return;
-  hyroxData = hyroxData.filter(h => h.id !== id);
-  save('gymlog_hyrox', hyroxData);
-  renderHyrox();
-}
+  await deleteDoc(doc(db, 'users', currentUser.uid, 'hyrox', id));
+  showToast();
+};
 
-// ══════════════════════════════
-//  UTILS
-// ══════════════════════════════
-function today() {
-  return new Date().toISOString().slice(0,10);
-}
-function formatDate(d) {
-  if (!d) return '';
-  const [y,m,day] = d.split('-');
-  return `${day}/${m}/${y}`;
-}
-function formatTime(totalSec) {
-  const m = Math.floor(totalSec / 60);
-  const s = totalSec % 60;
-  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-}
+// ── TABS ──
+window.switchTab = (tab, btn) => {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  btn.classList.add('active');
+};
 
+// ── UTILS ──
+function today() { return new Date().toISOString().slice(0,10); }
+function formatDate(d) { if (!d) return ''; const [y,m,day] = d.split('-'); return `${day}/${m}/${y}`; }
+function formatTime(s) { const m = Math.floor(s/60); return `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
 
 // close modals on overlay click
 document.querySelectorAll('.modal-overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target === o) o.classList.add('hidden'); });
 });
-
-// ══════════════════════════════
-//  INIT
-// ══════════════════════════════
-renderGym();
 </script>
 </body>
 </html>
