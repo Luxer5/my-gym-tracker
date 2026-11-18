@@ -1,0 +1,249 @@
+<section id="race-import">
+  <a class="back-link" routerLink="/carreras">← Carreras</a>
+  <div class="section-head">
+    <h1 class="section-title">
+      Importar carrera<small>Desde tu resultado oficial de HYROX</small>
+    </h1>
+  </div>
+
+  <ol class="import-steps">
+    <li class="import-step">
+      <span class="step-num" aria-hidden="true">1</span>
+      <div class="step-body">
+        <h2 class="step-title">Busca tu resultado oficial</h2>
+        <p class="step-text">
+          En la web de resultados de HYROX elige la temporada y la carrera, filtra por tu división
+          (HYROX, PRO, Doubles…) y busca por tu apellido. Abre tu ficha.
+        </p>
+        <a class="btn btn-ghost" [href]="officialUrl" target="_blank" rel="noopener noreferrer"
+          >Abrir results.hyrox.com ↗</a
+        >
+      </div>
+    </li>
+
+    <li class="import-step">
+      <span class="step-num" aria-hidden="true">2</span>
+      <div class="step-body">
+        <h2 class="step-title">Copia tu ficha y pégala aquí</h2>
+        <p class="step-text">
+          Selecciona toda la página (Ctrl+A, o mantén pulsado en el móvil), cópiala y pégala. Se
+          leen los 8 runs, las 8 estaciones, la Roxzone, el total y tus posiciones.
+        </p>
+        <label class="form-label" for="race-paste">Resultado copiado</label>
+        <textarea
+          id="race-paste"
+          class="form-input paste-box"
+          rows="6"
+          spellcheck="false"
+          placeholder="Running 1     00:04:18&#10;1000m SkiErg  00:04:15&#10;…"
+          (input)="onPaste(val($event))"
+        ></textarea>
+
+        @if (parsed(); as p) {
+          <div
+            class="parse-status"
+            [class.parse-status--ok]="p.found === 16 && !p.warnings.length"
+            [class.parse-status--warn]="p.found < 16 || p.warnings.length"
+            role="status"
+            id="parse-status"
+          >
+            @if (p.found) {
+              <strong>{{ p.found === 16 ? '✓' : '⚠' }} {{ p.found }} de 16 tramos</strong>
+              @if (p.totalSec) {
+                <span>· Total {{ p.totalSec | dur }}</span>
+              }
+              @if (p.roxzoneSec) {
+                <span>· Roxzone {{ p.roxzoneSec | mmss }}</span>
+              }
+              @if (p.missing.length) {
+                <span class="parse-missing">Falta: {{ p.missing.join(', ') }}</span>
+              }
+            }
+            @for (w of p.warnings; track w) {
+              <span class="parse-warning">{{ w }}</span>
+            }
+          </div>
+        }
+        @if (!form()) {
+          <button type="button" class="link-btn" (click)="manual()">
+            o introduce la carrera a mano
+          </button>
+        }
+      </div>
+    </li>
+
+    @if (form(); as f) {
+      <li class="import-step">
+        <span class="step-num" aria-hidden="true">3</span>
+        <div class="step-body">
+          <h2 class="step-title">Revisa y guarda</h2>
+          <form id="race-form" novalidate (submit)="save($event)">
+            <div class="race-form-meta">
+              <div class="form-group form-group--wide">
+                <label class="form-label" for="race-event">Carrera</label>
+                <input
+                  class="form-input"
+                  id="race-event"
+                  maxlength="100"
+                  placeholder="HYROX Madrid"
+                  [value]="f.event"
+                  (input)="patch({ event: val($event) })"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="race-date">Fecha</label>
+                <input
+                  class="form-input"
+                  id="race-date"
+                  type="date"
+                  [value]="f.date"
+                  (input)="patch({ date: val($event) })"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="race-division">División</label>
+                <input
+                  class="form-input"
+                  id="race-division"
+                  list="race-divisions"
+                  maxlength="50"
+                  [value]="f.division"
+                  (input)="patch({ division: val($event) })"
+                />
+                <datalist id="race-divisions">
+                  @for (d of divisions; track d) {
+                    <option [value]="d"></option>
+                  }
+                </datalist>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="race-age">Grupo de edad</label>
+                <input
+                  class="form-input"
+                  id="race-age"
+                  maxlength="20"
+                  placeholder="30-34"
+                  [value]="f.ageGroup"
+                  (input)="patch({ ageGroup: val($event) })"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="race-athlete">Atleta</label>
+                <input
+                  class="form-input"
+                  id="race-athlete"
+                  maxlength="100"
+                  [value]="f.athlete"
+                  (input)="patch({ athlete: val($event) })"
+                />
+              </div>
+            </div>
+
+            <div class="split-grid" role="group" aria-label="Tiempos por tramo">
+              @for (st of stations; track st.key; let i = $index) {
+                <div class="split-row">
+                  <span class="split-num" aria-hidden="true">{{ i + 1 }}</span>
+                  <label class="split-field split-field--run">
+                    <span class="split-label">Running {{ i + 1 }}</span>
+                    <input
+                      class="form-input time-input"
+                      inputmode="decimal"
+                      placeholder="mm:ss"
+                      [attr.aria-label]="'Running ' + (i + 1)"
+                      [value]="f.runs[i]"
+                      (input)="setRun(i, val($event))"
+                    />
+                  </label>
+                  <label class="split-field split-field--station">
+                    <span class="split-label"
+                      >{{ st.label }} <small>{{ st.detail }}</small></span
+                    >
+                    <input
+                      class="form-input time-input"
+                      inputmode="decimal"
+                      placeholder="mm:ss"
+                      [attr.aria-label]="st.label"
+                      [value]="f.stations[i]"
+                      (input)="setStation(i, val($event))"
+                    />
+                  </label>
+                </div>
+              }
+            </div>
+
+            <div class="race-form-meta">
+              <div class="form-group">
+                <label class="form-label" for="race-roxzone">Roxzone</label>
+                <input
+                  class="form-input time-input"
+                  id="race-roxzone"
+                  inputmode="decimal"
+                  placeholder="mm:ss"
+                  [value]="f.roxzone"
+                  (input)="patch({ roxzone: val($event) })"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="race-total">Tiempo oficial</label>
+                <input
+                  class="form-input time-input"
+                  id="race-total"
+                  inputmode="decimal"
+                  placeholder="h:mm:ss"
+                  [value]="f.total"
+                  (input)="patch({ total: val($event) })"
+                />
+                @if (splits(); as s) {
+                  <span class="field-hint" id="race-sum-hint">
+                    Tramos: {{ s.sum | dur }}
+                    @if (computedTotal(); as t) {
+                      · con Roxzone: {{ t | dur }}
+                    }
+                  </span>
+                }
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="race-rank">Posición (división)</label>
+                <input
+                  class="form-input"
+                  id="race-rank"
+                  inputmode="numeric"
+                  [value]="f.rankOverall"
+                  (input)="patch({ rankOverall: val($event) })"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="race-rank-ag">Posición (grupo de edad)</label>
+                <input
+                  class="form-input"
+                  id="race-rank-ag"
+                  inputmode="numeric"
+                  [value]="f.rankAgeGroup"
+                  (input)="patch({ rankAgeGroup: val($event) })"
+                />
+              </div>
+              <div class="form-group form-group--wide">
+                <label class="form-label" for="race-note">Nota (opcional)</label>
+                <input
+                  class="form-input"
+                  id="race-note"
+                  maxlength="500"
+                  placeholder="Sensaciones, estrategia…"
+                  [value]="f.note"
+                  (input)="patch({ note: val($event) })"
+                />
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <a class="btn btn-ghost" routerLink="/carreras">Cancelar</a>
+              <button type="submit" class="btn btn-primary" [disabled]="saving()">
+                Guardar carrera
+              </button>
+            </div>
+          </form>
+        </div>
+      </li>
+    }
+  </ol>
+</section>

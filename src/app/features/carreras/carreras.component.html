@@ -1,0 +1,83 @@
+<section id="carreras">
+  <div class="section-head">
+    <h1 class="section-title">Carreras<small>Tus resultados oficiales de HYROX</small></h1>
+    <a class="btn btn-primary" routerLink="/carreras/importar">+ Importar carrera</a>
+  </div>
+
+  @if (!store.racesLoaded()) {
+    <app-empty-state icon="🏁">Cargando…</app-empty-state>
+  } @else if (!cards().length) {
+    <app-empty-state icon="🏁"
+      >Aún no has importado ninguna carrera.<br />Pega tu resultado oficial y verás todos tus tramos
+      con gráficas.</app-empty-state
+    >
+  } @else {
+    <app-summary-bar id="races-summary" [items]="summary()" />
+
+    @if (evolution(); as chart) {
+      <div class="chart-card" id="races-evolution">
+        <div class="chart-head">
+          <h2 class="chart-title">Evolución</h2>
+          <span class="chart-note">Tiempo oficial por carrera · menos es mejor</span>
+        </div>
+        <div class="chart-box chart-box--sm">
+          <canvas [appChart]="chart" aria-label="Evolución del tiempo total por carrera"></canvas>
+        </div>
+      </div>
+    }
+
+    <ul class="seg-legend seg-legend--inline" aria-label="Leyenda de las barras">
+      <li>
+        <span class="swatch" [style.background]="colors.run"></span>
+        <span class="seg-legend-label">Running</span>
+      </li>
+      <li>
+        <span class="swatch" [style.background]="colors.station"></span>
+        <span class="seg-legend-label">Estaciones</span>
+      </li>
+      <li>
+        <span class="swatch" [style.background]="colors.roxzone"></span>
+        <span class="seg-legend-label">Roxzone</span>
+      </li>
+    </ul>
+
+    <div class="race-grid" id="race-grid">
+      @for (c of cards(); track c.race.id) {
+        <a class="race-card" [class.pb]="c.isPB" [routerLink]="['/carreras', c.race.id]">
+          <div class="race-card-top">
+            <span class="race-date">{{ c.race.date | fdmy }}</span>
+            @if (c.isPB) {
+              <span class="pb-badge">✓ PB</span>
+            }
+          </div>
+          <h2 class="race-name">{{ c.race.event }}</h2>
+          <div class="race-meta">
+            {{ c.race.division }}
+            @if (c.race.ageGroup) {
+              · {{ c.race.ageGroup }}
+            }
+          </div>
+          <div class="race-time">{{ c.race.totalSec | dur }}</div>
+          <div class="race-ranks">
+            @if (c.race.rankOverall) {
+              <span>#{{ c.race.rankOverall }} división</span>
+            }
+            @if (c.race.rankAgeGroup) {
+              <span>#{{ c.race.rankAgeGroup }} grupo de edad</span>
+            }
+          </div>
+          @if (c.deltaPrev !== null) {
+            <div
+              class="race-delta"
+              [class.race-delta--good]="c.deltaPrev < 0"
+              [class.race-delta--bad]="c.deltaPrev > 0"
+            >
+              {{ c.deltaPrev | gap }} que la anterior
+            </div>
+          }
+          <app-segmented-bar [parts]="c.parts" [thin]="true" [legend]="false" />
+        </a>
+      }
+    </div>
+  }
+</section>

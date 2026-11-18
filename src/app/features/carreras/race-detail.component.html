@@ -1,0 +1,236 @@
+<section id="race-detail">
+  <a class="back-link" routerLink="/carreras">← Carreras</a>
+
+  @if (race(); as r) {
+    @let s = stats()!;
+    <div class="section-head">
+      <h1 class="section-title">
+        {{ r.event }}
+        <small>
+          {{ r.date | fdmy }} · {{ r.division }}
+          @if (r.ageGroup) {
+            · {{ r.ageGroup }}
+          }
+          @if (r.athlete) {
+            · {{ r.athlete }}
+          }
+        </small>
+      </h1>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="remove()">Eliminar</button>
+    </div>
+
+    <div class="race-hero">
+      <div class="hero-time">
+        <span class="hero-label">Tiempo oficial</span>
+        <span class="hero-value" id="race-total">{{ r.totalSec | dur }}</span>
+        @if (other() && totalDelta() !== null) {
+          <span
+            class="hero-delta"
+            [class.hero-delta--good]="totalDelta()! < 0"
+            [class.hero-delta--bad]="totalDelta()! > 0"
+          >
+            {{ totalDelta() | gap }} que {{ other()!.event }}
+          </span>
+        }
+      </div>
+      <div class="stat-tiles" id="race-kpis">
+        <div class="stat-tile">
+          <span class="stat-label">Posición división</span>
+          <span class="stat-value">{{ r.rankOverall ? '#' + r.rankOverall : '—' }}</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Grupo de edad</span>
+          <span class="stat-value">{{ r.rankAgeGroup ? '#' + r.rankAgeGroup : '—' }}</span>
+          @if (r.ageGroup) {
+            <span class="stat-sub">{{ r.ageGroup }}</span>
+          }
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Running</span>
+          <span class="stat-value">{{ s.run | dur }}</span>
+          <span class="stat-sub">{{ s.pace | pace }}</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Estaciones</span>
+          <span class="stat-value">{{ s.stations | dur }}</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Roxzone</span>
+          <span class="stat-value">{{ s.roxzone | mmss }}</span>
+          <span class="stat-sub">{{ s.roxzoneShare }} % del total</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Mejor vuelta</span>
+          <span class="stat-value">{{ s.best.sec | mmss }}</span>
+          <span class="stat-sub">km {{ s.best.index + 1 }} · peor km {{ s.worst.index + 1 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card" id="race-breakdown">
+      <div class="chart-head">
+        <h2 class="chart-title">Dónde se va el tiempo</h2>
+      </div>
+      <app-segmented-bar [parts]="parts()" />
+    </div>
+
+    <div class="chart-card" id="race-splits">
+      <div class="chart-head">
+        <h2 class="chart-title">Tramo a tramo</h2>
+        <span class="chart-note">8 × (1 km de running + estación)</span>
+      </div>
+      <div class="chart-box">
+        <canvas
+          [appChart]="splitsConfig()"
+          aria-label="Tiempo de cada tramo de la carrera"
+        ></canvas>
+      </div>
+      <details class="table-toggle">
+        <summary>Ver la tabla</summary>
+        <table class="data-table" id="race-splits-table">
+          <thead>
+            <tr>
+              <th scope="col">Tramo</th>
+              <th scope="col" class="num">Tiempo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (seg of segments(); track $index) {
+              <tr [class.row-station]="seg.kind === 'station'">
+                <th scope="row">{{ seg.label }}</th>
+                <td class="num">{{ seg.sec | mmss }}</td>
+              </tr>
+            }
+            <tr>
+              <th scope="row">Roxzone</th>
+              <td class="num">{{ s.roxzone | mmss }}</td>
+            </tr>
+            <tr class="row-total">
+              <th scope="row">Total</th>
+              <td class="num">{{ r.totalSec | dur }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </details>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card" id="race-laps">
+        <div class="chart-head">
+          <h2 class="chart-title">Ritmo de running</h2>
+          <span class="chart-note">Cada vuelta de 1 km</span>
+        </div>
+        <div class="chart-box chart-box--sm">
+          <canvas [appChart]="lapsConfig()" aria-label="Tiempo de cada vuelta de 1 km"></canvas>
+        </div>
+      </div>
+      <div class="chart-card" id="race-insights">
+        <div class="chart-head">
+          <h2 class="chart-title">Conclusiones</h2>
+        </div>
+        <ul class="insights">
+          @for (line of insights(); track line) {
+            <li>{{ line }}</li>
+          }
+        </ul>
+        @if (r.note) {
+          <p class="race-note">«{{ r.note }}»</p>
+        }
+      </div>
+    </div>
+
+    @if (training().length) {
+      <div class="chart-card" id="race-training">
+        <div class="chart-head">
+          <h2 class="chart-title">Carrera frente a entrenamiento</h2>
+          <span class="chart-note"
+            >Tus mejores tests de la pestaña Hyrox en la misma distancia</span
+          >
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Tramo</th>
+              <th scope="col" class="num">Carrera</th>
+              <th scope="col" class="num">Mejor test</th>
+              <th scope="col" class="num">Diferencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of training(); track t.label) {
+              <tr>
+                <th scope="row">
+                  {{ t.label }} <small class="muted">{{ t.detail }}</small>
+                </th>
+                <td class="num">{{ t.raceSec | mmss }}</td>
+                <td class="num">
+                  {{ t.trainingSec | mmss }}
+                  <small class="muted">{{ t.trainingDate | fdmy }}</small>
+                </td>
+                <td class="num">{{ t.raceSec - t.trainingSec | delta }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (others().length) {
+      <div class="chart-card" id="race-compare">
+        <div class="chart-head">
+          <h2 class="chart-title">Comparar con otra carrera</h2>
+          <label class="compare-select">
+            <span class="visually-hidden">Carrera con la que comparar</span>
+            <select class="form-select" id="compare-with" (change)="selectOther($event)">
+              @for (o of others(); track o.id) {
+                <option [value]="o.id" [selected]="o.id === compareId()">
+                  {{ o.event }} · {{ o.date | fdmy }} · {{ o.totalSec | dur }}
+                </option>
+              }
+            </select>
+          </label>
+        </div>
+        @if (deltaConfig(); as cfg) {
+          <div class="chart-box chart-box--tall">
+            <canvas [appChart]="cfg" aria-label="Diferencia de tiempo en cada tramo"></canvas>
+          </div>
+          <details class="table-toggle">
+            <summary>Ver la tabla</summary>
+            <table class="data-table" id="race-compare-table">
+              <thead>
+                <tr>
+                  <th scope="col">Tramo</th>
+                  <th scope="col" class="num">{{ r.event }}</th>
+                  <th scope="col" class="num">{{ other()!.event }}</th>
+                  <th scope="col" class="num">Diferencia</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of comparison(); track row.label + $index) {
+                  <tr [class.row-total]="row.kind === 'total'">
+                    <th scope="row">{{ row.label }}</th>
+                    <td class="num">{{ row.sec | dur }}</td>
+                    <td class="num">{{ row.otherSec | dur }}</td>
+                    <td
+                      class="num"
+                      [class.delta-good]="row.delta < 0"
+                      [class.delta-bad]="row.delta > 0"
+                    >
+                      {{ row.delta | delta }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </details>
+        }
+      </div>
+    }
+  } @else if (store.racesLoaded()) {
+    <app-empty-state icon="🏁"
+      >No encuentro esta carrera. Puede que se haya eliminado.</app-empty-state
+    >
+  } @else {
+    <app-empty-state icon="🏁">Cargando…</app-empty-state>
+  }
+</section>
