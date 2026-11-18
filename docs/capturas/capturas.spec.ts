@@ -258,7 +258,7 @@ test.describe('README · escritorio', () => {
 
     // Estimador: un par de ajustes sobre la última carrera
     await page.getByRole('link', { name: 'Estimador' }).click();
-    await page.locator('#est-run').fill('2230');
+    await page.locator('#est-run').fill('279');
     await page.locator('#est-rox').fill('330');
     await page.locator('#est-st-7').fill('350');
     await top(page);

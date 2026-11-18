@@ -87,10 +87,11 @@ test.describe('Carreras', () => {
     await page.getByRole('link', { name: 'Estimador' }).click();
     await expect(page).toHaveURL(/\/carreras\/estimador$/);
     await expect(page.locator('#est-total')).toHaveText('1:21:15');
-    await page.locator('#est-run').fill('2300');
-    await expect(page.locator('#est-total')).toHaveText('1:20:42');
+    await page.locator('#est-run').fill('288');
+    await expect(page.locator('#est-total')).toHaveText('1:20:46');
+    await expect(page.locator('#est-run-total')).toContainText('38:24');
     await page.locator('#est-rox').fill('300');
-    await expect(page.locator('#est-delta')).toHaveText('2:11 más rápido que HYROX Madrid');
+    await expect(page.locator('#est-delta')).toHaveText('2:07 más rápido que HYROX Madrid');
     await page.getByRole('button', { name: 'Restablecer' }).click();
     await expect(page.locator('#est-total')).toHaveText('1:21:15');
 

@@ -48,27 +48,35 @@
     <div class="chart-grid">
       <div class="chart-card est-slider">
         <div class="slider-head">
-          <label for="est-run">Running <span class="muted">8 × 1 km</span></label>
+          <label for="est-run">Ritmo medio de running <span class="muted">por km</span></label>
           <span class="slider-value"
-            >{{ e.run | dur }}
+            >{{ pace() | pace }}
             <span
               class="slider-delta"
-              [class.delta-good]="runDelta() < 0"
-              [class.delta-bad]="runDelta() > 0"
-              >{{ runDelta() | delta }}</span
+              [class.delta-good]="paceDelta() < 0"
+              [class.delta-bad]="paceDelta() > 0"
+              >{{ paceDelta() | delta }}/km</span
             ></span
           >
         </div>
         <input
           id="est-run"
           type="range"
-          [min]="runRange().min"
-          [max]="runRange().max"
-          [step]="runRange().step"
-          [value]="e.run"
+          [min]="paceRange().min"
+          [max]="paceRange().max"
+          [step]="paceRange().step"
+          [value]="pace()"
           (input)="setRun($event)"
         />
-        <span class="chart-note">Ritmo medio {{ e.pace | pace }}</span>
+        <span class="chart-note" id="est-run-total"
+          >Running total (8 × 1 km): <strong>{{ e.run | dur }}</strong>
+          <span
+            class="slider-delta"
+            [class.delta-good]="runDelta() < 0"
+            [class.delta-bad]="runDelta() > 0"
+            >{{ runDelta() | delta }}</span
+          ></span
+        >
       </div>
       <div class="chart-card est-slider">
         <div class="slider-head">

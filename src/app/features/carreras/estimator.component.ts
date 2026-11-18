@@ -18,7 +18,7 @@ import {
   valuesFromRace,
 } from '../../domain/estimator';
 import { fmtDuration, fmtGap } from '../../domain/format';
-import { RACE_STATIONS, sortRaces } from '../../domain/race';
+import { RACE_LAPS, RACE_STATIONS, sortRaces } from '../../domain/race';
 import { EmptyStateComponent } from '../../shared/empty-state.component';
 import { FORMAT_PIPES } from '../../shared/format.pipes';
 import { BarPart, SegmentedBarComponent } from '../../shared/segmented-bar.component';
@@ -87,9 +87,11 @@ export class EstimatorComponent {
     ];
   });
 
-  protected readonly runRange = computed(() =>
-    sliderRange(this.baseValues()?.run ?? 0, RANGE_FACTORS.run),
-  );
+  /** El running se ajusta por ritmo medio (s/km); el total es ritmo × 8 */
+  private readonly basePace = computed(() => Math.round((this.baseValues()?.run ?? 0) / RACE_LAPS));
+  protected readonly pace = computed(() => Math.round((this.values()?.run ?? 0) / RACE_LAPS));
+  protected readonly paceDelta = computed(() => this.pace() - this.basePace());
+  protected readonly paceRange = computed(() => sliderRange(this.basePace(), RANGE_FACTORS.run));
   protected readonly roxRange = computed(() =>
     sliderRange(this.baseValues()?.rox ?? 0, RANGE_FACTORS.rox),
   );
@@ -122,7 +124,7 @@ export class EstimatorComponent {
   }
 
   protected setRun(e: Event): void {
-    const run = this.num(e);
+    const run = this.num(e) * RACE_LAPS;
     this.values.update((v) => (v ? { ...v, run } : v));
   }
 
