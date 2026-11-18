@@ -1,3 +1,4 @@
+import { IconComponent } from '../../shared/icon.component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,7 +16,7 @@ import { GymActions } from './gym-actions.service';
 /** Tarjeta de un ejercicio: mejor PR/1RM/3RM/5RM, último registro e historial desplegable */
 @Component({
   selector: 'app-exercise-card',
-  imports: [...FORMAT_PIPES],
+  imports: [IconComponent, ...FORMAT_PIPES],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './exercise-card.component.html',
 })

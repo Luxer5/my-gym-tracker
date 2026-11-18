@@ -6,7 +6,7 @@
       <div class="ex-category">{{ ex.category }}</div>
     </div>
     <div class="card-actions">
-      <button type="button" class="btn btn-primary btn-sm" (click)="addRecord.emit()">
+      <button type="button" class="btn btn-ghost btn-sm" (click)="addRecord.emit()">
         + Registro
       </button>
       <button
@@ -15,7 +15,7 @@
         [attr.aria-label]="'Eliminar ' + ex.name"
         (click)="remove()"
       >
-        ✕
+        <svg appIcon="x"></svg>
       </button>
     </div>
   </div>
@@ -25,7 +25,7 @@
       <div class="rm-box" [class.is-pr]="b.isPR">
         <div class="rm-tag">
           @if (b.isPR) {
-            <span aria-hidden="true">👑</span>
+            <svg appIcon="crown"></svg>
           }
           {{ b.label }} <span class="rm-sub">{{ b.sub }}</span>
         </div>
@@ -75,7 +75,7 @@
                 [attr.aria-label]="'Eliminar registro ' + r.type + ' del ' + (r.date | fdmy)"
                 (click)="removeRecord(r.id)"
               >
-                ✕
+                <svg appIcon="x"></svg>
               </button>
             </span>
           </li>

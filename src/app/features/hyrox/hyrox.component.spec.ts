@@ -30,9 +30,9 @@ describe('HyroxComponent', () => {
       '3 Combis distintas',
     ]);
     expect(cards().map((c) => textOf(c.querySelector('.hx-meta')))).toEqual([
-      '🏋️ 24 kg/mano',
-      '📏 1000 m',
-      '🏋️ 6 kg',
+      '24 kg/mano',
+      '1000 m',
+      '6 kg',
     ]);
   });
 
@@ -65,7 +65,7 @@ describe('HyroxComponent', () => {
     await settle();
     expect(doc.querySelector('#hyrox-form')).toBeNull();
     const sled = card('Sled Push');
-    expect(textOf(sled.querySelector('.hx-meta'))).toBe('🏋️ 90 kg');
+    expect(textOf(sled.querySelector('.hx-meta'))).toBe('90 kg');
     expect(textOf(sled.querySelector('.time-display'))).toBe('Mejor marca01:10');
   });
 

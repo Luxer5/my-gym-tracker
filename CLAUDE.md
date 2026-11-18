@@ -25,7 +25,7 @@ Firestore) publicado en Netlify. La arquitectura copia la de InversionDashboard;
   escrituras van en un servicio `*Actions`. Rutas con carga diferida en `app.routes.ts` y pestañas
   en `features/sections.ts`.
 - `src/app/shared/`: piezas sin estado (modal, resumen, toasts, diálogo de confirmación, pipes).
-- Estilos globales en `src/styles.css`; no hay CSS por componente.
+- Estilos globales en `src/styles.css`; no hay CSS por componente. Diseño **«Podio»** (elegido entre tres propuestas): tokens semánticos en `:root` (`--bg`, `--surface`, `--accent` lima, `--text-2`…; los nombres antiguos son alias), Barlow + Barlow Condensed, píldoras para navegación, filtros y botones, un solo botón principal por pantalla, iconos SVG de `shared/icon.component.ts` (nunca emojis) y la capa de componentes en la sección «Capa Podio». Guía seguida: skill `ui-ux-pro-max`.
 
 ## Comandos
 

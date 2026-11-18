@@ -38,16 +38,16 @@ export class ChartThemeService {
   init(): void {
     if (this.ready) return;
     this.ready = true;
-    Chart.defaults.color = '#a8a8a8';
-    Chart.defaults.borderColor = 'rgba(240, 237, 232, 0.08)';
+    Chart.defaults.color = '#b4bcc8';
+    Chart.defaults.borderColor = 'rgba(238, 241, 247, 0.08)';
     Chart.defaults.font.family = "'Barlow', system-ui, sans-serif";
     Chart.defaults.font.size = 12;
     const tip = Chart.defaults.plugins.tooltip;
-    tip.backgroundColor = 'rgba(13, 13, 13, 0.96)';
-    tip.borderColor = '#3e3e3e';
+    tip.backgroundColor = 'rgba(13, 19, 33, 0.96)';
+    tip.borderColor = '#34405c';
     tip.borderWidth = 1;
     tip.titleColor = '#ffffff';
-    tip.bodyColor = '#f0ede8';
+    tip.bodyColor = '#eef1f7';
     tip.padding = 10;
     tip.cornerRadius = 8;
     tip.boxPadding = 4;
@@ -56,6 +56,6 @@ export class ChartThemeService {
     leg.usePointStyle = true;
     leg.boxWidth = 8;
     leg.boxHeight = 8;
-    leg.color = '#f0ede8';
+    leg.color = '#eef1f7';
   }
 }

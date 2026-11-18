@@ -9,7 +9,7 @@
   </h2>
   @if (g.paramLabel) {
     <div class="hx-meta">
-      <span aria-hidden="true">{{ g.kind === 'distance' ? '📏' : '🏋️' }}</span> {{ g.paramLabel }}
+      <svg [appIcon]="g.kind === 'distance' ? 'ruler' : 'weight'"></svg> {{ g.paramLabel }}
     </div>
   }
   <div class="time-display">
@@ -51,7 +51,7 @@
               [attr.aria-label]="'Eliminar test del ' + (t.date | fdmy)"
               (click)="remove(t.id)"
             >
-              ✕
+              <svg appIcon="x"></svg>
             </button>
           </span>
         </li>

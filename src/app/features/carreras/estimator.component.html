@@ -10,7 +10,7 @@
   </div>
 
   @if (!store.racesLoaded()) {
-    <app-empty-state icon="⏱">Cargando…</app-empty-state>
+    <app-empty-state icon="timer">Cargando…</app-empty-state>
   } @else if (race(); as r) {
     @let e = result()!;
     <div class="est-base">
@@ -161,7 +161,7 @@
       </details>
     </div>
   } @else {
-    <app-empty-state icon="⏱"
+    <app-empty-state icon="timer"
       >Importa una carrera para estimar tu próximo tiempo a partir de ella.</app-empty-state
     >
     <a class="btn btn-primary" routerLink="/carreras/importar">+ Importar carrera</a>

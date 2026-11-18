@@ -22,7 +22,7 @@
         [routerLink]="['/', s.key]"
         routerLinkActive="active"
         ariaCurrentWhenActive="page"
-        >{{ s.icon }} {{ s.label }}
+        ><svg [appIcon]="s.icon"></svg> {{ s.label }}
         @if (s.detail) {
           <span class="tab-detail">— {{ s.detail }}</span>
         }

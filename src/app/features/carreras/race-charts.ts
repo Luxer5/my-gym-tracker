@@ -6,7 +6,7 @@ import { BarPart } from '../../shared/segmented-bar.component';
 
 /**
  * Configuración de las gráficas de carreras. Colores validados para el fondo oscuro de las
- * tarjetas (#1a1a1a) con el validador de la guía de visualización: separación con daltonismo,
+ * tarjetas (#151d2e, tema «Podio») con el validador de la guía de visualización: separación con daltonismo,
  * banda de luminosidad y contraste 3:1.
  */
 export const RACE_COLORS = {
@@ -17,10 +17,10 @@ export const RACE_COLORS = {
   faster: '#199e70',
   slower: '#d95926',
   neutral: '#6b6b6b',
-  surface: '#1a1a1a',
+  surface: '#151d2e',
 } as const;
 
-const GRID = 'rgba(240, 237, 232, 0.08)';
+const GRID = 'rgba(238, 241, 247, 0.08)';
 
 /** Pasos «redondos» de un eje de tiempos, en segundos */
 const STEPS = [5, 10, 15, 20, 30, 60, 120, 300, 600, 900, 1800, 3600];
@@ -220,7 +220,7 @@ export function evolutionChart(races: readonly HyroxRace[]): ChartConfiguration<
           label: 'Tiempo total',
           data: list.map((r) => r.totalSec),
           borderColor: RACE_COLORS.run,
-          backgroundColor: 'rgba(201, 133, 0, 0.12)',
+          backgroundColor: 'rgba(201, 133, 0, 0.14)',
           fill: true,
           borderWidth: 2,
           tension: 0.3,

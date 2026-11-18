@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { IconComponent } from '../../shared/icon.component';
 import { RouterLink } from '@angular/router';
 import { TrainingStore } from '../../core/state/training-store';
 import { fmtDelta, fmtDuration } from '../../domain/format';
@@ -14,6 +15,7 @@ import { RACE_COLORS, breakdownParts, evolutionChart } from './race-charts';
 @Component({
   selector: 'app-carreras',
   imports: [
+    IconComponent,
     RouterLink,
     SummaryBarComponent,
     EmptyStateComponent,

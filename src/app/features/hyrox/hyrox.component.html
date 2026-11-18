@@ -5,14 +5,14 @@
   </div>
 
   @if (!store.hyroxLoaded()) {
-    <app-empty-state icon="🔥">Cargando…</app-empty-state>
+    <app-empty-state icon="flame">Cargando…</app-empty-state>
   } @else {
     <app-summary-bar id="hyrox-summary" [items]="summary()" />
     <div class="hyrox-grid" id="hyrox-grid">
       @for (g of groups(); track g.key) {
         <app-hyrox-card [group]="g" />
       } @empty {
-        <app-empty-state icon="🔥">Sin tests Hyrox aún.</app-empty-state>
+        <app-empty-state icon="flame">Sin tests Hyrox aún.</app-empty-state>
       }
     </div>
   }

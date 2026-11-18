@@ -1,4 +1,5 @@
 import { DOCUMENT } from '@angular/common';
+import { IconComponent } from '../../shared/icon.component';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -22,7 +23,7 @@ export const OFFICIAL_RESULTS_URL = 'https://results.hyrox.com/';
  */
 @Component({
   selector: 'app-race-import',
-  imports: [RouterLink, ...FORMAT_PIPES],
+  imports: [IconComponent, RouterLink, ...FORMAT_PIPES],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './race-import.component.html',
 })

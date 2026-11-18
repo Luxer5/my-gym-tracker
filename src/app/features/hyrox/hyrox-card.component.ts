@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { IconComponent } from '../../shared/icon.component';
 import { HyroxGroup } from '../../domain/hyrox';
 import { FORMAT_PIPES } from '../../shared/format.pipes';
 import { HyroxActions } from './hyrox-actions.service';
@@ -6,7 +7,7 @@ import { HyroxActions } from './hyrox-actions.service';
 /** Tarjeta de una estación + distancia/peso: mejor marca, mejora e historial de tests */
 @Component({
   selector: 'app-hyrox-card',
-  imports: [...FORMAT_PIPES],
+  imports: [IconComponent, ...FORMAT_PIPES],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './hyrox-card.component.html',
 })

@@ -3,16 +3,18 @@
     <h1 class="section-title">Carreras<small>Tus resultados oficiales de HYROX</small></h1>
     <div class="head-actions">
       @if (cards().length) {
-        <a class="btn btn-ghost" routerLink="/carreras/estimador">⏱ Estimador</a>
+        <a class="btn btn-ghost" routerLink="/carreras/estimador"
+          ><svg appIcon="timer"></svg> Estimador</a
+        >
       }
       <a class="btn btn-primary" routerLink="/carreras/importar">+ Importar carrera</a>
     </div>
   </div>
 
   @if (!store.racesLoaded()) {
-    <app-empty-state icon="🏁">Cargando…</app-empty-state>
+    <app-empty-state icon="flag">Cargando…</app-empty-state>
   } @else if (!cards().length) {
-    <app-empty-state icon="🏁"
+    <app-empty-state icon="flag"
       >Aún no has importado ninguna carrera.<br />Pega tu resultado oficial y verás todos tus tramos
       con gráficas.</app-empty-state
     >

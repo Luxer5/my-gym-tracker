@@ -21,7 +21,7 @@
           class="btn btn-primary btn-sm"
           routerLink="/carreras/estimador"
           [queryParams]="{ base: r.id }"
-          >⏱ Estimar desde aquí</a
+          ><svg appIcon="timer"></svg> Estimar desde aquí</a
         >
         <button type="button" class="btn btn-ghost btn-sm" (click)="remove()">Eliminar</button>
       </div>
@@ -235,10 +235,10 @@
       </div>
     }
   } @else if (store.racesLoaded()) {
-    <app-empty-state icon="🏁"
+    <app-empty-state icon="flag"
       >No encuentro esta carrera. Puede que se haya eliminado.</app-empty-state
     >
   } @else {
-    <app-empty-state icon="🏁">Cargando…</app-empty-state>
+    <app-empty-state icon="flag">Cargando…</app-empty-state>
   }
 </section>

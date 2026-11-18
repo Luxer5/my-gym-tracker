@@ -84,7 +84,7 @@ test.describe('Carreras', () => {
   test('estimador: parte de la última carrera y los deslizadores cambian el tiempo', async ({
     app: page,
   }) => {
-    await page.getByRole('link', { name: '⏱ Estimador' }).click();
+    await page.getByRole('link', { name: 'Estimador' }).click();
     await expect(page).toHaveURL(/\/carreras\/estimador$/);
     await expect(page.locator('#est-total')).toHaveText('1:21:15');
     await page.locator('#est-run').fill('2300');
@@ -97,7 +97,7 @@ test.describe('Carreras', () => {
     // Desde la ficha de otra carrera, esa es la de partida
     await page.getByRole('link', { name: '← Carreras' }).click();
     await page.locator('.race-card', { hasText: 'HYROX Valencia' }).click();
-    await page.getByRole('link', { name: '⏱ Estimar desde aquí' }).click();
+    await page.getByRole('link', { name: 'Estimar desde aquí' }).click();
     await expect(page.locator('#est-total')).toHaveText('1:27:20');
   });
 

@@ -1,3 +1,4 @@
+import { IconComponent } from '../../shared/icon.component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -33,6 +34,7 @@ import { breakdownParts, deltaChart, lapsChart, splitsChart } from './race-chart
 @Component({
   selector: 'app-race-detail',
   imports: [
+    IconComponent,
     RouterLink,
     ChartDirective,
     EmptyStateComponent,
