@@ -2,7 +2,7 @@
 // `npm run format:check`). Usa el Prettier del proyecto y respeta .prettierrc y .prettierignore.
 import { readFile, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
-import { join, relative } from 'node:path';
+import { isAbsolute, join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const FORMATTABLE = /\.(ts|mts|js|mjs|html|css|json|md|ya?ml)$/i;
@@ -14,7 +14,9 @@ process.stdin.on('end', async () => {
     const data = JSON.parse(input);
     const file = String(data.tool_input?.file_path ?? '');
     const root = process.env.CLAUDE_PROJECT_DIR || process.cwd();
-    if (!file || !FORMATTABLE.test(file) || relative(root, file).startsWith('..')) return;
+    // Solo ficheros del proyecto (en Windows, otra unidad da una ruta absoluta, no «..»)
+    const rel = relative(root, file);
+    if (!file || !FORMATTABLE.test(file) || rel.startsWith('..') || isAbsolute(rel)) return;
 
     const require = createRequire(join(root, 'package.json'));
     // require.resolve da la entrada CommonJS: sus funciones llegan en `default`
