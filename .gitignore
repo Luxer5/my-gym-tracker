@@ -1,0 +1,38 @@
+# Compiled output
+/dist
+/tmp
+/out-tsc
+
+# Node
+/node_modules
+npm-debug.log
+
+# IDEs and editors
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+
+# Miscellaneous
+/.angular/cache
+/.angular
+/coverage
+__screenshots__/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Playwright
+/e2e/.results
+/playwright-report
+
+# Claude Code: se comparten CLAUDE.md, skills, agentes y hooks; lo local no. Volcados de Git Bash
+/.claude/settings.local.json
+/.claude/worktrees/
+*.stackdump
+
+# Logs del emulador y de la CLI de Firebase
+firebase-debug.log
+firestore-debug.log

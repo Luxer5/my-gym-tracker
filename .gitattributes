@@ -1,0 +1,7 @@
+# Finales de línea LF en todos los sistemas (prettier y la CI los esperan así)
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary

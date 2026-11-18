@@ -1,0 +1,6 @@
+# Generado: no se formatea
+package-lock.json
+dist/
+coverage/
+playwright-report/
+.angular/

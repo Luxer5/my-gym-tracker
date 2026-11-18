@@ -1,0 +1,47 @@
+{
+  "name": "gym-log",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "start:demo": "ng serve --configuration e2e",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-gym-log \"vitest run --config vitest.rules.config.mts\"",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "capturas": "playwright test --config docs/capturas/playwright.capturas.config.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "private": true,
+  "packageManager": "npm@11.16.0",
+  "dependencies": {
+    "@angular/common": "^22.2.2",
+    "@angular/compiler": "^22.2.2",
+    "@angular/core": "^22.2.2",
+    "@angular/forms": "^22.2.2",
+    "@angular/platform-browser": "^22.2.2",
+    "@angular/router": "^22.2.2",
+    "@fontsource/barlow": "^5.3.0",
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "chart.js": "^4.5.1",
+    "firebase": "^13.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.2.2",
+    "@angular/cli": "^22.2.3",
+    "@angular/compiler-cli": "^22.2.2",
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "@playwright/test": "~1.64.0",
+    "@vitest/coverage-v8": "^5.0.4",
+    "firebase-tools": "^15.34.0",
+    "jsdom": "^30.0.0",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.2",
+    "vitest": "^5.0.0"
+  }
+}
