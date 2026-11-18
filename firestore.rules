@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Dueño de los datos: solo la propia cuenta
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // Campo de texto opcional: ausente, null o como mucho `max` caracteres
+    function textOk(d, k, max) {
+      return !(k in d) || d[k] == null || (d[k] is string && d[k].size() <= max);
+    }
+
+    // Campo numérico opcional: ausente, null o número
+    function numOk(d, k) {
+      return !(k in d) || d[k] == null || d[k] is number;
+    }
+
+    // Lista opcional con como mucho `max` elementos
+    function listOk(d, k, max) {
+      return !(k in d) || d[k] == null || (d[k] is list && d[k].size() <= max);
+    }
+
+    // Límites de cualquier documento que se escribe: cortan documentos desmesurados o con tipos
+    // incorrectos. Los máximos coinciden con los de los formularios (domain/forms.ts).
+    function docOk(id) {
+      let d = request.resource.data;
+      return id.size() <= 100
+        && d.keys().size() <= 20
+        && textOk(d, 'name', 100) && textOk(d, 'category', 50) && textOk(d, 'unit', 10)
+        && textOk(d, 'createdAt', 40) && textOk(d, 'type', 10) && textOk(d, 'date', 40)
+        && textOk(d, 'note', 500) && textOk(d, 'station', 100)
+        && numOk(d, 'value') && numOk(d, 'param') && numOk(d, 'totalSec')
+        // Carreras
+        && textOk(d, 'event', 100) && textOk(d, 'division', 50) && textOk(d, 'ageGroup', 20)
+        && textOk(d, 'athlete', 100) && listOk(d, 'runs', 8) && listOk(d, 'stations', 8)
+        && numOk(d, 'roxzoneSec') && numOk(d, 'rankOverall') && numOk(d, 'rankAgeGroup');
+    }
+
+    function canWrite(uid, id) {
+      return isOwner(uid) && docOk(id);
+    }
+
+    // Cada usuario lee y borra todo lo suyo
+    match /users/{uid}/{document=**} {
+      allow read, delete: if isOwner(uid);
+    }
+
+    // Ejercicios, tests Hyrox y carreras
+    match /users/{uid}/{col}/{id} {
+      allow create, update: if col in ['exercises', 'hyrox', 'races'] && canWrite(uid, id);
+    }
+
+    // Registros (PR / RM) de cada ejercicio
+    match /users/{uid}/exercises/{exerciseId}/records/{id} {
+      allow create, update: if canWrite(uid, id);
+    }
+  }
+}
