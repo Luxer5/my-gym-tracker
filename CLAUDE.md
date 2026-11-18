@@ -1,7 +1,7 @@
 # GYM LOG (my-gym-tracker)
 
 Registro privado de PRs/RMs de gimnasio y tests de Hyrox: Angular 22 + Firebase (Auth con Google,
-Firestore) publicado en GitHub Pages. La arquitectura copia la de InversionDashboard; el
+Firestore) publicado en Netlify. La arquitectura copia la de InversionDashboard; el
 [README](README.md) la describe con el modelo de datos, los comandos y el despliegue.
 
 ## Idioma y estilo
@@ -48,8 +48,10 @@ npm run format
   `index.html`). Rutas y nombres de campos de Firestore no se cambian sin migración; los campos que
   falten se completan en `core/data/normalize.ts`.
 - **Firestore**: si añades una colección o un campo, actualiza `firestore.rules` (rutas y `docOk`)
-  **y** `test/rules/firestore.rules.spec.ts`. GitHub Pages no despliega las reglas: se despliegan a
-  mano con `/deploy-rules`.
+  **y** `test/rules/firestore.rules.spec.ts`. Netlify no despliega las reglas: se despliegan a mano
+  con `/deploy-rules`.
+- **CSP** (`netlify.toml`): un servicio externo nuevo necesita su dominio en la política o el
+  navegador lo bloquea. Nada de scripts en línea (por eso `inlineCritical: false` en `angular.json`).
 - **Datos de demo** (`core/data/demo-data.ts`) y el repositorio en memoria deben seguir el modelo:
   los tests unitarios, los E2E y las capturas dependen de ellos.
 - **Capturas**: siempre con la demo y datos ficticios, nunca con una sesión real. Si cambia una
@@ -66,4 +68,4 @@ npm run format
   guía de visualización (`dataviz`).
 - **Nada de `innerHTML`** ni `alert()`/`confirm()`: textos con interpolación de Angular, avisos con
   `NotifyService` y confirmaciones con `ConfirmService`.
-- La web se publica sola al hacer push a `main` (`.github/workflows/deploy.yml`).
+- La web se publica sola en Netlify al hacer push a `main` (`netlify.toml`).

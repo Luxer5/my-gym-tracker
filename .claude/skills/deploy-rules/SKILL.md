@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Desplegar las reglas de Firestore
 
-GitHub Pages solo publica la web: `firestore.rules` y `firestore.indexes.json` se despliegan a
+Netlify solo publica la web: `firestore.rules` y `firestore.indexes.json` se despliegan a
 mano. Sigue estos pasos en orden y para en cuanto uno falle.
 
 1. **Cambios pendientes**: `git status --short firestore.rules firestore.indexes.json test/rules`.

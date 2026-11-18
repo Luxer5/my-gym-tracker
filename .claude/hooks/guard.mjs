@@ -28,7 +28,7 @@ process.stdin.on('end', () => {
     if (/\bfirebase(\.cmd)?\s+deploy\b/i.test(cmd)) {
       decide('ask', 'Despliegue al proyecto real de Firebase: confirma antes de ejecutarlo.');
     } else if (/\bgit\s+push\b/i.test(cmd) && /\bmain\b/.test(cmd)) {
-      decide('ask', 'Un push a main publica la web (GitHub Pages): confirma antes.');
+      decide('ask', 'Un push a main publica la web en Netlify: confirma antes.');
     }
     return;
   }

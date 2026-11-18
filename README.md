@@ -187,9 +187,10 @@ los avisos de «guardado» y comprueba que la cuenta en pantalla es la de la dem
 
 ## Despliegue
 
-- **Web**: cada push a `main` la publica en GitHub Pages (`.github/workflows/deploy.yml`). En el
-  repositorio: _Settings → Pages → Source → GitHub Actions_. El dominio (`<usuario>.github.io`)
-  tiene que estar en Firebase → Authentication → Settings → Authorized domains.
+- **Web**: Netlify la compila y publica en cada push a `main` (`netlify.toml`: `npm run build`,
+  carpeta `dist/gym-log/browser`, redirección de rutas a `index.html` y cabeceras de seguridad con
+  política de contenido). El dominio de Netlify tiene que estar en Firebase → Authentication →
+  Settings → Authorized domains.
 - **Reglas de Firestore**: a mano, tras pasar los tests en el emulador (`/deploy-rules` en Claude
   Code o `npx firebase deploy --only firestore`).
 - **CI** (`.github/workflows/ci.yml`): formato, unitarios, build, reglas y E2E en cada push.

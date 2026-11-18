@@ -1,0 +1,37 @@
+[build]
+  command = "npm run build"
+  publish = "dist/gym-log/browser"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+# Aplicación de una sola página: cualquier ruta (/hyrox, /carreras/…) sirve index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# La página de entrada no se cachea en el navegador (siempre la última versión; el resto lleva hash)
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# Cabeceras de seguridad (la ventana emergente de Google requiere no aislar el opener)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), camera=(), microphone=(), payment=(), usb=(), serial=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), browsing-topics=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"
+    Cross-Origin-Resource-Policy = "same-origin"
+    X-Permitted-Cross-Domain-Policies = "none"
+    # Política de contenido: el navegador solo ejecuta scripts y conecta con los dominios de la lista.
+    # No admite scripts en línea: por eso el build de producción no incrusta el CSS crítico
+    # (angular.json → optimization.styles.inlineCritical = false), que necesita uno para cargar la hoja.
+    # Si algo deja de funcionar, la consola muestra «Refused to…»: añade el dominio a la directiva o,
+    # para desactivarla de inmediato, renombra la cabecera a Content-Security-Policy-Report-Only.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://apis.google.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://*.googleusercontent.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; frame-src https://gym-tracker-5d1c0.firebaseapp.com https://accounts.google.com https://apis.google.com; worker-src 'self'; manifest-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'"
