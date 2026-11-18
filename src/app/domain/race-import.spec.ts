@@ -1,5 +1,10 @@
-import { PASTE_DESKTOP, PASTE_EXPECTED, PASTE_MOBILE } from '../../testing/race-paste';
-import { cleanAthlete, parseRaceText } from './race-import';
+import {
+  PASTE_DESKTOP,
+  PASTE_EXPECTED,
+  PASTE_MOBILE,
+  PASTE_OFFICIAL,
+} from '../../testing/race-paste';
+import { cleanAthlete, eventName, parseRaceText } from './race-import';
 
 const pick = (p: ReturnType<typeof parseRaceText>) => ({
   athlete: p.athlete,
@@ -104,6 +109,37 @@ describe('parseRaceText', () => {
     const p = parseRaceText('');
     expect(p.found).toBe(0);
     expect(p.date).toBe('');
+  });
+
+  it('reads the real official page layout (doubles, tabs above the table, no date)', () => {
+    const p = parseRaceText(PASTE_OFFICIAL);
+    expect(pick(p)).toEqual({
+      ...PASTE_EXPECTED,
+      athlete: 'Atleta Demo / Compañera Prueba',
+      event: 'HYROX Barcelona 2026',
+      date: '',
+      division: 'HYROX DOUBLES - Saturday',
+      totalSec: 4771,
+      rankOverall: 210,
+      rankAgeGroup: 41,
+    });
+    expect(p.found).toBe(16);
+    // El redondeo de 6 s no es un error; la fecha sí hay que ponerla a mano
+    expect(p.warnings).toEqual([
+      'La ficha oficial no incluye la fecha de la carrera: indícala abajo.',
+    ]);
+  });
+
+  it('"Race Details" is a heading, not the race name', () => {
+    expect(parseRaceText('Race Details\nRace\t2026 Valencia').event).toBe('HYROX Valencia 2026');
+    expect(eventName('HYROX Madrid')).toBe('HYROX Madrid');
+  });
+
+  it('without a "Name" label the athlete comes from the page title', () => {
+    const p = parseRaceText(
+      'HYROX - For Every Body: Atleta Demo\n' + PASTE_DESKTOP.replace(/^Name\t.*$/m, ''),
+    );
+    expect(p.athlete).toBe('Atleta Demo');
   });
 
   it('cleanAthlete turns "Surname, Name (NAT)" into "Name Surname"', () => {

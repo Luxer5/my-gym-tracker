@@ -54,11 +54,23 @@ const RANK_AG = /^(?:rank|place|platz|posici[oó]n)\s*\(?\s*(?:ag|age\s*group|ak
 const META: Record<'athlete' | 'event' | 'division' | 'ageGroup', RegExp> = {
   // Palabra completa: «Participant» (cabecera de la ficha) no es la etiqueta del nombre
   athlete: /^(?:name|athlete|teilnehmer|nombre)\s*:?(?=\s|$)/i,
-  event: /^(?:event|race|competition|veranstaltung|evento)\s*:?(?=\s|$)/i,
+  // «Race Details», «Race replay» o «Race Summary» son cabeceras de la ficha, no la etiqueta «Race»
+  event:
+    /^(?:event|race|competition|veranstaltung|evento)\s*:?(?=\s|$)(?!\s+(?:details|replay|summary|results?)\b)/i,
   division: /^(?:division|category|categor[ií]a|wertung)\s*:?(?=\s|$)/i,
   ageGroup: /^(?:age\s*group|altersklasse|grupo\s*de\s*edad)\s*:?(?=\s|$)/i,
 };
-const REPLAY_HEADING = /race\s*replay/i;
+/** Integrantes de un equipo (Doubles, Relay): «Member 1», «Member 2»… */
+const MEMBER_LABEL = /^(?:member|miembro|mitglied)\s*\d+\s*:?(?=\s|$)/i;
+/**
+ * La ficha oficial tiene dos vistas: «Workout summary» (tramos) y «Race replay» (horas del día y
+ * tiempos acumulados). Lo que sigue a «Race replay» se ignora hasta que vuelve «Workout summary»:
+ * los dos nombres aparecen también juntos como pestañas encima de la tabla.
+ */
+const REPLAY_HEADING = /^race\s*replay$/i;
+const WORKOUT_HEADING = /^workout(?:\s*summary)?$/i;
+/** Los tiempos oficiales van redondeados al segundo: la suma de los 17 tramos puede bailar algo */
+const SUM_TOLERANCE = 20;
 const TIME_TOKEN = /(?<![\d:])(\d{1,2}:)?\d{1,2}:\d{2}(?:[.,]\d+)?(?![\d:])/;
 const ANY_LABEL = [RUN_LABEL, ROXZONE_LABEL, TOTAL_LABEL, RANK_OVERALL, RANK_AG, ...STATION_LABELS];
 
@@ -117,6 +129,13 @@ function textAfter(cells: string[], i: number, rest: string): string {
   return another || TIME_TOKEN.test(t) ? '' : t.slice(0, 100);
 }
 
+/** Nombre oficial de la carrera («2026 Valencia») → «HYROX Valencia 2026» */
+export function eventName(raw: string): string {
+  const m = /^(\d{4})\s+(.+)$/.exec(raw.trim());
+  if (!m || /hyrox/i.test(raw)) return raw.trim();
+  return `HYROX ${m[2]} ${m[1]}`;
+}
+
 /** «Demo, Atleta (ESP)» → «Atleta Demo» */
 export function cleanAthlete(raw: string): string {
   const t = raw.replace(/\s*\([A-Z]{2,3}\)\s*$/, '').trim();
@@ -137,9 +156,13 @@ function findDate(cells: string[]): string {
 }
 
 export function parseRaceText(text: string): ParsedRace {
-  const all = toCells(text);
-  const replay = all.findIndex((c) => REPLAY_HEADING.test(c));
-  const cells = replay >= 0 ? all.slice(0, replay) : all;
+  let inReplay = false;
+  const cells = toCells(text).filter((c) => {
+    if (REPLAY_HEADING.test(c)) inReplay = true;
+    else if (WORKOUT_HEADING.test(c)) inReplay = false;
+    return !inReplay;
+  });
+  const members: string[] = [];
 
   const out: ParsedRace = {
     athlete: '',
@@ -180,17 +203,31 @@ export function parseRaceText(text: string): ParsedRace {
       out.rankAgeGroup ??= integerAfter(cells, i, cell.slice(m[0].length));
     } else if ((m = RANK_OVERALL.exec(cell))) {
       out.rankOverall ??= integerAfter(cells, i, cell.slice(m[0].length));
+    } else if ((m = MEMBER_LABEL.exec(cell))) {
+      const name = textAfter(cells, i, cell.slice(m[0].length));
+      if (name) members.push(cleanAthlete(name));
     } else {
       for (const key of Object.keys(META) as (keyof typeof META)[]) {
         const meta = META[key].exec(cell);
         if (meta && !out[key]) {
           const value = textAfter(cells, i, cell.slice(meta[0].length));
-          out[key] = key === 'athlete' ? cleanAthlete(value) : value;
+          out[key] =
+            key === 'athlete' ? cleanAthlete(value) : key === 'event' ? eventName(value) : value;
           break;
         }
       }
     }
   });
+
+  // Equipos: los integrantes, por orden
+  if (!out.athlete && members.length) out.athlete = members.join(' / ').slice(0, 100);
+
+  // Sin etiqueta «Name»: el título de la ficha («HYROX - For Every Body: Nombre»), que el marcador
+  // envía en la primera línea
+  if (!out.athlete) {
+    const title = cells.map((c) => /for every body:\s*(.+)$/i.exec(c)).find(Boolean);
+    if (title) out.athlete = cleanAthlete(title[1].trim()).slice(0, 100);
+  }
 
   const names = [
     ...out.runs.map((v, i) => (v == null ? runLabel(i) : null)),
@@ -207,7 +244,7 @@ export function parseRaceText(text: string): ParsedRace {
     const splits = [...out.runs, ...out.stations].reduce<number>((s, v) => s + (v ?? 0), 0);
     if (out.roxzoneSec != null) {
       const diff = out.totalSec - splits - out.roxzoneSec;
-      if (Math.abs(diff) > 5)
+      if (Math.abs(diff) > SUM_TOLERANCE)
         out.warnings.push(
           `Los tramos y la Roxzone suman ${fmtDuration(splits + out.roxzoneSec)} pero el total es ${fmtDuration(out.totalSec)}: revisa los tiempos.`,
         );
@@ -217,5 +254,7 @@ export function parseRaceText(text: string): ParsedRace {
       );
     }
   }
+  if (out.found && !out.date)
+    out.warnings.push('La ficha oficial no incluye la fecha de la carrera: indícala abajo.');
   return out;
 }
