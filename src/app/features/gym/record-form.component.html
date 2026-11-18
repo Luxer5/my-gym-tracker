@@ -1,0 +1,66 @@
+@let ex = exercise();
+<app-modal title="Nuevo" accent="registro" (closed)="closed.emit()">
+  <form id="record-form" novalidate (submit)="save($event)">
+    <p class="modal-subtitle">{{ ex.name }} · {{ ex.category }}</p>
+
+    <div class="form-group">
+      <span class="form-label" id="rec-type-label">Tipo de registro</span>
+      <div class="rec-type-grid" role="group" aria-labelledby="rec-type-label">
+        @for (t of types; track t) {
+          <button
+            type="button"
+            class="rec-type-btn"
+            [class.active]="form().type === t"
+            [attr.aria-pressed]="form().type === t"
+            (click)="setType(t)"
+          >
+            <span class="rec-type-label">{{ meta[t].label }}</span>
+            <span class="rec-type-sub">{{ meta[t].formSub }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="rec-value">Peso ({{ ex.unit }})</label>
+      <input
+        appAutofocus
+        class="form-input"
+        id="rec-value"
+        type="number"
+        inputmode="decimal"
+        placeholder="0"
+        min="0"
+        step="0.5"
+        [value]="form().value"
+        (input)="patch({ value: val($event) })"
+      />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="rec-date">Fecha</label>
+      <input
+        class="form-input"
+        id="rec-date"
+        type="date"
+        [value]="form().date"
+        (input)="patch({ date: val($event) })"
+      />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="rec-note">Nota (opcional)</label>
+      <input
+        class="form-input"
+        id="rec-note"
+        maxlength="500"
+        placeholder="Ej: sin faja, pausa en fondo…"
+        [value]="form().note"
+        (input)="patch({ note: val($event) })"
+      />
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" (click)="closed.emit()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="saving()">Guardar registro</button>
+    </div>
+  </form>
+</app-modal>

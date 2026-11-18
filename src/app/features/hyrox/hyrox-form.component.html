@@ -1,0 +1,113 @@
+<app-modal title="Test" accent="Hyrox" (closed)="closed.emit()">
+  <form id="hyrox-form" novalidate (submit)="save($event)">
+    <div class="form-group">
+      <label class="form-label" for="hx-station">Estación</label>
+      <select class="form-select" id="hx-station" (change)="setStation(val($event))">
+        @for (s of stations; track s) {
+          <option [value]="s" [selected]="s === form().station">{{ s }}</option>
+        }
+      </select>
+    </div>
+
+    @let c = cfg();
+    @if (c.kind !== 'none') {
+      <div class="form-group">
+        <label class="form-label" for="hx-preset"
+          >{{ c.kind === 'distance' ? 'Distancia' : 'Peso' }} ({{ c.unit }})</label
+        >
+        <select class="form-select" id="hx-preset" (change)="patch({ preset: val($event) })">
+          @for (p of c.presets; track p) {
+            <option [value]="p" [selected]="'' + p === form().preset">{{ p }} {{ c.unit }}</option>
+          }
+          <option [value]="OTHER" [selected]="isOther()">
+            {{ c.kind === 'distance' ? 'Otra…' : 'Otro…' }}
+          </option>
+        </select>
+        @if (isOther()) {
+          <input
+            class="form-input form-input--extra"
+            id="hx-custom"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            [step]="c.kind === 'distance' ? 1 : 0.5"
+            [placeholder]="c.unit"
+            [attr.aria-label]="(c.kind === 'distance' ? 'Distancia' : 'Peso') + ' en ' + c.unit"
+            [value]="form().custom"
+            (input)="patch({ custom: val($event) })"
+          />
+        }
+      </div>
+    }
+
+    @if (isCustomStation()) {
+      <div class="form-group">
+        <label class="form-label" for="hx-custom-name">Nombre personalizado</label>
+        <input
+          class="form-input"
+          id="hx-custom-name"
+          maxlength="100"
+          placeholder="Nombre del ejercicio"
+          [value]="form().customName"
+          (input)="patch({ customName: val($event) })"
+        />
+      </div>
+    }
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="hx-min">Minutos</label>
+        <input
+          class="form-input"
+          id="hx-min"
+          type="number"
+          inputmode="numeric"
+          placeholder="0"
+          min="0"
+          [value]="form().min"
+          (input)="patch({ min: val($event) })"
+        />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="hx-sec">Segundos</label>
+        <input
+          class="form-input"
+          id="hx-sec"
+          type="number"
+          inputmode="numeric"
+          placeholder="0"
+          min="0"
+          max="59"
+          [value]="form().sec"
+          (input)="patch({ sec: val($event) })"
+        />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="hx-date">Fecha</label>
+      <input
+        class="form-input"
+        id="hx-date"
+        type="date"
+        [value]="form().date"
+        (input)="patch({ date: val($event) })"
+      />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="hx-note">Nota (opcional)</label>
+      <input
+        class="form-input"
+        id="hx-note"
+        maxlength="500"
+        placeholder="Condiciones, sensaciones…"
+        [value]="form().note"
+        (input)="patch({ note: val($event) })"
+      />
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" (click)="closed.emit()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="saving()">Guardar test</button>
+    </div>
+  </form>
+</app-modal>

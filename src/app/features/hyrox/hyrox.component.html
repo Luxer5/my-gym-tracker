@@ -1,0 +1,23 @@
+<section id="hyrox">
+  <div class="section-head">
+    <h1 class="section-title">Hyrox<small>Tests por estación y tiempos</small></h1>
+    <button type="button" class="btn btn-primary" (click)="adding.set(true)">+ Nuevo test</button>
+  </div>
+
+  @if (!store.hyroxLoaded()) {
+    <app-empty-state icon="🔥">Cargando…</app-empty-state>
+  } @else {
+    <app-summary-bar id="hyrox-summary" [items]="summary()" />
+    <div class="hyrox-grid" id="hyrox-grid">
+      @for (g of groups(); track g.key) {
+        <app-hyrox-card [group]="g" />
+      } @empty {
+        <app-empty-state icon="🔥">Sin tests Hyrox aún.</app-empty-state>
+      }
+    </div>
+  }
+</section>
+
+@if (adding()) {
+  <app-hyrox-form (closed)="adding.set(false)" />
+}

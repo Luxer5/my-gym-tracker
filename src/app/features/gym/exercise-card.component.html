@@ -1,0 +1,86 @@
+@let ex = exercise();
+<article class="ex-card" [attr.aria-label]="ex.name">
+  <div class="card-top">
+    <div>
+      <h2 class="ex-name">{{ ex.name }}</h2>
+      <div class="ex-category">{{ ex.category }}</div>
+    </div>
+    <div class="card-actions">
+      <button type="button" class="btn btn-primary btn-sm" (click)="addRecord.emit()">
+        + Registro
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        [attr.aria-label]="'Eliminar ' + ex.name"
+        (click)="remove()"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
+
+  <div class="rm-grid">
+    @for (b of boxes(); track b.type) {
+      <div class="rm-box" [class.is-pr]="b.isPR">
+        <div class="rm-tag">
+          @if (b.isPR) {
+            <span aria-hidden="true">👑</span>
+          }
+          {{ b.label }} <span class="rm-sub">{{ b.sub }}</span>
+        </div>
+        @if (b.best; as r) {
+          <div class="rm-val">
+            {{ r.value }}<span class="rm-unit">{{ ex.unit }}</span>
+          </div>
+          <div class="rm-date">{{ r.date | fdmy }}</div>
+        } @else {
+          <div class="rm-val rm-val--empty">—</div>
+        }
+      </div>
+    }
+  </div>
+
+  @if (lastDate(); as d) {
+    <div class="card-date">Último registro: {{ d | fdmy }}</div>
+  }
+
+  @if (history().length) {
+    <button
+      type="button"
+      class="history-toggle"
+      [attr.aria-expanded]="historyOpen()"
+      (click)="historyOpen.set(!historyOpen())"
+    >
+      <span aria-hidden="true">{{ historyOpen() ? '▾' : '▸' }}</span> Historial ({{
+        history().length
+      }})
+    </button>
+    @if (historyOpen()) {
+      <ul class="history-list">
+        @for (r of history(); track r.id) {
+          <li class="history-entry">
+            <span>
+              <span class="history-type">{{ r.type }}</span>
+              <span class="history-val">{{ r.value }} {{ ex.unit }}</span>
+              @if (r.note) {
+                <span class="history-note"> · {{ r.note }}</span>
+              }
+            </span>
+            <span>
+              <span class="history-date">{{ r.date | fdmy }}</span>
+              <button
+                type="button"
+                class="btn-danger"
+                [attr.aria-label]="'Eliminar registro ' + r.type + ' del ' + (r.date | fdmy)"
+                (click)="removeRecord(r.id)"
+              >
+                ✕
+              </button>
+            </span>
+          </li>
+        }
+      </ul>
+    }
+  }
+</article>

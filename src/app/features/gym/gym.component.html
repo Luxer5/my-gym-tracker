@@ -1,0 +1,49 @@
+<section id="gym">
+  <div class="section-head">
+    <h1 class="section-title">
+      Ejercicios<small>Peso máximo (PR) y repeticiones máximas (RM)</small>
+    </h1>
+    <button type="button" class="btn btn-primary" (click)="addingExercise.set(true)">
+      + Nuevo ejercicio
+    </button>
+  </div>
+
+  @if (!store.exercisesLoaded()) {
+    <app-empty-state icon="🏋️">Cargando…</app-empty-state>
+  } @else {
+    <app-summary-bar id="gym-summary" [items]="summary()" />
+
+    @if (filters().length > 1) {
+      <div class="filters" id="gym-filters" role="group" aria-label="Filtrar por categoría">
+        @for (c of filters(); track c) {
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="c === filter()"
+            [attr.aria-pressed]="c === filter()"
+            (click)="setFilter(c)"
+          >
+            {{ c === ALL ? 'Todos' : c }}
+          </button>
+        }
+      </div>
+    }
+
+    <div class="exercise-grid" id="exercise-grid">
+      @for (ex of list(); track ex.id) {
+        <app-exercise-card [exercise]="ex" (addRecord)="openRecord(ex.id)" />
+      } @empty {
+        <app-empty-state icon="🏋️"
+          >Sin ejercicios aún.<br />Añade tu primer ejercicio.</app-empty-state
+        >
+      }
+    </div>
+  }
+</section>
+
+@if (addingExercise()) {
+  <app-exercise-form (closed)="addingExercise.set(false)" />
+}
+@if (recordFor(); as ex) {
+  <app-record-form [exercise]="ex" (closed)="closeRecord()" />
+}
