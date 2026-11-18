@@ -1320,6 +1320,84 @@ main {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+.parse-source {
+  flex-basis: 100%;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.bookmarklet-install {
+  border: 1px dashed var(--iron);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1.2rem;
+}
+.bookmarklet-install summary {
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  color: var(--yellow);
+}
+.install-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem 2rem;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.install-title {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+.install-list {
+  list-style: decimal;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.bookmarklet-btn {
+  display: inline-block;
+  margin-top: 0.6rem;
+  padding: 0.55rem 1.1rem;
+  border: 2px solid var(--yellow);
+  border-radius: 100px;
+  background: var(--yellow-dim);
+  color: var(--yellow);
+  font-family: var(--font-head);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: grab;
+}
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0.4rem 0 0.8rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.or-divider::before,
+.or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--steel);
+}
 .race-form-meta {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));

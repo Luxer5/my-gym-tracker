@@ -51,6 +51,36 @@ test.describe('Carreras', () => {
     await expect(page.locator('.race-card').first()).toContainText('HYROX Barcelona');
   });
 
+  test('marcador: desde la ficha oficial abre GYM LOG con la carrera rellenada', async ({
+    app: page,
+    context,
+  }) => {
+    await page.getByRole('link', { name: '+ Importar carrera' }).click();
+    const href = (await page.locator('#bookmarklet').getAttribute('href'))!;
+    const script = decodeURIComponent(href.slice('javascript:'.length));
+
+    // Ficha oficial simulada: la petición se responde aquí y no sale a internet
+    const official = await context.newPage();
+    await official.route('https://results.hyrox.com/**', (route) =>
+      route.fulfill({
+        contentType: 'text/html',
+        body: `<title>HYROX - For Every Body: Atleta Demo</title><pre>${PASTE_DESKTOP}</pre>`,
+      }),
+    );
+    await official.goto('https://results.hyrox.com/season-8/ficha');
+    const [app] = await Promise.all([context.waitForEvent('page'), official.evaluate(script)]);
+
+    // Pestaña nueva: primero el acceso, luego la importación
+    await app.getByRole('button', { name: 'Continuar con Google' }).click();
+    await expect(app.locator('#parse-status')).toContainText('Leído de tu ficha oficial');
+    await expect(app.locator('#parse-status')).toContainText('16 de 16 tramos');
+    await expect(app.getByLabel('Carrera', { exact: true })).toHaveValue('HYROX Barcelona');
+    await expect(app.getByLabel('Atleta')).toHaveValue('Atleta Demo');
+    await expect(app).toHaveURL(/\/carreras\/importar$/);
+    await app.getByRole('button', { name: 'Guardar carrera' }).click();
+    await expect(app.locator('#race-total')).toHaveText('1:19:25');
+  });
+
   test('copia desde el móvil, con un tramo que falta', async ({ app: page }) => {
     await page.getByRole('link', { name: '+ Importar carrera' }).click();
     await page.getByLabel('Resultado copiado').fill(PASTE_MOBILE.replace('Sled Pull\n03:56', ''));

@@ -17,8 +17,9 @@ entra con su cuenta de Google y solo ve sus datos.
 - **Hyrox**: tests por estación (SkiErg, RowErg, Sled Push/Pull, Farmer's Carry, Wall Balls…). Se
   agrupan por estación y distancia/peso; cada grupo muestra la mejor marca, la mejora desde el
   primer test y el historial. Estaciones con nombre libre («Otro»).
-- **Carreras**: importa tus resultados oficiales de HYROX copiando tu ficha de
-  [results.hyrox.com](https://results.hyrox.com/) y pegándola. La app lee los 8 runs, las 8
+- **Carreras**: importa tus resultados oficiales de HYROX desde tu ficha de
+  [results.hyrox.com](https://results.hyrox.com/) con un toque en el marcador «Importar en GYM
+  LOG» (o copiándola y pegándola). La app lee los 8 runs, las 8
   estaciones, la Roxzone, el total y tus posiciones, y los deja revisables antes de guardar (también
   se pueden meter a mano). Cada carrera tiene su ficha: tiempo oficial, cifras clave, reparto del
   tiempo, gráfica tramo a tramo, ritmo por vuelta, conclusiones, comparación con tus tests de
@@ -72,8 +73,12 @@ que mejoró respecto a la anterior y una barra con el reparto running / estacion
 
 ![Carreras](docs/screenshots/carreras.png)
 
-Para importar una carrera se abre la ficha oficial, se copia y se pega: la app indica cuántos
-tramos ha leído (y cuáles faltan) y rellena el formulario para revisarlo.
+Para importar una carrera se abre la ficha oficial y se pulsa el marcador «Importar en GYM LOG»
+(se instala una vez desde esta pantalla: arrastrándolo a la barra de marcadores o, en el móvil,
+pegando su código como dirección de un marcador). Es tu navegador quien lee la página que ya estás
+viendo y abre GYM LOG con su texto tras el `#` de la dirección, que no llega a ningún servidor.
+También se puede copiar la ficha y pegarla. La app indica cuántos tramos ha leído (y cuáles faltan)
+y rellena el formulario para revisarlo.
 
 ![Importar carrera](docs/screenshots/carreras-importar.png)
 

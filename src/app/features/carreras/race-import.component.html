@@ -24,11 +24,46 @@
     <li class="import-step">
       <span class="step-num" aria-hidden="true">2</span>
       <div class="step-body">
-        <h2 class="step-title">Copia tu ficha y pégala aquí</h2>
+        <h2 class="step-title">Pulsa el marcador «Importar en GYM LOG»</h2>
         <p class="step-text">
-          Selecciona toda la página (Ctrl+A, o mantén pulsado en el móvil), cópiala y pégala. Se
-          leen los 8 runs, las 8 estaciones, la Roxzone, el total y tus posiciones.
+          Con tu ficha abierta, pulsa el marcador: se abre GYM LOG con la carrera ya rellenada. Lo
+          lee tu propio navegador; GYM LOG no descarga nada de la web oficial.
         </p>
+
+        <details class="bookmarklet-install" id="bookmarklet-install">
+          <summary>Instalar el marcador (una sola vez)</summary>
+          <div class="install-grid">
+            <div>
+              <h3 class="install-title">En el ordenador</h3>
+              <p>Arrastra este botón a la barra de marcadores:</p>
+              <a
+                class="bookmarklet-btn"
+                id="bookmarklet"
+                [href]="bookmarkletHref"
+                (click)="bookmarkletClick($event)"
+                >⚑ Importar en GYM LOG</a
+              >
+            </div>
+            <div>
+              <h3 class="install-title">En el móvil</h3>
+              <ol class="install-list">
+                <li>
+                  <button type="button" class="btn btn-ghost btn-sm" (click)="copyBookmarklet()">
+                    Copiar código del marcador
+                  </button>
+                </li>
+                <li>Guarda cualquier página en marcadores y edítalo.</li>
+                <li>Nómbralo «Importar en GYM LOG» y pega el código como dirección.</li>
+                <li>
+                  Para usarlo, con tu ficha abierta: en Chrome escribe «Importar en GYM LOG» en la
+                  barra y pulsa el marcador; en Safari, ábrelo desde Marcadores.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </details>
+
+        <p class="or-divider"><span>o copia tu ficha y pégala aquí</span></p>
         <label class="form-label" for="race-paste">Resultado copiado</label>
         <textarea
           id="race-paste"
@@ -36,6 +71,7 @@
           rows="6"
           spellcheck="false"
           placeholder="Running 1     00:04:18&#10;1000m SkiErg  00:04:15&#10;…"
+          [value]="pasteText()"
           (input)="onPaste(val($event))"
         ></textarea>
 
@@ -47,6 +83,9 @@
             role="status"
             id="parse-status"
           >
+            @if (fromBookmarklet()) {
+              <span class="parse-source">Leído de tu ficha oficial</span>
+            }
             @if (p.found) {
               <strong>{{ p.found === 16 ? '✓' : '⚠' }} {{ p.found }} de 16 tramos</strong>
               @if (p.totalSec) {

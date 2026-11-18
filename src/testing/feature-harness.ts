@@ -82,6 +82,15 @@ export async function settle(turns = 6): Promise<void> {
   }
 }
 
+/**
+ * Espera a que se cumpla una condición (navegaciones con carga diferida, escrituras encadenadas):
+ * más fiable que un número fijo de vueltas cuando el equipo va cargado
+ */
+export async function until(cond: () => boolean, turns = 100): Promise<void> {
+  for (let i = 0; i < turns && !cond(); i++) await settle(1);
+  if (!cond()) throw new Error('La condición no llegó a cumplirse');
+}
+
 /** Espera a que la sesión esté lista y los datos (ejercicios, Hyrox y carreras) cargados */
 export async function waitForData(store: TrainingStore): Promise<void> {
   TestBed.inject(AuthGateway);

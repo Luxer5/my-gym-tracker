@@ -60,7 +60,10 @@ npm run format
   `toISOString()` para el día.
 - **Resultados oficiales de HYROX**: la app **no** consulta ni extrae datos de results.hyrox.com
   (sin API; HYROX reclama sus resultados como base de datos protegida y envía requerimientos a quien
-  los extrae). El usuario copia su ficha y la pega; `domain/race-import.ts` la lee por etiquetas. Si
+  los extrae) ni hay servidor que la descargue. El marcador «Importar en GYM LOG»
+  (`domain/race-bookmarklet.ts`) lee la ficha en el navegador del usuario y abre
+  `/carreras/importar#hyrox=<base64url>`; también se puede copiar y pegar. En ambos casos
+  `domain/race-import.ts` lee el texto por etiquetas. Si
   cambia el formato de la web, se ajustan las etiquetas y se añade el texto nuevo a
   `src/testing/race-paste.ts` con su caso en `race-import.spec.ts`.
 - **Gráficas**: configuración en `features/carreras/race-charts.ts` (con spec) y colores de
