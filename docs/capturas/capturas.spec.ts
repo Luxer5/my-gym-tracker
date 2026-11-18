@@ -255,6 +255,14 @@ test.describe('README · escritorio', () => {
     await expect(page.locator('.race-card')).toHaveCount(3);
     await page.waitForTimeout(900);
     await shot('carreras', { full: true });
+
+    // Estimador: un par de ajustes sobre la última carrera
+    await page.getByRole('link', { name: '⏱ Estimador' }).click();
+    await page.locator('#est-run').fill('2230');
+    await page.locator('#est-rox').fill('330');
+    await page.locator('#est-st-7').fill('350');
+    await top(page);
+    await shot('estimador', { full: true });
   });
 });
 

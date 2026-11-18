@@ -1,7 +1,12 @@
 <section id="carreras">
   <div class="section-head">
     <h1 class="section-title">Carreras<small>Tus resultados oficiales de HYROX</small></h1>
-    <a class="btn btn-primary" routerLink="/carreras/importar">+ Importar carrera</a>
+    <div class="head-actions">
+      @if (cards().length) {
+        <a class="btn btn-ghost" routerLink="/carreras/estimador">⏱ Estimador</a>
+      }
+      <a class="btn btn-primary" routerLink="/carreras/importar">+ Importar carrera</a>
+    </div>
   </div>
 
   @if (!store.racesLoaded()) {

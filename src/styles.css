@@ -1320,6 +1320,72 @@ main {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+.head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.head-actions .btn {
+  text-decoration: none;
+}
+
+/* Estimador */
+input[type='range'] {
+  width: 100%;
+  accent-color: var(--yellow);
+  height: 28px;
+  margin: 0;
+  cursor: pointer;
+}
+.est-base {
+  max-width: 520px;
+  margin-bottom: 1rem;
+}
+.est-breakdown {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.est-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.slider-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.8rem;
+  font-size: 0.9rem;
+}
+.slider-head label {
+  font-weight: 600;
+}
+.slider-value {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.slider-delta {
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-left: 0.3rem;
+}
+.est-stations {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.1rem 2rem;
+}
+.est-station {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
 .parse-source {
   flex-basis: 100%;
   font-size: 0.72rem;

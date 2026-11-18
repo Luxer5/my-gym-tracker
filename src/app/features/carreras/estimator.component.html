@@ -1,0 +1,169 @@
+<section id="estimator">
+  <a class="back-link" routerLink="/carreras">← Carreras</a>
+  <div class="section-head">
+    <h1 class="section-title">
+      Estimador de tiempo<small>Ajusta tus tramos y mira el tiempo que harías</small>
+    </h1>
+    @if (race()) {
+      <button type="button" class="btn btn-ghost btn-sm" (click)="reset()">Restablecer</button>
+    }
+  </div>
+
+  @if (!store.racesLoaded()) {
+    <app-empty-state icon="⏱">Cargando…</app-empty-state>
+  } @else if (race(); as r) {
+    @let e = result()!;
+    <div class="est-base">
+      <label class="form-label" for="est-base">Carrera de partida</label>
+      <select class="form-select" id="est-base" (change)="selectBase($event)">
+        @for (o of races(); track o.id) {
+          <option [value]="o.id" [selected]="o.id === r.id">
+            {{ o.event }} · {{ o.date | fdmy }} · {{ o.totalSec | dur }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="race-hero">
+      <div class="hero-time">
+        <span class="hero-label">Tiempo estimado</span>
+        <span class="hero-value" id="est-total">{{ total() | dur }}</span>
+        <span
+          class="hero-delta"
+          id="est-delta"
+          [class.hero-delta--good]="delta() < 0"
+          [class.hero-delta--bad]="delta() > 0"
+          >{{ deltaText() }}</span
+        >
+      </div>
+      <div class="chart-card est-breakdown">
+        <div class="chart-head">
+          <h2 class="chart-title">Dónde se va el tiempo</h2>
+          <span class="chart-note">Ritmo de running {{ e.pace | pace }}</span>
+        </div>
+        <app-segmented-bar [parts]="parts()" />
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card est-slider">
+        <div class="slider-head">
+          <label for="est-run">Running <span class="muted">8 × 1 km</span></label>
+          <span class="slider-value"
+            >{{ e.run | dur }}
+            <span
+              class="slider-delta"
+              [class.delta-good]="runDelta() < 0"
+              [class.delta-bad]="runDelta() > 0"
+              >{{ runDelta() | delta }}</span
+            ></span
+          >
+        </div>
+        <input
+          id="est-run"
+          type="range"
+          [min]="runRange().min"
+          [max]="runRange().max"
+          [step]="runRange().step"
+          [value]="e.run"
+          (input)="setRun($event)"
+        />
+        <span class="chart-note">Ritmo medio {{ e.pace | pace }}</span>
+      </div>
+      <div class="chart-card est-slider">
+        <div class="slider-head">
+          <label for="est-rox">Roxzone <span class="muted">transiciones</span></label>
+          <span class="slider-value"
+            >{{ e.rox | mmss }}
+            <span
+              class="slider-delta"
+              [class.delta-good]="roxDelta() < 0"
+              [class.delta-bad]="roxDelta() > 0"
+              >{{ roxDelta() | delta }}</span
+            ></span
+          >
+        </div>
+        <input
+          id="est-rox"
+          type="range"
+          [min]="roxRange().min"
+          [max]="roxRange().max"
+          [step]="roxRange().step"
+          [value]="e.rox"
+          (input)="setRox($event)"
+        />
+        <span class="chart-note">Entre cada running y su estación</span>
+      </div>
+    </div>
+
+    <div class="chart-card" id="est-stations">
+      <div class="chart-head">
+        <h2 class="chart-title">Estaciones</h2>
+        <span class="slider-value">{{ e.stations | dur }}</span>
+      </div>
+      <div class="est-stations">
+        @for (s of stations(); track s.label; let i = $index) {
+          <div class="est-station">
+            <div class="slider-head">
+              <label [for]="'est-st-' + i"
+                >{{ s.label }} <span class="muted">{{ s.detail }}</span></label
+              >
+              <span class="slider-value"
+                >{{ s.value | mmss }}
+                <span
+                  class="slider-delta"
+                  [class.delta-good]="s.delta < 0"
+                  [class.delta-bad]="s.delta > 0"
+                  >{{ s.delta | delta }}</span
+                ></span
+              >
+            </div>
+            <input
+              type="range"
+              [id]="'est-st-' + i"
+              [min]="s.range.min"
+              [max]="s.range.max"
+              [step]="s.range.step"
+              [value]="s.value"
+              (input)="setStation(i, $event)"
+            />
+          </div>
+        }
+      </div>
+      <details class="table-toggle">
+        <summary>Ver la tabla</summary>
+        <table class="data-table" id="est-table">
+          <thead>
+            <tr>
+              <th scope="col">Tramo</th>
+              <th scope="col" class="num">{{ r.event }}</th>
+              <th scope="col" class="num">Estimado</th>
+              <th scope="col" class="num">Diferencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of rows(); track row.label) {
+              <tr>
+                <th scope="row">{{ row.label }}</th>
+                <td class="num">{{ row.base | dur }}</td>
+                <td class="num">{{ row.value | dur }}</td>
+                <td
+                  class="num"
+                  [class.delta-good]="row.delta < 0"
+                  [class.delta-bad]="row.delta > 0"
+                >
+                  {{ row.delta | delta }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </details>
+    </div>
+  } @else {
+    <app-empty-state icon="⏱"
+      >Importa una carrera para estimar tu próximo tiempo a partir de ella.</app-empty-state
+    >
+    <a class="btn btn-primary" routerLink="/carreras/importar">+ Importar carrera</a>
+  }
+</section>

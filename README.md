@@ -86,6 +86,15 @@ La ficha de la carrera reúne todas las cifras y gráficas:
 
 ![Ficha de una carrera](docs/screenshots/carrera.png)
 
+### Estimador de tiempo
+
+Parte de tu última carrera (o de la que elijas, también desde su ficha con «Estimar desde aquí»).
+Con deslizadores para el running total, la Roxzone y cada estación calcula el tiempo que harías,
+la diferencia con esa carrera, el nuevo reparto y la tabla tramo a tramo. Sin tocar nada da
+exactamente el tiempo oficial (absorbe los redondeos de la ficha).
+
+![Estimador de tiempo](docs/screenshots/estimador.png)
+
 ### Móvil
 
 | Gym                                                                       | Nuevo registro                                                                      | Hyrox                                                                         |

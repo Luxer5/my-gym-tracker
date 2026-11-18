@@ -26,6 +26,12 @@ export const routes: Routes = [
       import('./features/carreras/race-import.component').then((m) => m.RaceImportComponent),
   },
   {
+    path: 'carreras/estimador',
+    title: 'Estimador de tiempo',
+    loadComponent: () =>
+      import('./features/carreras/estimator.component').then((m) => m.EstimatorComponent),
+  },
+  {
     path: 'carreras/:id',
     title: 'Carrera',
     loadComponent: () =>

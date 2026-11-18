@@ -16,7 +16,15 @@
           }
         </small>
       </h1>
-      <button type="button" class="btn btn-ghost btn-sm" (click)="remove()">Eliminar</button>
+      <div class="head-actions">
+        <a
+          class="btn btn-primary btn-sm"
+          routerLink="/carreras/estimador"
+          [queryParams]="{ base: r.id }"
+          >⏱ Estimar desde aquí</a
+        >
+        <button type="button" class="btn btn-ghost btn-sm" (click)="remove()">Eliminar</button>
+      </div>
     </div>
 
     <div class="race-hero">

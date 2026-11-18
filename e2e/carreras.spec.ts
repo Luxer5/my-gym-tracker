@@ -81,6 +81,26 @@ test.describe('Carreras', () => {
     await expect(app.locator('#race-total')).toHaveText('1:19:25');
   });
 
+  test('estimador: parte de la última carrera y los deslizadores cambian el tiempo', async ({
+    app: page,
+  }) => {
+    await page.getByRole('link', { name: '⏱ Estimador' }).click();
+    await expect(page).toHaveURL(/\/carreras\/estimador$/);
+    await expect(page.locator('#est-total')).toHaveText('1:21:15');
+    await page.locator('#est-run').fill('2300');
+    await expect(page.locator('#est-total')).toHaveText('1:20:42');
+    await page.locator('#est-rox').fill('300');
+    await expect(page.locator('#est-delta')).toHaveText('2:11 más rápido que HYROX Madrid');
+    await page.getByRole('button', { name: 'Restablecer' }).click();
+    await expect(page.locator('#est-total')).toHaveText('1:21:15');
+
+    // Desde la ficha de otra carrera, esa es la de partida
+    await page.getByRole('link', { name: '← Carreras' }).click();
+    await page.locator('.race-card', { hasText: 'HYROX Valencia' }).click();
+    await page.getByRole('link', { name: '⏱ Estimar desde aquí' }).click();
+    await expect(page.locator('#est-total')).toHaveText('1:27:20');
+  });
+
   test('copia desde el móvil, con un tramo que falta', async ({ app: page }) => {
     await page.getByRole('link', { name: '+ Importar carrera' }).click();
     await page.getByLabel('Resultado copiado').fill(PASTE_MOBILE.replace('Sled Pull\n03:56', ''));
