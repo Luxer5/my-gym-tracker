@@ -4,7 +4,7 @@ import {
   assertSucceeds,
   initializeTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { readFileSync } from 'node:fs';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 
@@ -80,6 +80,15 @@ describe('Reglas de Firestore', () => {
         await assertSucceeds(getDoc(doc(as(BOB), pathOf(BOB, rest))));
         await assertSucceeds(deleteDoc(doc(as(BOB), pathOf(BOB, rest))));
       }
+    });
+  });
+
+  describe('edición', () => {
+    it('renombra un ejercicio propio con los mismos límites; uno ajeno no', async () => {
+      const own = doc(as(BOB), pathOf(BOB, 'exercises/e1'));
+      await assertSucceeds(updateDoc(own, { name: 'Sentadilla trasera', category: 'Piernas' }));
+      await assertFails(updateDoc(own, { name: 'x'.repeat(101) }));
+      await assertFails(updateDoc(doc(as(ALICE), pathOf(BOB, 'exercises/e1')), { name: 'x' }));
     });
   });
 

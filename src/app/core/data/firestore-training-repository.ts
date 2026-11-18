@@ -10,6 +10,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  updateDoc,
   writeBatch,
 } from 'firebase/firestore';
 import { Observable } from 'rxjs';
@@ -17,6 +18,7 @@ import { AuthGateway } from '../auth/auth-gateway';
 import { FIRESTORE } from '../firebase';
 import {
   Exercise,
+  ExercisePatch,
   HyroxRace,
   HyroxTest,
   LiftRecord,
@@ -84,6 +86,10 @@ export class FirestoreTrainingRepository extends TrainingRepository {
 
   async addExercise(data: NewExercise): Promise<string> {
     return (await addDoc(this.exercisesCol(), data)).id;
+  }
+
+  updateExercise(id: string, patch: ExercisePatch): Promise<void> {
+    return updateDoc(this.exerciseDoc(id), { name: patch.name, category: patch.category });
   }
 
   async deleteExercise(id: string): Promise<void> {

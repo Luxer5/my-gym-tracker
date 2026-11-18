@@ -46,6 +46,8 @@ export interface Exercise {
   createdAt: string;
 }
 export type NewExercise = Omit<Exercise, 'id'>;
+/** Lo que se puede cambiar de un ejercicio ya creado (la unidad no: reinterpretaría sus registros) */
+export type ExercisePatch = Pick<Exercise, 'name' | 'category'>;
 
 export interface LiftRecord {
   id: string;

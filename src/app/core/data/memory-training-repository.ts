@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
   Exercise,
+  ExercisePatch,
   HyroxRace,
   HyroxTest,
   LiftRecord,
@@ -76,6 +77,15 @@ export class MemoryTrainingRepository extends TrainingRepository {
     const id = this.newId();
     this.exercises$.next([...this.exercises$.value, { id, ...clone(data) }]);
     return id;
+  }
+
+  async updateExercise(id: string, patch: ExercisePatch): Promise<void> {
+    await tick();
+    if (!this.exercises$.value.some((e) => e.id === id)) throw new Error('El ejercicio no existe');
+    const { name, category } = patch;
+    this.exercises$.next(
+      this.exercises$.value.map((e) => (e.id === id ? { ...e, name, category } : e)),
+    );
   }
 
   async deleteExercise(id: string): Promise<void> {

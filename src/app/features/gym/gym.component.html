@@ -31,7 +31,11 @@
 
     <div class="exercise-grid" id="exercise-grid">
       @for (ex of list(); track ex.id) {
-        <app-exercise-card [exercise]="ex" (addRecord)="openRecord(ex.id)" />
+        <app-exercise-card
+          [exercise]="ex"
+          (addRecord)="openRecord(ex.id)"
+          (edit)="editingId.set(ex.id)"
+        />
       } @empty {
         <app-empty-state icon="dumbbell"
           >Sin ejercicios aún.<br />Añade tu primer ejercicio.</app-empty-state
@@ -43,6 +47,9 @@
 
 @if (addingExercise()) {
   <app-exercise-form (closed)="addingExercise.set(false)" />
+}
+@if (editing(); as ex) {
+  <app-exercise-form [exercise]="ex" (closed)="editingId.set(null)" />
 }
 @if (recordFor(); as ex) {
   <app-record-form [exercise]="ex" (closed)="closeRecord()" />

@@ -25,6 +25,8 @@ export class ExerciseCardComponent {
   readonly exercise = input.required<ExerciseWithRecords>();
   /** Pide abrir el formulario de nuevo registro */
   readonly addRecord = output<void>();
+  /** Pide abrir el formulario para cambiar el nombre o la categoría */
+  readonly edit = output<void>();
 
   protected readonly boxes = computed(() => recordBoxes(this.exercise().records));
   protected readonly history = computed(() => byDateDesc(this.exercise().records));

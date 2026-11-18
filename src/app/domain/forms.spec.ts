@@ -5,7 +5,9 @@ import {
   emptyExerciseForm,
   emptyHyroxForm,
   emptyRecordForm,
+  exerciseToForm,
   formToExercise,
+  formToExercisePatch,
   formToHyrox,
   formToRecord,
 } from './forms';
@@ -33,6 +35,24 @@ describe('forms', () => {
     it('unknown units fall back to kg', () => {
       const res = formToExercise({ name: 'Remo', category: 'Jalón', unit: 'stone' });
       expect(res.ok && res.data.unit).toBe('kg');
+    });
+  });
+
+  describe('formToExercisePatch (editing)', () => {
+    it('keeps only the name and the category, with the same checks as creating', () => {
+      expect(
+        formToExercisePatch({ name: ' Sentadilla trasera ', category: 'Piernas', unit: 'lb' }),
+      ).toEqual({ ok: true, data: { name: 'Sentadilla trasera', category: 'Piernas' } });
+      expect(formToExercisePatch({ ...emptyExerciseForm(), name: ' ' })).toEqual({
+        ok: false,
+        error: 'Escribe el nombre del ejercicio.',
+      });
+      expect(formToExercisePatch({ ...emptyExerciseForm(), name: 'x'.repeat(101) }).ok).toBe(false);
+    });
+
+    it('exerciseToForm fills the form with the exercise', () => {
+      const ex = { id: 'e1', name: 'Remo', category: 'Jalón', unit: 'lb' as const, createdAt: '' };
+      expect(exerciseToForm(ex)).toEqual({ name: 'Remo', category: 'Jalón', unit: 'lb' });
     });
   });
 

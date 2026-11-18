@@ -43,6 +43,22 @@ test.describe('Gym', () => {
     await expect(card).toHaveCount(0);
   });
 
+  test('cambiar el nombre de un ejercicio conserva sus marcas', async ({ app: page }) => {
+    const bench = exerciseCard(page, 'Press banca');
+    await bench.getByRole('button', { name: 'Editar Press banca' }).click();
+    const dlg = page.getByRole('dialog', { name: 'Editar ejercicio' });
+    await expect(dlg.getByLabel('Nombre')).toHaveValue('Press banca');
+    await expect(dlg.getByLabel('Unidad')).toBeDisabled();
+    await dlg.getByLabel('Nombre').fill('Press banca inclinado');
+    await dlg.getByRole('button', { name: 'Guardar cambios' }).click();
+    await expect(dlg).toBeHidden();
+    await expect(page.locator('.toast--success')).toContainText('«Press banca inclinado» guardado');
+    await expect(bench).toHaveCount(0);
+    const card = exerciseCard(page, 'Press banca inclinado');
+    await expect(card.locator('.ex-category')).toHaveText('Empuje');
+    await expect(page.locator('#gym-summary .summary-val')).toHaveText(['3', '2', '3']);
+  });
+
   test('los datos que faltan se avisan sin cerrar la ventana', async ({ app: page }) => {
     await page.getByRole('button', { name: '+ Nuevo ejercicio' }).click();
     await page.getByRole('button', { name: 'Guardar ejercicio' }).click();

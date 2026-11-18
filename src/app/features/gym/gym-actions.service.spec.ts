@@ -6,6 +6,7 @@ import {
   answerConfirm,
   setupApp,
   teardownApp,
+  until,
   waitForData,
 } from '../../../testing/feature-harness';
 import { GymActions } from './gym-actions.service';
@@ -45,6 +46,39 @@ describe('GymActions', () => {
       expect(await svc.addExercise({ name: 'Remo', category: 'Jalón', unit: 'kg' })).toBe(false);
       expect(ctx.alert).toHaveBeenCalledWith('Error: sin permiso');
       expect(ctx.status).toHaveBeenLastCalledWith('');
+    });
+  });
+
+  describe('updateExercise', () => {
+    it('renames it without touching its unit or its records', async () => {
+      const upd = vi.spyOn(ctx.repo, 'updateExercise');
+      const form = { name: ' Sentadilla trasera ', category: 'Piernas', unit: 'lb' };
+      expect(await svc.updateExercise('e1', form)).toBe(true);
+      expect(upd).toHaveBeenCalledWith('e1', { name: 'Sentadilla trasera', category: 'Piernas' });
+      expect(ctx.status.mock.calls).toEqual([
+        ['Guardando…'],
+        ['«Sentadilla trasera» guardado ✓', true],
+      ]);
+      await until(() => ctx.store.exercise('e1')?.name === 'Sentadilla trasera');
+      expect(ctx.store.exercise('e1')).toMatchObject({ unit: 'kg', category: 'Piernas' });
+      expect(ctx.store.exercise('e1')!.records).toHaveLength(3);
+    });
+
+    it('validates; without changes or with an unknown id it writes nothing', async () => {
+      const upd = vi.spyOn(ctx.repo, 'updateExercise');
+      const same = { name: 'Sentadilla', category: 'Piernas', unit: 'kg' };
+      expect(await svc.updateExercise('e1', { ...same, name: '' })).toBe(false);
+      expect(ctx.alert).toHaveBeenCalledWith('Escribe el nombre del ejercicio.');
+      expect(await svc.updateExercise('e1', same)).toBe(true);
+      expect(await svc.updateExercise('nope', same)).toBe(false);
+      expect(upd).not.toHaveBeenCalled();
+    });
+
+    it('reports write errors', async () => {
+      vi.spyOn(ctx.repo, 'updateExercise').mockRejectedValue(new Error('sin permiso'));
+      const form = { name: 'X', category: 'Piernas', unit: 'kg' };
+      expect(await svc.updateExercise('e1', form)).toBe(false);
+      expect(ctx.alert).toHaveBeenCalledWith('Error: sin permiso');
     });
   });
 

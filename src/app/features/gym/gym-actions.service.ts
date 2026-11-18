@@ -3,7 +3,13 @@ import { TrainingRepository } from '../../core/data/training-repository';
 import { ConfirmService } from '../../core/services/confirm.service';
 import { NotifyService } from '../../core/services/notify.service';
 import { TrainingStore } from '../../core/state/training-store';
-import { ExerciseForm, RecordForm, formToExercise, formToRecord } from '../../domain/forms';
+import {
+  ExerciseForm,
+  RecordForm,
+  formToExercise,
+  formToExercisePatch,
+  formToRecord,
+} from '../../domain/forms';
 
 /** Casos de uso de Gym. Los métodos que guardan devuelven true si se guardó. */
 @Injectable({ providedIn: 'root' })
@@ -34,6 +40,19 @@ export class GymActions {
       return false;
     }
     return this.run(`«${res.data.name}» añadido ✓`, () => this.repo.addExercise(res.data));
+  }
+
+  /** Cambia el nombre o la categoría de un ejercicio; sin cambios no escribe nada */
+  async updateExercise(id: string, f: ExerciseForm): Promise<boolean> {
+    const ex = this.store.exercise(id);
+    if (!ex) return false;
+    const res = formToExercisePatch(f);
+    if (!res.ok) {
+      this.notify.alert(res.error);
+      return false;
+    }
+    if (res.data.name === ex.name && res.data.category === ex.category) return true;
+    return this.run(`«${res.data.name}» guardado ✓`, () => this.repo.updateExercise(id, res.data));
   }
 
   /** Borra el ejercicio y todos sus registros, tras confirmarlo */

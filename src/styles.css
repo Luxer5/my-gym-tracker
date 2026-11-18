@@ -761,6 +761,18 @@ main {
 .form-input--extra {
   margin-top: 0.5rem;
 }
+.form-input:disabled,
+.form-select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+/* Texto de ayuda bajo un campo */
+.form-help {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--text-2);
+}
 .form-select option {
   background: var(--charcoal);
 }
@@ -1714,6 +1726,28 @@ main {
 .btn-danger-solid {
   background: var(--danger);
   color: var(--on-accent);
+}
+/* Botón de solo icono, neutro (editar): mismo tamaño que el de eliminar */
+.btn-icon {
+  display: inline-grid;
+  place-items: center;
+  min-width: 36px;
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-2);
+}
+.btn-icon:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+/* Los botones de solo icono no llevan el relleno horizontal de .btn: así no estrechan el título */
+.btn.btn-icon,
+.btn.btn-danger {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
 }
 
 /* Tarjetas */

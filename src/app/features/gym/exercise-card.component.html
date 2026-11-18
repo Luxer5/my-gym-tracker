@@ -11,6 +11,15 @@
       </button>
       <button
         type="button"
+        class="btn btn-icon"
+        [attr.aria-label]="'Editar ' + ex.name"
+        title="Editar"
+        (click)="edit.emit()"
+      >
+        <svg appIcon="pencil"></svg>
+      </button>
+      <button
+        type="button"
         class="btn btn-danger"
         [attr.aria-label]="'Eliminar ' + ex.name"
         (click)="remove()"

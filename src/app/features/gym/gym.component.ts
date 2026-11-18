@@ -41,8 +41,14 @@ export class GymComponent {
     ];
   });
 
-  /** Ventanas abiertas: alta de ejercicio y nuevo registro (id del ejercicio) */
+  /** Ventanas abiertas: alta y edición de ejercicio y nuevo registro (id del ejercicio) */
   protected readonly addingExercise = signal(false);
+  protected readonly editingId = signal<string | null>(null);
+  /** Si el ejercicio se borra (en otro dispositivo) mientras se edita, la ventana se cierra */
+  protected readonly editing = computed(() => {
+    const id = this.editingId();
+    return id ? (this.store.exercise(id) ?? null) : null;
+  });
   private readonly recordForId = signal<string | null>(null);
   protected readonly recordFor = computed(() => {
     const id = this.recordForId();

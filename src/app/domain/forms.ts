@@ -1,5 +1,7 @@
 import {
   EXERCISE_CATEGORIES,
+  Exercise,
+  ExercisePatch,
   NewExercise,
   NewHyroxTest,
   NewLiftRecord,
@@ -33,16 +35,34 @@ export const emptyExerciseForm = (): ExerciseForm => ({
   unit: WEIGHT_UNITS[0],
 });
 
-export function formToExercise(f: ExerciseForm, now: Date = new Date()): FormResult<NewExercise> {
+/** Formulario relleno con un ejercicio que ya existe (para editarlo) */
+export const exerciseToForm = (ex: Exercise): ExerciseForm => ({
+  name: ex.name,
+  category: ex.category,
+  unit: ex.unit,
+});
+
+/** Nombre y categoría validados: comunes al alta y a la edición */
+function exerciseFields(f: ExerciseForm): FormResult<ExercisePatch> {
   const name = f.name.trim();
   if (!name) return fail('Escribe el nombre del ejercicio.');
   if (name.length > 100) return fail('El nombre no puede pasar de 100 caracteres.');
+  const category = f.category || EXERCISE_CATEGORIES[EXERCISE_CATEGORIES.length - 1];
+  return { ok: true, data: { name, category } };
+}
+
+export function formToExercise(f: ExerciseForm, now: Date = new Date()): FormResult<NewExercise> {
+  const res = exerciseFields(f);
+  if (!res.ok) return res;
   const unit = (WEIGHT_UNITS as readonly string[]).includes(f.unit)
     ? (f.unit as WeightUnit)
     : WEIGHT_UNITS[0];
-  const category = f.category || EXERCISE_CATEGORIES[EXERCISE_CATEGORIES.length - 1];
-  return { ok: true, data: { name, category, unit, createdAt: now.toISOString() } };
+  return { ok: true, data: { ...res.data, unit, createdAt: now.toISOString() } };
 }
+
+/** Cambios de un ejercicio ya creado: nombre y categoría (la unidad no se toca) */
+export const formToExercisePatch = (f: ExerciseForm): FormResult<ExercisePatch> =>
+  exerciseFields(f);
 
 // ── Registro de un ejercicio ──
 

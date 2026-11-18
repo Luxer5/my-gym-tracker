@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import {
   Exercise,
+  ExercisePatch,
   HyroxRace,
   HyroxTest,
   LiftRecord,
@@ -27,6 +28,8 @@ export abstract class TrainingRepository {
 
   // ── Ejercicios y sus registros ──
   abstract addExercise(data: NewExercise): Promise<string>;
+  /** Cambia el nombre o la categoría; los registros no se tocan */
+  abstract updateExercise(id: string, patch: ExercisePatch): Promise<void>;
   /** Borra el ejercicio y todos sus registros */
   abstract deleteExercise(id: string): Promise<void>;
   abstract addRecord(exerciseId: string, data: NewLiftRecord): Promise<string>;

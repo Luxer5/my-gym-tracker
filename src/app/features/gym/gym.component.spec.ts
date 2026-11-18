@@ -79,6 +79,25 @@ describe('GymComponent', () => {
     expect(textOf(card('Peso muerto').querySelector('.ex-category'))).toBe('Piernas');
   });
 
+  it('renames an exercise from its card and keeps its records', async () => {
+    el.querySelector<HTMLButtonElement>('button[aria-label="Editar Sentadilla"]')!.click();
+    await settle();
+    const doc = el.ownerDocument;
+    expect(textOf(doc.querySelector('.modal-title'))).toBe('Editar ejercicio');
+    expect(doc.querySelector<HTMLInputElement>('#ex-name')!.value).toBe('Sentadilla');
+    expect(doc.querySelector<HTMLSelectElement>('#ex-category')!.value).toBe('Piernas');
+    // La unidad no se cambia: los registros ya guardados están en ella
+    expect(doc.querySelector<HTMLSelectElement>('#ex-unit')!.disabled).toBe(true);
+    expect(textOf(doc.querySelector('#ex-unit-help'))).toBe('Sus registros están en kg');
+    type(doc.body, '#ex-name', 'Sentadilla trasera');
+    doc.querySelector<HTMLFormElement>('#exercise-form')!.requestSubmit();
+    await settle();
+    expect(doc.querySelector('#exercise-form')).toBeNull();
+    expect(card('Sentadilla')).toBeUndefined();
+    const vals = [...card('Sentadilla trasera').querySelectorAll('.rm-val')].map((v) => textOf(v));
+    expect(vals).toEqual(['140kg', '—', '—', '115kg']);
+  });
+
   it('adds a record from the card', async () => {
     clickButton(card('Dominadas lastradas'), '+ Registro');
     const doc = el.ownerDocument;
