@@ -1,0 +1,36 @@
+<div id="screen-app">
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo">GYM<span>LOG</span></div>
+      <div class="tagline">PR · RM · Hyrox</div>
+    </div>
+    @if (user(); as u) {
+      <div class="user-area">
+        @if (u.photoURL) {
+          <img class="user-avatar" [src]="u.photoURL" alt="" referrerpolicy="no-referrer" />
+        }
+        <span class="user-name">{{ u.displayName || u.email }}</span>
+        <button type="button" class="btn-signout" (click)="signOut()">Salir</button>
+      </div>
+    }
+  </header>
+
+  <nav class="tabs" aria-label="Secciones">
+    @for (s of sections; track s.key) {
+      <a
+        class="tab-btn"
+        [routerLink]="['/', s.key]"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        >{{ s.icon }} {{ s.label }}
+        @if (s.detail) {
+          <span class="tab-detail">— {{ s.detail }}</span>
+        }
+      </a>
+    }
+  </nav>
+
+  <main id="main">
+    <router-outlet />
+  </main>
+</div>
