@@ -40,6 +40,15 @@ export const STATION_CONFIG: Record<HyroxStation, StationConfig> = {
 export const stationConfig = (station: string): StationConfig =>
   STATION_CONFIG[station as HyroxStation] ?? { kind: 'none' };
 
+/** Ergómetros cuyo ritmo se mide por 500 m */
+const ERG_STATIONS = ['SkiErg', 'RowErg'];
+
+/** Ritmo por 500 m de un test de SkiErg o RowErg (segundos); null en el resto */
+export function split500(t: Pick<HyroxTest, 'station' | 'param' | 'totalSec'>): number | null {
+  if (!ERG_STATIONS.includes(t.station) || !t.param || t.param <= 0) return null;
+  return (t.totalSec * 500) / t.param;
+}
+
 /** Texto del parámetro de un test: «1000 m», «24 kg/mano» o vacío */
 export function paramLabel(t: Pick<HyroxTest, 'station' | 'param'>): string {
   const cfg = stationConfig(t.station);
@@ -64,6 +73,8 @@ export interface HyroxGroup {
   improvement: number;
   /** Hay más de un test con el que compararse */
   hasPB: boolean;
+  /** Ritmo por 500 m de la mejor marca (SkiErg y RowErg); null en el resto */
+  bestSplit500: number | null;
 }
 
 /** Tests agrupados por estación y parámetro, ordenados por estación y luego por parámetro */
@@ -87,6 +98,7 @@ export function hyroxGroups(list: readonly HyroxTest[]): HyroxGroup[] {
         best,
         improvement: Math.max(0, first.totalSec - best.totalSec),
         hasPB: tests.length > 1,
+        bestSplit500: split500(best),
       };
     })
     .sort((a, b) =>

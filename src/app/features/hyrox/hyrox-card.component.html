@@ -15,6 +15,9 @@
   <div class="time-display">
     <span class="best-label">Mejor marca</span>{{ g.best.totalSec | mmss }}
   </div>
+  @if (g.bestSplit500 !== null) {
+    <div class="hx-split">Ritmo {{ g.bestSplit500 | split500 }}</div>
+  }
   @if (g.hasPB && g.improvement > 0) {
     <div class="card-date card-date--good">
       ↓ Mejora: {{ g.improvement | mmss }} · {{ g.entries.length }} tests
@@ -37,7 +40,12 @@
     <ul class="history-list">
       @for (t of g.entries; track t.id) {
         <li class="history-entry">
-          <span class="history-val">{{ t.totalSec | mmss }}</span>
+          <span class="history-val"
+            >{{ t.totalSec | mmss }}
+            @if (split(t); as s) {
+              <span class="history-note"> · {{ s | split500 }}</span>
+            }
+          </span>
           <span>
             <span class="history-date"
               >{{ t.date | fdmy }}

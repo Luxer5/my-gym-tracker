@@ -43,6 +43,17 @@ describe('HyroxComponent', () => {
     expect(textOf(ski.querySelector('.card-date'))).toBe('↓ Mejora: 00:13 · 2 tests');
   });
 
+  it('SkiErg and RowErg show the pace per 500 m; the other stations do not', () => {
+    const ski = card('SkiErg');
+    // 1000 m en 03:48 → 1:54 cada 500 m
+    expect(textOf(ski.querySelector('.hx-split'))).toBe('Ritmo 1:54 /500 m');
+    clickButton(ski, 'Historial');
+    const history = [...ski.querySelectorAll('.history-entry')].map((h) => textOf(h));
+    expect(history[0]).toContain('03:48 · 1:54 /500 m');
+    expect(history[1]).toContain('04:01 · 2:01 /500 m');
+    expect(card('Wall Balls').querySelector('.hx-split')).toBeNull();
+  });
+
   it("the history of «Farmer's Carry» opens (the apostrophe used to break it)", () => {
     const farmer = card("Farmer's Carry");
     clickButton(farmer, 'Historial');

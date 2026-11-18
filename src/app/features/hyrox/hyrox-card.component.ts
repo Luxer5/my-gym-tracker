@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { IconComponent } from '../../shared/icon.component';
-import { HyroxGroup } from '../../domain/hyrox';
+import { HyroxGroup, split500 } from '../../domain/hyrox';
 import { FORMAT_PIPES } from '../../shared/format.pipes';
 import { HyroxActions } from './hyrox-actions.service';
 
@@ -15,6 +15,7 @@ export class HyroxCardComponent {
   private readonly actions = inject(HyroxActions);
   readonly group = input.required<HyroxGroup>();
   protected readonly historyOpen = signal(false);
+  protected readonly split = split500;
 
   protected remove(id: string): void {
     void this.actions.deleteTest(id);

@@ -1,5 +1,5 @@
 import { HyroxTest } from '../core/models';
-import { groupKey, hyroxGroups, hyroxSummary, paramLabel, stationConfig } from './hyrox';
+import { groupKey, hyroxGroups, hyroxSummary, paramLabel, split500, stationConfig } from './hyrox';
 
 const t = (
   id: string,
@@ -28,6 +28,16 @@ describe('hyrox', () => {
     expect(paramLabel({ station: 'Sled Push', param: 0 })).toBe('0 kg');
   });
 
+  it('split500: pace per 500 m only for SkiErg and RowErg', () => {
+    expect(split500({ station: 'SkiErg', param: 1000, totalSec: 228 })).toBe(114);
+    expect(split500({ station: 'RowErg', param: 2000, totalSec: 480 })).toBe(120);
+    expect(split500({ station: 'RowErg', param: 500, totalSec: 95 })).toBe(95);
+    expect(split500({ station: 'Running', param: 1000, totalSec: 240 })).toBeNull();
+    expect(split500({ station: 'Wall Balls', param: 6, totalSec: 300 })).toBeNull();
+    expect(split500({ station: 'SkiErg', param: null, totalSec: 228 })).toBeNull();
+    expect(split500({ station: 'SkiErg', param: 0, totalSec: 228 })).toBeNull();
+  });
+
   describe('hyroxGroups', () => {
     const list = [
       t('h1', 'SkiErg', 1000, 240, '2026-09-01'),
@@ -40,6 +50,12 @@ describe('hyrox', () => {
 
     it('groups by station + parameter, sorted by station then parameter', () => {
       expect(groups.map((g) => g.key)).toEqual(['RowErg|2000 m', 'SkiErg|500 m', 'SkiErg|1000 m']);
+    });
+
+    it('the pace per 500 m comes from the best test', () => {
+      expect(groups.map((g) => g.bestSplit500)).toEqual([120, 110, 112.5]);
+      const [wb] = hyroxGroups([t('w', 'Wall Balls', 6, 300, '2026-09-01')]);
+      expect(wb.bestSplit500).toBeNull();
     });
 
     it('entries go from best to worst time', () => {

@@ -1,5 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { fmtDelta, fmtDmy, fmtDuration, fmtGap, fmtPace, fmtTime } from '../domain/format';
+import {
+  fmtDelta,
+  fmtDmy,
+  fmtDuration,
+  fmtGap,
+  fmtPace,
+  fmtSplit500,
+  fmtTime,
+} from '../domain/format';
 
 /** 2026-10-07 → 07/10/2026 */
 @Pipe({ name: 'fdmy' })
@@ -41,6 +49,14 @@ export class FmtGapPipe implements PipeTransform {
   }
 }
 
+/** Segundos por 500 m → 1:54 /500 m */
+@Pipe({ name: 'split500' })
+export class FmtSplit500Pipe implements PipeTransform {
+  transform(sec: number | null | undefined): string {
+    return sec == null ? '' : fmtSplit500(sec);
+  }
+}
+
 /** Segundos por km → 4:31 /km */
 @Pipe({ name: 'pace' })
 export class FmtPacePipe implements PipeTransform {
@@ -56,4 +72,5 @@ export const FORMAT_PIPES = [
   FmtDeltaPipe,
   FmtGapPipe,
   FmtPacePipe,
+  FmtSplit500Pipe,
 ] as const;

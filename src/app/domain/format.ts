@@ -46,6 +46,12 @@ export const fmtGap = (deltaSec: number): string => {
   return `${fmtDelta(Math.abs(d)).slice(1)} más ${d < 0 ? 'rápido' : 'lento'}`;
 };
 
+/** Ritmo por 500 m (ergómetros): 114 s → 1:54 /500 m */
+export const fmtSplit500 = (sec: number): string => {
+  const s = Math.max(0, Math.round(sec));
+  return `${Math.floor(s / 60)}:${pad(s % 60)} /500 m`;
+};
+
 /** Ritmo por kilómetro: 271 s → 4:31 /km */
 export const fmtPace = (secPerKm: number): string => {
   const s = Math.max(0, Math.round(secPerKm));

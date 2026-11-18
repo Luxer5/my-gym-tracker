@@ -4,6 +4,7 @@ import {
   fmtDuration,
   fmtGap,
   fmtPace,
+  fmtSplit500,
   fmtTime,
   num,
   parseDuration,
@@ -30,6 +31,12 @@ describe('format', () => {
     expect(fmtTime(65)).toBe('01:05');
     expect(fmtTime(3725)).toBe('62:05');
     expect(fmtTime(-3)).toBe('00:00');
+  });
+
+  it('fmtSplit500 formats the pace per 500 m', () => {
+    expect(fmtSplit500(114)).toBe('1:54 /500 m');
+    expect(fmtSplit500(112.5)).toBe('1:53 /500 m');
+    expect(fmtSplit500(95)).toBe('1:35 /500 m');
   });
 
   it('fmtDuration switches to h:mm:ss from one hour', () => {

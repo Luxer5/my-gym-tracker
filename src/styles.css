@@ -644,6 +644,13 @@ main {
   letter-spacing: 0.02em;
   margin-bottom: 0.3rem;
 }
+.hx-split {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.3rem;
+}
 .best-label {
   font-size: 0.65rem;
   letter-spacing: 0.2em;
