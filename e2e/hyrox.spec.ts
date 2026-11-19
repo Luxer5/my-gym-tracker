@@ -10,7 +10,7 @@ test.describe('Hyrox', () => {
     await expect(page.locator('#hyrox-summary .summary-val')).toHaveText(['4', '3', '3']);
     const ski = hyroxCard(page, 'SkiErg');
     await expect(ski.locator('.time-display')).toContainText('03:48');
-    await expect(ski.locator('.card-date')).toHaveText('↓ Mejora: 00:13 · 2 tests');
+    await expect(ski.locator('.card-date')).toHaveText('Mejora: 00:13 · 2 tests');
 
     // El apóstrofo de la estación rompía el botón del historial
     const farmer = hyroxCard(page, "Farmer's Carry");
@@ -30,7 +30,7 @@ test.describe('Hyrox', () => {
 
     const ski = hyroxCard(page, 'SkiErg');
     await expect(ski.locator('.time-display')).toContainText('03:30');
-    await expect(ski.locator('.card-date')).toHaveText('↓ Mejora: 00:31 · 3 tests');
+    await expect(ski.locator('.card-date')).toHaveText('Mejora: 00:31 · 3 tests');
 
     await ski.getByRole('button', { name: /Historial/ }).click();
     await ski

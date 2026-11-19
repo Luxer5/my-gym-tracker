@@ -1,6 +1,7 @@
 import {
   fmtDelta,
   fmtDmy,
+  fmtDmyShort,
   fmtDuration,
   fmtGap,
   fmtKmh,
@@ -59,6 +60,11 @@ describe('format', () => {
     expect(fmtGap(-110)).toBe('1:50 más rápido');
     expect(fmtGap(175)).toBe('2:55 más lento');
     expect(fmtGap(0.2)).toBe('mismo tiempo');
+  });
+
+  it('fmtDmyShort: two-digit year for chart axes', () => {
+    expect(fmtDmyShort('2026-09-15')).toBe('15/09/26');
+    expect(fmtDmyShort('raro')).toBe('raro');
   });
 
   it('fmtMinSec and fmtKmh', () => {

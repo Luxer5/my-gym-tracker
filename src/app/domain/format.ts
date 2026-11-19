@@ -14,6 +14,12 @@ export const fmtDmy = (iso: string | null | undefined): string => {
   return d && m && y ? `${d}/${m}/${y}` : iso;
 };
 
+/** 2026-10-07 → 07/10/26: fecha corta para los ejes de las gráficas */
+export const fmtDmyShort = (iso: string): string => {
+  const [y, m, d] = iso.split('-');
+  return d && m && y ? `${d}/${m}/${y.slice(-2)}` : iso;
+};
+
 /** Segundos → mm:ss (los minutos pueden pasar de 59: 3725 s → 62:05) */
 export const fmtTime = (totalSec: number): string => {
   const s = Math.max(0, Math.round(totalSec));

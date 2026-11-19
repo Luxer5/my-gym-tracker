@@ -12,6 +12,7 @@ import {
   vamZones,
   vanceHrZones,
   vancePaceZones,
+  zoneScale,
 } from './run-tests';
 
 const vam = (id: string, distanceM: number, date: string): RunTest => ({
@@ -52,6 +53,8 @@ describe('run-tests', () => {
         '4:46 /km',
         '4:31 /km',
       ]);
+      // Velocidad de cada zona: el mismo % de los 14 km/h de la VAM
+      expect(zones.map((z) => Math.round(z.kmh * 10) / 10)).toEqual([9.1, 9.8, 11.9, 12.6, 13.3]);
     });
   });
 
@@ -94,6 +97,27 @@ describe('run-tests', () => {
         '> 191 lpm',
       ]);
       expect(zones[3].label).toBe('Umbral / MLSS');
+    });
+
+    it('zoneScale: pace zones from easy (left) to hard (right), open zones as wide as an average one', () => {
+      const { bands, marker } = zoneScale(vancePaceZones(300), 300);
+      expect(bands).toHaveLength(7);
+      expect(bands[0]).toEqual({ left: 0, width: expect.closeTo(14.29, 2), open: 'start' });
+      expect(bands[6].open).toBe('end');
+      expect(bands[6].left + bands[6].width).toBeCloseTo(100);
+      expect(bands.slice(1, 6).every((b) => b.open === null)).toBe(true);
+      // Cada zona empieza donde acaba la anterior
+      bands.slice(1).forEach((b, i) => expect(b.left).toBeCloseTo(bands[i].left + bands[i].width));
+      // El umbral (5:00 /km) es el límite entre Z4 y Z5a
+      expect(marker).toBeCloseTo(bands[4].left);
+    });
+
+    it('zoneScale: heart-rate zones grow to the right as well', () => {
+      const { bands, marker } = zoneScale(vanceHrZones(180), 180);
+      expect(bands.map((b) => b.left)).toEqual([...bands.map((b) => b.left)].sort((a, b) => a - b));
+      // LTHR 180 cae dentro de Z5a (178-184)
+      expect(marker).toBeGreaterThan(bands[4].left);
+      expect(marker).toBeLessThan(bands[5].left);
     });
   });
 

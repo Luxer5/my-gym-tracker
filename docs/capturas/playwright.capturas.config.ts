@@ -15,6 +15,9 @@ export default defineConfig({
   retries: 0,
   reporter: 'line',
   projects: [{ name: 'capturas' }],
+  // Sin animaciones (cifras que cuentan, entradas, gráficas que crecen): cada captura es el estado
+  // final, igual en cada ejecución
+  use: { ...base.use, reducedMotion: 'reduce' },
   // El servidor de la app se arranca desde la raíz del repo
   webServer:
     base.webServer && !Array.isArray(base.webServer)

@@ -26,6 +26,18 @@
   --radius-lg: 22px;
   --dur: 200ms;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* Movimiento: respuesta a la pulsación, cambios de estado, desplazamientos cortos y entradas.
+     Desaceleración al llegar; un ligero rebote solo en lo que aparece (ventanas, pulgares) */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+  --dur-4: 520ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  /* Profundidad en dos niveles: reposo y elevada (hover, ventanas) */
+  --shadow-1: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-2: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 40px -18px rgba(0, 0, 0, 0.75);
+  --glow-accent: 0 8px 24px -10px rgba(212, 255, 63, 0.55);
   --gutter: clamp(1rem, 4vw, 2.5rem);
   --content: 1240px;
   --font: 'Barlow', system-ui, sans-serif;
@@ -1983,7 +1995,743 @@ main {
   color: var(--text-2);
 }
 
-/* ── 14. MÓVIL ─────────────────────────────────────────────── */
+/* ── 14. MOVIMIENTO, PROFUNDIDAD Y DATOS ─────────────────────
+   Capa de acabado: fondo con luz ambiental, profundidad de tarjetas, píldora de navegación,
+   respuesta al pulsar, esqueletos de carga, comparación de carreras, zonas de entrenamiento y
+   minigráficas. Toda animación decorativa va en `prefers-reduced-motion: no-preference` (al final
+   de la sección): con «reducir movimiento» se ve directamente el estado final. */
+
+/* Luz ambiental muy suave tras el contenido (fija: no se repinta al desplazarse) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 30rem at 10% -12%, rgba(212, 255, 63, 0.055), transparent 60%),
+    radial-gradient(52rem 34rem at 100% -4%, rgba(57, 135, 229, 0.07), transparent 62%);
+}
+
+/* Profundidad: brillo arriba y sombra corta en reposo; elevada al pasar por encima */
+.ex-card,
+.hyrox-card,
+.race-card,
+.chart-card,
+.import-step {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.022), rgba(255, 255, 255, 0) 140px),
+    var(--surface);
+  box-shadow: var(--shadow-1);
+}
+.stat-tile {
+  box-shadow: var(--shadow-1);
+}
+.ex-card,
+.hyrox-card,
+.race-card {
+  transition:
+    border-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-3) var(--ease-out),
+    transform var(--dur-3) var(--ease-out);
+}
+@media (hover: hover) {
+  .ex-card:hover,
+  .hyrox-card:hover {
+    box-shadow: var(--shadow-2);
+  }
+  /* Solo lo que se puede pulsar se levanta */
+  .race-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-2);
+  }
+}
+.race-card:active {
+  transform: translateY(-1px) scale(0.995);
+}
+.race-card-go {
+  position: absolute;
+  right: 1.2rem;
+  top: calc(50% - 10px);
+  width: 20px;
+  height: 20px;
+  color: var(--text-2);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-3) var(--ease-out);
+}
+.race-card:hover .race-card-go,
+.race-card:focus-visible .race-card-go {
+  opacity: 1;
+  transform: none;
+}
+
+/* Respuesta al pulsar: escala breve, sin mover lo de alrededor */
+.btn,
+.filter-chip,
+.history-toggle,
+.rec-type-btn {
+  transition:
+    background-color var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-out);
+}
+.btn:active:not(:disabled),
+.filter-chip:active,
+.tab-btn:active,
+.history-toggle:active,
+.rec-type-btn:active {
+  transform: scale(0.97);
+}
+.btn-primary:hover:not(:disabled) {
+  box-shadow: var(--glow-accent);
+}
+.btn,
+.filter-chip,
+.tab-btn,
+.history-toggle {
+  touch-action: manipulation;
+}
+
+/* Navegación: la píldora de la pestaña activa se desliza (la coloca el shell) */
+.tabs {
+  position: relative;
+  isolation: isolate;
+}
+.tab-pill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: var(--pill-w, 0);
+  transform: translateX(var(--pill-x, 0));
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: var(--glow-accent);
+  z-index: -1;
+  opacity: 0;
+}
+.tabs.has-pill .tab-pill {
+  opacity: 1;
+}
+.tabs.has-pill .tab-btn.active {
+  background: transparent;
+}
+.tabs.pill-ready .tab-pill {
+  transition:
+    transform var(--dur-3) var(--ease-out),
+    width var(--dur-3) var(--ease-out);
+}
+.tab-btn {
+  transition:
+    color var(--dur-2) var(--ease-out),
+    background-color var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-out);
+}
+
+/* Desplegables: chevron que gira y sitio cómodo para el dedo */
+.history-toggle {
+  min-height: 36px;
+  padding: 0.25rem 0.5rem 0.25rem 0;
+  border-radius: 8px;
+}
+.chev {
+  width: 1em;
+  height: 1em;
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.history-toggle[aria-expanded='true'] .chev {
+  transform: rotate(90deg);
+}
+.table-toggle summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 36px;
+  list-style: none;
+}
+.table-toggle summary::-webkit-details-marker {
+  display: none;
+}
+.table-toggle summary::before {
+  content: '';
+  width: 0.42em;
+  height: 0.42em;
+  margin-left: 0.15em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.table-toggle[open] summary::before {
+  transform: rotate(45deg);
+}
+
+/* Desplegable con chevron propio (en todas las listas de selección) */
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b4bcc8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  padding-right: 2.5rem;
+}
+
+/* Deslizadores: pista con el tramo recorrido en el acento y pulgar que crece al arrastrar */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--accent) var(--fill, 50%),
+    var(--line-strong) var(--fill, 50%)
+  );
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 4px 12px rgba(0, 0, 0, 0.45);
+  transition: transform var(--dur-1) var(--ease-spring);
+}
+input[type='range']:active::-webkit-slider-thumb {
+  transform: scale(1.18);
+}
+input[type='range']::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line-strong);
+}
+input[type='range']::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+input[type='range']::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+input[type='range']:focus-visible {
+  outline: none;
+}
+input[type='range']:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 3px var(--surface),
+    0 0 0 5px var(--accent);
+}
+.seg {
+  transition: flex-grow var(--dur-3) var(--ease-out);
+}
+
+/* Esqueletos de carga: la forma de lo que viene, con un brillo que pasa */
+.skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 1rem;
+}
+.skeleton--detail {
+  grid-template-columns: 1fr;
+}
+.sk-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.sk {
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--surface-2) 0%, #232d44 50%, var(--surface-2) 100%);
+  background-size: 200% 100%;
+}
+.sk-line {
+  height: 0.8rem;
+}
+.sk-lg {
+  height: 1.5rem;
+}
+.sk-block {
+  height: 3.2rem;
+}
+.sk-w30 {
+  width: 30%;
+}
+.sk-w40 {
+  width: 40%;
+}
+.sk-w55 {
+  width: 55%;
+}
+.sk-hero {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  gap: 1rem;
+}
+.sk-tall {
+  height: 170px;
+  border-radius: var(--radius-lg);
+}
+.sk-chart {
+  height: 320px;
+  border-radius: var(--radius-lg);
+}
+.empty-state .empty-icon {
+  width: 64px;
+  height: 64px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  opacity: 1;
+}
+
+/* Ficha de carrera: comparación, tiempo oficial y diferencias */
+.compare-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.6rem 0.5rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+}
+.compare-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.compare-bar .form-select {
+  flex: 0 1 26rem;
+  width: auto;
+  min-height: 40px;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+.compare-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+  padding-right: 0.6rem;
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+.key-hollow {
+  width: 11px;
+  height: 11px;
+  border: 2px solid #9aa3b2;
+  border-radius: 50%;
+}
+.hero-time {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(212, 255, 63, 0.3);
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(212, 255, 63, 0.13), transparent 62%), var(--surface);
+  box-shadow: var(--shadow-1);
+}
+.hero-time::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent 75%);
+}
+.hero-delta {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.hero-delta--good {
+  background: rgba(139, 245, 196, 0.1);
+}
+.hero-delta--bad {
+  background: rgba(255, 158, 128, 0.1);
+}
+.stat-delta {
+  align-self: flex-start;
+  margin-top: 0.3rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-family: var(--font-head);
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-2);
+}
+.stat-delta.delta-good {
+  background: rgba(139, 245, 196, 0.1);
+  color: var(--good);
+}
+.stat-delta.delta-bad {
+  background: rgba(240, 138, 93, 0.12);
+  color: #f08a5d;
+}
+.chart-title .icon {
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: 0.3rem;
+  color: var(--accent);
+  vertical-align: -0.02em;
+}
+.chart-box--md {
+  height: 280px;
+}
+.chart-box--xs {
+  height: 150px;
+  margin-top: 0.35rem;
+}
+.chart-grid--pair {
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+}
+.list-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin: 1.5rem 0 1rem;
+}
+.list-head .seg-legend--inline {
+  margin: 0;
+}
+.pb-badge .icon {
+  width: 0.95em;
+  height: 0.95em;
+  margin-right: 0.25rem;
+}
+.card-date .icon {
+  width: 1em;
+  height: 1em;
+}
+
+/* Zonas de entrenamiento: muestra de color, barra (VAM) o franja en escala común (Jim Vance) */
+.zone-title .icon {
+  width: 1.1em;
+  height: 1.1em;
+  margin-right: 0.15rem;
+  vertical-align: -0.2em;
+}
+.zone-table th[scope='row'] {
+  padding-top: 0.55rem;
+  padding-bottom: 0.6rem;
+}
+.zone-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 3.4rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.zone-chip {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--zone);
+}
+.zone-track {
+  position: relative;
+  display: block;
+  height: 6px;
+  margin-top: 0.45rem;
+  border-radius: 999px;
+  background: rgba(238, 241, 247, 0.06);
+}
+.zone-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 999px;
+  background: var(--zone);
+  transform-origin: left center;
+}
+.zone-fill--open-start {
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(90deg, transparent, var(--zone) 80%);
+}
+.zone-fill--open-end {
+  border-radius: 999px 0 0 999px;
+  background: linear-gradient(90deg, var(--zone) 20%, transparent);
+}
+/* Marca del umbral: la misma posición en todas las filas, así forma una guía vertical */
+.zone-track--range::after {
+  content: '';
+  position: absolute;
+  left: var(--mark);
+  top: -5px;
+  bottom: -5px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--text);
+  opacity: 0.7;
+}
+.zone-sub {
+  display: block;
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-2);
+}
+.zone-axis {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.45rem;
+  font-size: 0.75rem;
+  color: var(--text-2);
+}
+.zone-axis-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.zone-axis-mark::before {
+  content: '';
+  width: 2px;
+  height: 0.95em;
+  border-radius: 1px;
+  background: var(--text);
+  opacity: 0.7;
+}
+.run-protocol {
+  padding-left: 0.2rem;
+}
+
+/* Minigráfica de tendencia de las tarjetas Hyrox */
+.hx-best {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.spark {
+  flex-shrink: 0;
+  margin-bottom: 0.4rem;
+  overflow: visible;
+}
+.spark-area {
+  fill: rgba(180, 188, 200, 0.08);
+}
+.spark-line {
+  fill: none;
+  stroke: #7e889b;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+}
+.spark-dot {
+  fill: var(--accent);
+  stroke: var(--surface);
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Ventanas y avisos con elevación */
+.modal,
+.login-box,
+.toast {
+  box-shadow: var(--shadow-2);
+}
+
+/* Entradas: la pantalla sube al llegar, las tarjetas en cascada (50 ms entre una y otra), las
+   barras se descubren de izquierda a derecha y los desplegables aparecen donde se abren. Todas
+   con relleno «backwards»: al terminar no queda ninguna transformación aplicada. */
+main > :not(router-outlet) {
+  display: block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  main > :not(router-outlet) {
+    animation: page-in var(--dur-4) var(--ease-out) backwards;
+  }
+  .stagger > *,
+  .stat-tiles > * {
+    animation: rise var(--dur-4) var(--ease-out) backwards;
+  }
+  .stagger > :nth-child(2),
+  .stat-tiles > :nth-child(2) {
+    animation-delay: 50ms;
+  }
+  .stagger > :nth-child(3),
+  .stat-tiles > :nth-child(3) {
+    animation-delay: 100ms;
+  }
+  .stagger > :nth-child(4),
+  .stat-tiles > :nth-child(4) {
+    animation-delay: 150ms;
+  }
+  .stagger > :nth-child(5),
+  .stat-tiles > :nth-child(5) {
+    animation-delay: 200ms;
+  }
+  .stagger > :nth-child(6),
+  .stat-tiles > :nth-child(6) {
+    animation-delay: 250ms;
+  }
+  .stagger > :nth-child(7) {
+    animation-delay: 300ms;
+  }
+  .stagger > :nth-child(8) {
+    animation-delay: 350ms;
+  }
+  .stagger > :nth-child(n + 9) {
+    animation-delay: 400ms;
+  }
+  .modal-overlay {
+    animation: fade-in var(--dur-2) var(--ease-out) backwards;
+  }
+  .modal,
+  .login-box {
+    animation: pop-in var(--dur-3) var(--ease-spring) backwards;
+  }
+  .history-list,
+  .run-protocol,
+  .table-toggle[open] > :not(summary) {
+    animation: reveal var(--dur-3) var(--ease-out) backwards;
+  }
+  .seg-bar {
+    animation: wipe 900ms var(--ease-out) 120ms backwards;
+  }
+  .zone-fill {
+    animation: grow-x 700ms var(--ease-out) backwards;
+  }
+  .zone-table tbody tr:nth-child(2) .zone-fill {
+    animation-delay: 60ms;
+  }
+  .zone-table tbody tr:nth-child(3) .zone-fill {
+    animation-delay: 120ms;
+  }
+  .zone-table tbody tr:nth-child(4) .zone-fill {
+    animation-delay: 180ms;
+  }
+  .zone-table tbody tr:nth-child(5) .zone-fill {
+    animation-delay: 240ms;
+  }
+  .zone-table tbody tr:nth-child(6) .zone-fill {
+    animation-delay: 300ms;
+  }
+  .zone-table tbody tr:nth-child(7) .zone-fill {
+    animation-delay: 360ms;
+  }
+  .spark-line {
+    animation: draw 900ms var(--ease-out) 200ms backwards;
+  }
+  .spark-area {
+    animation: fade-in 600ms var(--ease-out) 500ms backwards;
+  }
+  .spark-dot {
+    animation: dot-in var(--dur-3) var(--ease-spring) 950ms backwards;
+  }
+  .sk {
+    animation: shimmer 1.6s linear infinite;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+}
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+@keyframes wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+@keyframes dot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ── 15. MÓVIL ─────────────────────────────────────────────── */
 @media (max-width: 600px) {
   main {
     padding: 1rem;
@@ -2053,6 +2801,26 @@ main {
   }
   .chart-box--tall {
     height: 520px;
+  }
+  .chart-box--md {
+    height: 250px;
+  }
+  .chart-box--xs {
+    height: 140px;
+  }
+  /* La comparación pasa a tarjeta: el desplegable a lo ancho */
+  .compare-bar {
+    padding: 0.75rem;
+    border-radius: var(--radius);
+  }
+  .compare-bar .form-select {
+    flex: 1 1 100%;
+  }
+  .compare-key {
+    margin-left: 0;
+  }
+  .sk-hero {
+    grid-template-columns: 1fr;
   }
   .toasts {
     left: 1rem;

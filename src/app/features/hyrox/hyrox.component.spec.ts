@@ -48,7 +48,12 @@ describe('HyroxComponent', () => {
     const ski = card('SkiErg');
     expect(ski.classList.contains('pb')).toBe(true);
     expect(textOf(ski.querySelector('.time-display'))).toBe('Mejor marca03:48');
-    expect(textOf(ski.querySelector('.card-date'))).toBe('↓ Mejora: 00:13 · 2 tests');
+    expect(textOf(ski.querySelector('.card-date'))).toBe('Mejora: 00:13 · 2 tests');
+    // Minigráfica de tendencia: de 04:01 (el primero) a 03:48
+    expect(ski.querySelector('app-sparkline svg')?.getAttribute('aria-label')).toBe(
+      'Tendencia: de 04:01 a 03:48 en 2 tests',
+    );
+    expect(card('Wall Balls').querySelector('app-sparkline svg')).toBeNull();
   });
 
   it('SkiErg and RowErg show the pace per 500 m; the other stations do not', () => {
@@ -105,12 +110,14 @@ describe('HyroxComponent', () => {
       expect(textOf(vam.querySelector('.hx-split'))).toBe('13,8 km/h · 4:21 /km');
       expect(textOf(vam.querySelector('.card-date'))).toBe('+60 m vs. el anterior');
       expect(rows(vam.querySelector('.zone-table'))).toEqual([
-        'Zona 1 | 65 % | 6:41 /km',
-        'Zona 2 | 70 % | 6:13 /km',
-        'Zona 3 | 85 % | 5:07 /km',
-        'Zona 4 | 90 % | 4:50 /km',
-        'Zona 5 | 95 % | 4:35 /km',
+        'Zona 1 | 65 % | 6:41 /km 9,0 km/h',
+        'Zona 2 | 70 % | 6:13 /km 9,7 km/h',
+        'Zona 3 | 85 % | 5:07 /km 11,7 km/h',
+        'Zona 4 | 90 % | 4:50 /km 12,4 km/h',
+        'Zona 5 | 95 % | 4:35 /km 13,1 km/h',
       ]);
+      // Dos tests: hay gráfica de progresión
+      expect(vam.querySelector('canvas')).not.toBeNull();
     });
 
     it("Jim Vance 30': pace and heart-rate zones", () => {

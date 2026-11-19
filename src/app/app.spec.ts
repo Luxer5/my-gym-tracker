@@ -1,6 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { clickButton, settle, setupApp, teardownApp, textOf } from '../testing/feature-harness';
+import {
+  clickButton,
+  settle,
+  setupApp,
+  teardownApp,
+  textOf,
+  until,
+} from '../testing/feature-harness';
 import { App } from './app';
 
 describe('App', () => {
@@ -37,7 +44,9 @@ describe('App', () => {
       a.textContent?.includes('Hyrox'),
     )!;
     hyroxTab.click();
-    await settle(10);
+    // La pantalla Hyrox se carga aparte (con Chart.js para la progresión de los tests)
+    await until(() => TestBed.inject(Router).url === '/hyrox');
+    await settle();
     expect(TestBed.inject(Router).url).toBe('/hyrox');
     expect(hyroxTab.getAttribute('aria-current')).toBe('page');
     expect(el.querySelector('#hyrox')).not.toBeNull();

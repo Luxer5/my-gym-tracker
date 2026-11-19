@@ -4,6 +4,7 @@ import { RUN_TEST_KINDS, RunTestKind } from '../../core/models';
 import { hyroxGroups, hyroxSummary } from '../../domain/hyrox';
 import { runTestsOf } from '../../domain/run-tests';
 import { EmptyStateComponent } from '../../shared/empty-state.component';
+import { SkeletonComponent } from '../../shared/skeleton.component';
 import { SummaryBarComponent, SummaryItem } from '../../shared/summary-bar.component';
 import { HyroxCardComponent } from './hyrox-card.component';
 import { HyroxFormComponent } from './hyrox-form.component';
@@ -19,6 +20,7 @@ import { RunTestFormComponent } from './run-test-form.component';
   imports: [
     SummaryBarComponent,
     EmptyStateComponent,
+    SkeletonComponent,
     HyroxCardComponent,
     HyroxFormComponent,
     RunTestCardComponent,

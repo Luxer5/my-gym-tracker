@@ -59,6 +59,8 @@ export interface VamZone {
   pct: number;
   /** Ritmo de la zona en segundos por km, redondeado al segundo */
   paceSec: number;
+  /** Velocidad de la zona en km/h */
+  kmh: number;
 }
 
 const VAM_PCTS = [0.65, 0.7, 0.85, 0.9, 0.95] as const;
@@ -69,6 +71,7 @@ export const vamZones = (distanceM: number): VamZone[] =>
     name: `Zona ${i + 1}`,
     pct,
     paceSec: Math.round(vamPace(distanceM) / pct),
+    kmh: vamKmh(distanceM) * pct,
   }));
 
 // ── Test de Jim Vance (30') ──
@@ -114,6 +117,44 @@ export const vancePaceZones = (paceSec: number): RangeZone[] =>
 /** Zonas de FC (lpm) a partir de la FC media de los últimos 20' */
 export const vanceHrZones = (lthr: number): RangeZone[] =>
   rangeZones(HR_LIMITS.map((k) => Math.round(k * lthr)));
+
+export interface ZoneBand {
+  /** Inicio y anchura de la zona en la escala común, en % */
+  left: number;
+  width: number;
+  /** La zona no tiene límite por ese lado (la primera y la última) */
+  open: 'start' | 'end' | null;
+}
+
+export interface ZoneScale {
+  bands: ZoneBand[];
+  /** Posición del valor de umbral (ritmo FTPa o LTHR) en la escala, en % */
+  marker: number;
+}
+
+/**
+ * Coloca las zonas de Jim Vance en una escala común de intensidad (0-100 %, de más suave a más
+ * intensa), sea de ritmo (los números bajan con la intensidad) o de FC (suben). Las dos zonas
+ * abiertas ocupan lo que mide de media una zona cerrada, para que se vean sin inventar un límite.
+ */
+export function zoneScale(zones: readonly RangeZone[], threshold: number): ZoneScale {
+  const limits = zones.slice(1).map((z) => z.from!);
+  const first = limits[0];
+  const last = limits[limits.length - 1];
+  const pad = (last - first) / Math.max(1, limits.length - 1);
+  const lo = first - pad;
+  const hi = last + pad;
+  const pos = (v: number) => ((v - lo) / (hi - lo || 1)) * 100;
+  const edges = [0, ...limits.map(pos), 100];
+  return {
+    bands: zones.map((_, i) => ({
+      left: edges[i],
+      width: edges[i + 1] - edges[i],
+      open: i === 0 ? 'start' : i === zones.length - 1 ? 'end' : null,
+    })),
+    marker: Math.min(100, Math.max(0, pos(threshold))),
+  };
+}
 
 /** «> 7:28 /km», «6:36 – 7:28 /km», «< 5:12 /km» */
 export function paceRangeLabel(z: RangeZone): string {

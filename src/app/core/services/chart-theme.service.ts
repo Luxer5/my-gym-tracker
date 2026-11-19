@@ -12,6 +12,7 @@ import {
   PointElement,
   Tooltip,
 } from 'chart.js';
+import { prefersReducedMotion } from '../../shared/motion';
 
 // Solo las piezas de Chart.js que usan las gráficas de la app (el resto no viaja en el bundle)
 Chart.register(
@@ -38,6 +39,11 @@ export class ChartThemeService {
   init(): void {
     if (this.ready) return;
     this.ready = true;
+    // Entrada: las barras crecen y las líneas se dibujan con desaceleración; con «reducir
+    // movimiento» se pintan directamente en su sitio
+    const anim = Chart.defaults.animation as { duration: number; easing: string };
+    anim.duration = prefersReducedMotion() ? 0 : 750;
+    anim.easing = 'easeOutQuart';
     Chart.defaults.color = '#b4bcc8';
     Chart.defaults.borderColor = 'rgba(238, 241, 247, 0.08)';
     Chart.defaults.font.family = "'Barlow', system-ui, sans-serif";
@@ -51,7 +57,10 @@ export class ChartThemeService {
     tip.padding = 10;
     tip.cornerRadius = 8;
     tip.boxPadding = 4;
-    tip.titleFont = { family: "'Barlow Condensed', sans-serif", weight: 700, size: 13 };
+    tip.titleFont = { family: "'Barlow Condensed', sans-serif", weight: 700, size: 14 };
+    tip.bodyFont = { family: "'Barlow', sans-serif", size: 13 };
+    tip.usePointStyle = true;
+    tip.caretSize = 6;
     const leg = Chart.defaults.plugins.legend.labels;
     leg.usePointStyle = true;
     leg.boxWidth = 8;

@@ -20,14 +20,17 @@ entra con su cuenta de Google y solo ve sus datos.
 - **Tests de carrera** (en Hyrox): Test VAM (máxima distancia en 6 minutos) y Test de Jim Vance de
   30 minutos (ritmo medio, FC de los últimos 20' y, opcionalmente, potencia). Con el último test de
   cada tipo calcula las zonas de entrenamiento con las mismas fórmulas que Hyprogram: del 65 al 95 %
-  de la VAM, y las zonas Z1–Z5c de ritmo y de FC del umbral funcional.
+  de la VAM, y las zonas Z1–Z5c de ritmo y de FC del umbral funcional. Las zonas se ven como barras
+  y franjas sobre una escala común, y la progresión de cada test en una gráfica.
 - **Carreras**: importa tus resultados oficiales de HYROX desde tu ficha de
   [results.hyrox.com](https://results.hyrox.com/) con un toque en el marcador «Importar en GYM
   LOG» (o copiándola y pegándola). La app lee los 8 runs, las 8
   estaciones, la Roxzone, el total y tus posiciones, y los deja revisables antes de guardar (también
   se pueden meter a mano). Cada carrera tiene su ficha: tiempo oficial, cifras clave, reparto del
   tiempo, gráfica tramo a tramo, ritmo por vuelta, conclusiones, comparación con tus tests de
-  entrenamiento y con otra carrera. El listado muestra la evolución, el PB y la mejora entre
+  entrenamiento y con otra carrera (diferencias en cada cifra, la otra carrera superpuesta en las
+  gráficas, ventaja acumulada tramo a tramo y diferencia por tramo). El listado muestra la
+  evolución con el PB, de dónde viene la mejora (running, estaciones y Roxzone) y la mejora entre
   carreras.
 - Datos en tiempo real (Firestore): lo que se apunta en el móvil aparece al momento en el
   ordenador.
@@ -57,7 +60,8 @@ El registro se apunta eligiendo el tipo (PR, 1RM, 3RM o 5RM), el peso, la fecha 
 ### Hyrox
 
 Los tests se agrupan por estación y distancia/peso. Cada tarjeta muestra la mejor marca y, si hay
-más de un test, el badge PB y lo que se ha mejorado desde el primero.
+más de un test, el badge PB, lo que se ha mejorado desde el primero y una minigráfica con la
+tendencia (más rápido, más arriba).
 
 ![Hyrox](docs/screenshots/hyrox.png)
 
@@ -67,13 +71,19 @@ Carry, Lunges, Wall Balls) con valores habituales o uno escrito a mano, o nada.
 ![Nuevo test Hyrox](docs/screenshots/hyrox-test.png)
 
 Debajo, los tests de carrera. Cada tarjeta enseña el último resultado, la diferencia con el anterior,
-las zonas que salen de él, cómo se hace el test y el historial:
+la progresión (con dos tests o más; en el ritmo, más rápido queda arriba), las zonas que salen del
+último, cómo se hace el test y el historial:
 
 - **Test VAM**: VAM (km/h) = km recorridos en 6' × 10; cada zona es el ritmo al 65, 70, 85, 90 y
-  95 % de la VAM.
+  95 % de la VAM, con su velocidad. La barra de cada zona mide su % de la VAM.
 - **Test Jim Vance 30'**: el ritmo medio es el umbral (FTPa) y la FC media de los últimos 20' el
   LTHR. Zonas de ritmo con los límites 129, 114, 105, 100, 96 y 90 % del FTPa, y de FC con 81, 89,
-  95, 99, 102 y 106 % del LTHR. La potencia (Stryd) se guarda pero no genera zonas.
+  95, 99, 102 y 106 % del LTHR. Cada zona es una franja en una escala común, de más suave a más
+  intensa, con la marca del umbral: se ve cuánto mide cada una y dónde cae el umbral. La potencia
+  (Stryd) se guarda pero no genera zonas.
+
+Las zonas van en una rampa de azules (de la zona más suave, oscura, a la más intensa, clara)
+validada para el fondo oscuro; Z5a, Z5b y Z5c comparten el color de la zona 5.
 
 ![Tests de carrera](docs/screenshots/hyrox-carrera.png)
 
@@ -83,8 +93,10 @@ Todo lo que borra pide confirmación:
 
 ### Carreras
 
-Evolución del tiempo oficial y una tarjeta por carrera, con su posición, el PB de la división, lo
-que mejoró respecto a la anterior y una barra con el reparto running / estaciones / Roxzone.
+Evolución del tiempo oficial (con el PB señalado), de dónde viene la mejora (running, estaciones y
+Roxzone frente a tu primera carrera) y una tarjeta por carrera, con su posición, el PB de la
+división, lo que mejoró respecto a la anterior y una barra con el reparto running / estaciones /
+Roxzone.
 
 ![Carreras](docs/screenshots/carreras.png)
 
@@ -97,15 +109,31 @@ y rellena el formulario para revisarlo.
 
 ![Importar carrera](docs/screenshots/carreras-importar.png)
 
-La ficha de la carrera reúne todas las cifras y gráficas:
+La ficha de la carrera reúne todas las cifras y gráficas. Arriba se elige con qué carrera comparar
+(por defecto, la anterior de la misma división; también «Sin comparar») y eso afecta a toda la
+ficha:
+
+- **Cifras**: tiempo oficial, posiciones, running, estaciones, Roxzone y mejor vuelta, cada una
+  con su diferencia frente a la otra carrera.
+- **Tramo a tramo**: las 16 barras con su tiempo encima (si cabe) y la otra carrera como un punto
+  hueco gris en cada tramo.
+- **Ritmo de running**: las 8 vueltas frente a la media, con la mejor y la peor señaladas y las
+  vueltas de la otra carrera superpuestas.
+- **Ventaja acumulada**: cuánto ibas por delante (verde) o por detrás (naranja) tras cada tramo,
+  hasta la diferencia oficial en meta.
+- **Diferencia por tramo**: barras divergentes con la cifra de cada tramo, y su tabla.
+
+Las gráficas tienen tooltip con el valor exacto y una guía que sigue al puntero; las de tramos
+tienen además su tabla.
 
 ![Ficha de una carrera](docs/screenshots/carrera.png)
 
 ### Estimador de tiempo
 
 Parte de tu última carrera (o de la que elijas, también desde su ficha con «Estimar desde aquí»).
-Con deslizadores para el running total, la Roxzone y cada estación calcula el tiempo que harías,
-la diferencia con esa carrera, el nuevo reparto y la tabla tramo a tramo. Sin tocar nada da
+Con deslizadores para el running total, la Roxzone y cada estación calcula el tiempo que harías
+(la cifra se desliza al nuevo valor), la diferencia con esa carrera, el nuevo reparto y la tabla
+tramo a tramo. Sin tocar nada da
 exactamente el tiempo oficial (absorbe los redondeos de la ficha).
 
 ![Estimador de tiempo](docs/screenshots/estimador.png)
@@ -139,6 +167,7 @@ src/
     │   ├── race.ts        carreras: tramos, reparto, ritmo, conclusiones, comparaciones, PB
     │   ├── race-import.ts lectura del resultado oficial pegado (por etiquetas, tolerante)
     │   ├── race-forms.ts  formulario de revisión de una carrera
+    │   ├── sparkline.ts   trazado de las minigráficas de tendencia
     │   ├── forms.ts       validación de los formularios → datos listos para guardar
     │   └── format.ts      fechas (día local), mm:ss, h:mm:ss, ritmos, diferencias
     ├── core/
@@ -148,17 +177,26 @@ src/
     │   ├── state/         TrainingStore: datos de la sesión en signals
     │   ├── services/      avisos (toasts), confirmación, títulos, tema de las gráficas
     │   └── providers.ts   elige el backend según el entorno
-    ├── shared/            modal, resumen, barra segmentada, gráfica (Chart.js), toasts, pipes
+    ├── shared/            modal, resumen, barra segmentada, gráfica (Chart.js) y sus plugins,
+    │                      cifras que cuentan, minigráfica, esqueletos de carga, toasts, pipes
     └── features/
         ├── login/         acceso con Google
         ├── shell/         cabecera, pestañas y pantalla activa
         ├── gym/           pantalla, tarjeta de ejercicio, formularios y GymActions
-        ├── hyrox/         pantalla, tarjetas de estación y de test de carrera, formularios y HyroxActions
+        ├── hyrox/         pantalla, tarjetas de estación y de test de carrera, gráficas y colores
+        │                  de zonas, formularios y HyroxActions
         └── carreras/      listado, importación, ficha, configuración de gráficas y RaceActions
 ```
 
-Las gráficas usan Chart.js, que se carga solo con la pestaña Carreras (no pesa en el arranque).
-Sus colores están validados para el fondo oscuro, con separación suficiente también con daltonismo.
+Las gráficas usan Chart.js, que se carga solo con las pestañas Hyrox y Carreras (no pesa en el
+arranque). Sus colores están validados para el fondo oscuro, con separación suficiente también con
+daltonismo. Las cifras sobre las barras, las notas en los puntos y la guía bajo el puntero son
+plugins propios (`shared/chart-plugins.ts`), sin dependencias nuevas.
+
+- **Movimiento**: la pantalla entra con un ligero desplazamiento, las tarjetas en cascada, las
+  cifras principales cuentan hasta su valor, las barras se descubren y la píldora de la pestaña se
+  desliza. Todo usa los tokens `--dur-*` / `--ease-*` de `styles.css` y, si el sistema pide
+  «reducir movimiento», se ve directamente el estado final (también en las gráficas).
 
 - Los componentes solo pintan; las escrituras pasan por los servicios `*Actions` (validación del
   dominio, confirmación, avisos) y el repositorio.
@@ -215,7 +253,8 @@ npm run capturas -- -g "móvil"      # solo una parte
 
 Como la demo trae pocos datos, el script da de alta antes desde la interfaz más ejercicios,
 registros y tests Hyrox ficticios (en `capturas.spec.ts`: `EXERCISES`, `RECORDS` y `HYROX`), oculta
-los avisos de «guardado» y comprueba que la cuenta en pantalla es la de la demo. Deja las PNG
+los avisos de «guardado» y comprueba que la cuenta en pantalla es la de la demo. Se hacen con
+«reducir movimiento», así que cada captura es el estado final sin depender de las animaciones. Deja las PNG
 (escritorio 1440×900 y móvil 390×844, a 2×) en `docs/screenshots/`. Tarda menos de un minuto.
 
 ## Despliegue

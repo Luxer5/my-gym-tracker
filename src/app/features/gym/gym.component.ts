@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { TrainingStore } from '../../core/state/training-store';
 import { ALL, categoryFilters, filterByCategory, gymSummary } from '../../domain/records';
 import { EmptyStateComponent } from '../../shared/empty-state.component';
+import { SkeletonComponent } from '../../shared/skeleton.component';
 import { SummaryBarComponent, SummaryItem } from '../../shared/summary-bar.component';
 import { ExerciseCardComponent } from './exercise-card.component';
 import { ExerciseFormComponent } from './exercise-form.component';
@@ -13,6 +14,7 @@ import { RecordFormComponent } from './record-form.component';
   imports: [
     SummaryBarComponent,
     EmptyStateComponent,
+    SkeletonComponent,
     ExerciseCardComponent,
     ExerciseFormComponent,
     RecordFormComponent,

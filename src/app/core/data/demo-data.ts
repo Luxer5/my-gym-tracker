@@ -136,6 +136,16 @@ export const demoData = (): DemoData => ({
       date: '2026-08-28',
       note: '',
     },
+    {
+      id: 't4',
+      kind: 'vance30',
+      distanceM: null,
+      paceSec: 366,
+      lthr: 174,
+      powerW: null,
+      date: '2026-05-23',
+      note: '',
+    },
   ],
   races: structuredClone(DEMO_RACES),
 });

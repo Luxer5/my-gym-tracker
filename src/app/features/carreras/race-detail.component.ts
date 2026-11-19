@@ -1,4 +1,3 @@
-import { IconComponent } from '../../shared/icon.component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,11 +8,13 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TrainingStore } from '../../core/state/training-store';
+import { fmtDuration } from '../../domain/format';
 import {
   RACE_STATIONS,
   avgRun,
   compareRaces,
   previousRace,
+  raceGap,
   raceInsights,
   raceSegments,
   roxzoneOf,
@@ -24,21 +25,31 @@ import {
   trainingComparison,
 } from '../../domain/race';
 import { ChartDirective } from '../../shared/chart.directive';
+import { CountUpDirective } from '../../shared/count-up.directive';
 import { EmptyStateComponent } from '../../shared/empty-state.component';
 import { FORMAT_PIPES } from '../../shared/format.pipes';
+import { IconComponent } from '../../shared/icon.component';
 import { SegmentedBarComponent } from '../../shared/segmented-bar.component';
+import { SkeletonComponent } from '../../shared/skeleton.component';
 import { RaceActions } from './race-actions.service';
-import { breakdownParts, deltaChart, lapsChart, splitsChart } from './race-charts';
+import { breakdownParts, deltaChart, gapChart, lapsChart, splitsChart } from './race-charts';
 
-/** Ficha de una carrera: cifras, reparto del tiempo, gráficas, conclusiones y comparaciones */
+/**
+ * Ficha de una carrera: cifras, reparto del tiempo, gráficas, conclusiones y comparaciones.
+ * La carrera con la que se compara (por defecto, la anterior de la misma división) se elige arriba
+ * y afecta a toda la ficha: diferencias en las cifras, puntos grises en las gráficas, ventaja
+ * acumulada y diferencia por tramo.
+ */
 @Component({
   selector: 'app-race-detail',
   imports: [
     IconComponent,
     RouterLink,
     ChartDirective,
+    CountUpDirective,
     EmptyStateComponent,
     SegmentedBarComponent,
+    SkeletonComponent,
     ...FORMAT_PIPES,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,6 +64,9 @@ export class RaceDetailComponent {
   readonly id = input.required<string>();
 
   protected readonly race = computed(() => this.store.race(this.id()) ?? null);
+  protected readonly fmtDuration = fmtDuration;
+  /** «HYROX Madrid» → «Madrid» */
+  protected readonly short = (event: string): string => event.replace(/^HYROX\s+/i, '');
 
   protected readonly stats = computed(() => {
     const r = this.race();
@@ -77,14 +91,6 @@ export class RaceDetailComponent {
   protected readonly segments = computed(() => {
     const r = this.race();
     return r ? raceSegments(r) : [];
-  });
-  protected readonly splitsConfig = computed(() => {
-    const r = this.race();
-    return r ? splitsChart(r) : null;
-  });
-  protected readonly lapsConfig = computed(() => {
-    const r = this.race();
-    return r ? lapsChart(r) : null;
   });
   protected readonly insights = computed(() => {
     const r = this.race();
@@ -116,12 +122,41 @@ export class RaceDetailComponent {
     const o = this.other();
     return r && o ? compareRaces(r, o) : [];
   });
+  protected readonly totalDelta = computed(() => this.comparison().at(-1)?.delta ?? null);
+
+  /** Diferencia de cada cifra con la otra carrera (null sin comparación) */
+  protected readonly tileDelta = computed(() => {
+    const s = this.stats();
+    const o = this.other();
+    if (!s || !o) return null;
+    return {
+      run: s.run - runTotal(o),
+      stations: s.stations - stationTotal(o),
+      roxzone: s.roxzone - roxzoneOf(o),
+      best: s.best.sec - runExtremes(o).best.sec,
+    };
+  });
+
+  // ── Gráficas ──
+
+  protected readonly splitsConfig = computed(() => {
+    const r = this.race();
+    return r ? splitsChart(r, this.other()) : null;
+  });
+  protected readonly lapsConfig = computed(() => {
+    const r = this.race();
+    return r ? lapsChart(r, this.other()) : null;
+  });
+  protected readonly gapConfig = computed(() => {
+    const r = this.race();
+    const o = this.other();
+    return r && o ? gapChart(raceGap(r, o), o.event) : null;
+  });
   protected readonly deltaConfig = computed(() => {
     const o = this.other();
     const rows = this.comparison();
     return o && rows.length ? deltaChart(rows, o.event) : null;
   });
-  protected readonly totalDelta = computed(() => this.comparison().at(-1)?.delta ?? null);
 
   protected readonly stationLabel = (i: number) => RACE_STATIONS[i].label;
 

@@ -9,7 +9,7 @@
   </div>
 
   @if (!store.exercisesLoaded()) {
-    <app-empty-state icon="dumbbell">Cargando…</app-empty-state>
+    <app-skeleton [count]="3" />
   } @else {
     <app-summary-bar id="gym-summary" [items]="summary()" />
 
@@ -29,7 +29,7 @@
       </div>
     }
 
-    <div class="exercise-grid" id="exercise-grid">
+    <div class="exercise-grid stagger" id="exercise-grid">
       @for (ex of list(); track ex.id) {
         <app-exercise-card
           [exercise]="ex"

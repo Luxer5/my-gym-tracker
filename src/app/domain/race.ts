@@ -200,6 +200,59 @@ export function compareRaces(race: HyroxRace, other: HyroxRace): SegmentDelta[] 
   ];
 }
 
+export interface GapPoint {
+  /** «Salida», «Tras SkiErg»… */
+  label: string;
+  /** Etiqueta corta del eje */
+  short: string;
+  /** Ventaja acumulada en segundos: positivo = por delante de la otra carrera */
+  gap: number;
+}
+
+/**
+ * Ventaja acumulada tramo a tramo sobre otra carrera, como en un gráfico de diferencias de una
+ * carrera de coches: empieza en 0 y el último punto («Meta») es la diferencia de tiempo oficial
+ * (incluye la Roxzone, que no se conoce tramo a tramo).
+ */
+export function raceGap(race: HyroxRace, other: HyroxRace): GapPoint[] {
+  const theirs = raceSegments(other);
+  let acc = 0;
+  return [
+    { label: 'Salida', short: 'Salida', gap: 0 },
+    ...raceSegments(race).map((s, i) => {
+      acc += theirs[i].sec - s.sec;
+      return { label: `Tras ${s.label}`, short: s.short, gap: acc };
+    }),
+    { label: 'Meta (con la Roxzone)', short: 'Meta', gap: other.totalSec - race.totalSec },
+  ];
+}
+
+export interface BlockTrend {
+  race: HyroxRace;
+  /** Diferencia con la primera carrera en cada bloque: negativo = más rápido */
+  run: number;
+  stations: number;
+  roxzone: number;
+}
+
+/** Running, estaciones y Roxzone de cada carrera frente a la primera, de la más antigua a la más reciente */
+export function blockTrend(list: readonly HyroxRace[]): BlockTrend[] {
+  const sorted = [...list].sort(
+    (a, b) => a.date.localeCompare(b.date) || a.createdAt.localeCompare(b.createdAt),
+  );
+  if (!sorted.length) return [];
+  const [run0, st0, rox0] = raceBreakdown(sorted[0]);
+  return sorted.map((race) => {
+    const [run, st, rox] = raceBreakdown(race);
+    return {
+      race,
+      run: run.sec - run0.sec,
+      stations: st.sec - st0.sec,
+      roxzone: rox.sec - rox0.sec,
+    };
+  });
+}
+
 /** Carreras de la más reciente a la más antigua */
 export const sortRaces = (list: readonly HyroxRace[]): HyroxRace[] =>
   [...list].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt));

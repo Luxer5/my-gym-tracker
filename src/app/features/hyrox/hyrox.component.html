@@ -5,10 +5,10 @@
   </div>
 
   @if (!store.hyroxLoaded()) {
-    <app-empty-state icon="flame">Cargando…</app-empty-state>
+    <app-skeleton [count]="3" />
   } @else {
     <app-summary-bar id="hyrox-summary" [items]="summary()" />
-    <div class="hyrox-grid" id="hyrox-grid">
+    <div class="hyrox-grid stagger" id="hyrox-grid">
       @for (g of groups(); track g.key) {
         <app-hyrox-card [group]="g" />
       } @empty {
@@ -23,9 +23,9 @@
       <p class="block-note">Zonas de entrenamiento con el último test de cada tipo</p>
     </div>
     @if (!store.runTestsLoaded()) {
-      <app-empty-state icon="timer">Cargando…</app-empty-state>
+      <app-skeleton [count]="2" />
     } @else {
-      <div class="run-grid">
+      <div class="run-grid stagger">
         @for (k of runKinds; track k) {
           <app-run-test-card [kind]="k" [tests]="runTests()[k]" (add)="addingRun.set(k)" />
         }

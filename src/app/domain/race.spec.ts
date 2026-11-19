@@ -1,10 +1,12 @@
 import { HyroxRace, HyroxTest } from '../core/models';
 import {
   avgRun,
+  blockTrend,
   compareRaces,
   previousRace,
   raceBreakdown,
   raceCards,
+  raceGap,
   raceInsights,
   raceSegments,
   racesSummary,
@@ -120,6 +122,27 @@ describe('race', () => {
     });
     expect(rows.at(-2)).toMatchObject({ label: 'Roxzone', delta: -54 });
     expect(rows.at(-1)).toMatchObject({ label: 'Total', delta: -365 });
+  });
+
+  it('raceGap accumulates the advantage segment by segment and ends at the official gap', () => {
+    const gap = raceGap(madrid, race());
+    // Salida + 16 tramos + Meta
+    expect(gap).toHaveLength(18);
+    expect(gap[0]).toEqual({ label: 'Salida', short: 'Salida', gap: 0 });
+    expect(gap[1]).toEqual({ label: 'Tras Running 1', short: 'R1', gap: 10 });
+    expect(gap[2]).toEqual({ label: 'Tras SkiErg', short: 'Ski', gap: 20 });
+    expect(gap.at(-2)).toEqual({ label: 'Tras Wall Balls', short: 'WB', gap: 311 });
+    // 311 en los tramos + 54 de Roxzone = 365, la diferencia oficial
+    expect(gap.at(-1)).toEqual({ label: 'Meta (con la Roxzone)', short: 'Meta', gap: 365 });
+    expect(raceGap(race(), madrid).at(-1)?.gap).toBe(-365);
+  });
+
+  it('blockTrend: each block against the first race, oldest first', () => {
+    const trend = blockTrend([madrid, race()]);
+    expect(trend.map((t) => t.race.event)).toEqual(['HYROX Valencia', 'HYROX Madrid']);
+    expect(trend[0]).toMatchObject({ run: 0, stations: 0, roxzone: 0 });
+    expect(trend[1]).toMatchObject({ run: -122, stations: -189, roxzone: -54 });
+    expect(blockTrend([])).toEqual([]);
   });
 
   it('sorting and previous race of the same division', () => {

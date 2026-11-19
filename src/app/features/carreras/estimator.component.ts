@@ -11,6 +11,7 @@ import { TrainingStore } from '../../core/state/training-store';
 import {
   EstimatorValues,
   RANGE_FACTORS,
+  SliderRange,
   baseAdjustment,
   estimate,
   estimateRows,
@@ -19,9 +20,11 @@ import {
 } from '../../domain/estimator';
 import { fmtDuration, fmtGap } from '../../domain/format';
 import { RACE_LAPS, RACE_STATIONS, sortRaces } from '../../domain/race';
+import { CountUpDirective } from '../../shared/count-up.directive';
 import { EmptyStateComponent } from '../../shared/empty-state.component';
 import { FORMAT_PIPES } from '../../shared/format.pipes';
 import { BarPart, SegmentedBarComponent } from '../../shared/segmented-bar.component';
+import { SkeletonComponent } from '../../shared/skeleton.component';
 import { RACE_COLORS } from './race-charts';
 
 /**
@@ -30,12 +33,23 @@ import { RACE_COLORS } from './race-charts';
  */
 @Component({
   selector: 'app-estimator',
-  imports: [RouterLink, EmptyStateComponent, SegmentedBarComponent, ...FORMAT_PIPES],
+  imports: [
+    RouterLink,
+    CountUpDirective,
+    EmptyStateComponent,
+    SegmentedBarComponent,
+    SkeletonComponent,
+    ...FORMAT_PIPES,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './estimator.component.html',
 })
 export class EstimatorComponent {
   protected readonly store = inject(TrainingStore);
+  protected readonly fmtDuration = fmtDuration;
+  /** Parte recorrida de un deslizador (para pintar su pista hasta el pulgar), en % */
+  protected readonly fill = (value: number, r: SliderRange): string =>
+    `${Math.min(100, Math.max(0, ((value - r.min) / (r.max - r.min || 1)) * 100))}%`;
 
   /** Carrera de partida (parámetro `?base=` de la ruta); sin él, la más reciente */
   readonly base = input<string>();

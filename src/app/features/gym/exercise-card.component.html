@@ -61,9 +61,7 @@
       [attr.aria-expanded]="historyOpen()"
       (click)="historyOpen.set(!historyOpen())"
     >
-      <span aria-hidden="true">{{ historyOpen() ? '▾' : '▸' }}</span> Historial ({{
-        history().length
-      }})
+      <svg class="chev" appIcon="chevron"></svg> Historial ({{ history().length }})
     </button>
     @if (historyOpen()) {
       <ul class="history-list">

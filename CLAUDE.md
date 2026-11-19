@@ -67,9 +67,17 @@ npm run format
   `domain/race-import.ts` lee el texto por etiquetas. Si
   cambia el formato de la web, se ajustan las etiquetas y se añade el texto nuevo a
   `src/testing/race-paste.ts` con su caso en `race-import.spec.ts`.
-- **Gráficas**: configuración en `features/carreras/race-charts.ts` (con spec) y colores de
-  `RACE_COLORS`, validados para el fondo oscuro. Un color nuevo se valida antes con el script de la
-  guía de visualización (`dataviz`).
+- **Gráficas**: configuración en `features/carreras/race-charts.ts` y
+  `features/hyrox/run-test-charts.ts` (con spec), colores de `RACE_COLORS` y `ZONE_COLORS` (rampa
+  ordinal de azules; Z5a/b/c comparten el de la zona 5), validados para el fondo oscuro `#151d2e`.
+  Un color nuevo se valida antes con el script de la guía de visualización (`dataviz`; `--ordinal`
+  para escalas como las zonas). Cifras en barras, notas en puntos y guía bajo el puntero son plugins
+  de `shared/chart-plugins.ts`: el texto va con las tintas del tema, nunca con el color de la serie.
+- **Movimiento**: tokens `--dur-1…4`, `--ease-out` y `--ease-spring` en `styles.css`. Las
+  animaciones decorativas van dentro de `@media (prefers-reduced-motion: no-preference)` y con
+  relleno `backwards` (al acabar no queda ningún `transform`, que rompería las ventanas `fixed`).
+  Las cifras que cuentan (`CountUpDirective`) y Chart.js pintan el valor final si se pide reducir
+  movimiento o no hay `requestAnimationFrame` (jsdom), así que los tests leen el valor final.
 - **Nada de `innerHTML`** ni `alert()`/`confirm()`: textos con interpolación de Angular, avisos con
   `NotifyService` y confirmaciones con `ConfirmService`.
 - La web se publica sola en Netlify al hacer push a `main` (`netlify.toml`).

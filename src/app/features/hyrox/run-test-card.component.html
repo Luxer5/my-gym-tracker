@@ -25,7 +25,19 @@
       <div class="hx-split">{{ d }}</div>
     }
     @if (progress(); as p) {
-      <div class="card-date" [class.card-date--good]="p.better">{{ p.text }}</div>
+      <div class="card-date" [class.card-date--good]="p.better">
+        @if (p.better) {
+          <svg appIcon="trend-up"></svg>
+        }
+        {{ p.text }}
+      </div>
+    }
+
+    @if (chart(); as c) {
+      <h4 class="zone-title">Progresión</h4>
+      <div class="chart-box chart-box--xs">
+        <canvas [appChart]="c" [attr.aria-label]="'Progresión del ' + i.name"></canvas>
+      </div>
     }
 
     @if (vamZones().length) {
@@ -39,51 +51,98 @@
           </tr>
         </thead>
         <tbody>
-          @for (z of vamZones(); track z.name) {
-            <tr>
+          @for (z of vamZones(); track z.name; let n = $index) {
+            <tr [style.--zone]="zoneColor(n)">
               <th scope="row">
-                <span class="zone-name">{{ z.name }}</span>
+                <span class="zone-name"
+                  ><span class="zone-chip" aria-hidden="true"></span>{{ z.name }}</span
+                >
+                <span class="zone-track" aria-hidden="true"
+                  ><span class="zone-fill" [style.width.%]="z.pct * 100"></span
+                ></span>
               </th>
               <td class="num">{{ pct(z.pct) }}</td>
-              <td class="num">{{ z.paceSec | pace }}</td>
+              <td class="num">
+                {{ z.paceSec | pace }} <small class="zone-sub">{{ kmh(z.kmh) }}</small>
+              </td>
             </tr>
           }
         </tbody>
       </table>
     }
 
-    @if (paceZones().length) {
+    @if (paceScale(); as sc) {
       <h4 class="zone-title">Zonas de ritmo (FTPa)</h4>
-      <table class="data-table zone-table" aria-label="Zonas de ritmo">
+      <table class="data-table zone-table zone-table--range" aria-label="Zonas de ritmo">
         <tbody>
-          @for (z of paceZones(); track z.name) {
-            <tr>
+          @for (z of paceZones(); track z.name; let n = $index) {
+            @let b = sc.bands[n];
+            <tr [style.--zone]="zoneColor(n)">
               <th scope="row">
-                <span class="zone-name">{{ z.name }}</span>
+                <span class="zone-name"
+                  ><span class="zone-chip" aria-hidden="true"></span>{{ z.name }}</span
+                >
                 <span class="zone-label">&#32;{{ z.label }}</span>
+                <span
+                  class="zone-track zone-track--range"
+                  aria-hidden="true"
+                  [style.--mark]="sc.marker + '%'"
+                  ><span
+                    class="zone-fill"
+                    [class.zone-fill--open-start]="b.open === 'start'"
+                    [class.zone-fill--open-end]="b.open === 'end'"
+                    [style.left.%]="b.left"
+                    [style.width.%]="b.width"
+                  ></span
+                ></span>
               </th>
               <td class="num">{{ paceRange(z) }}</td>
             </tr>
           }
         </tbody>
       </table>
+      <p class="zone-axis" aria-hidden="true">
+        <span>Más suave</span>
+        <span class="zone-axis-mark">Umbral {{ t.paceSec! | pace }}</span>
+        <span>Más intenso</span>
+      </p>
     }
 
-    @if (hrZones().length) {
-      <h4 class="zone-title">Zonas de FC (LTHR)</h4>
-      <table class="data-table zone-table" aria-label="Zonas de FC">
+    @if (hrScale(); as sc) {
+      <h4 class="zone-title"><svg appIcon="heart"></svg> Zonas de FC (LTHR)</h4>
+      <table class="data-table zone-table zone-table--range" aria-label="Zonas de FC">
         <tbody>
-          @for (z of hrZones(); track z.name) {
-            <tr>
+          @for (z of hrZones(); track z.name; let n = $index) {
+            @let b = sc.bands[n];
+            <tr [style.--zone]="zoneColor(n)">
               <th scope="row">
-                <span class="zone-name">{{ z.name }}</span>
+                <span class="zone-name"
+                  ><span class="zone-chip" aria-hidden="true"></span>{{ z.name }}</span
+                >
                 <span class="zone-label">&#32;{{ z.label }}</span>
+                <span
+                  class="zone-track zone-track--range"
+                  aria-hidden="true"
+                  [style.--mark]="sc.marker + '%'"
+                  ><span
+                    class="zone-fill"
+                    [class.zone-fill--open-start]="b.open === 'start'"
+                    [class.zone-fill--open-end]="b.open === 'end'"
+                    [style.left.%]="b.left"
+                    [style.width.%]="b.width"
+                  ></span
+                ></span>
               </th>
               <td class="num">{{ hrRange(z) }}</td>
             </tr>
           }
         </tbody>
       </table>
+      <p class="zone-axis" aria-hidden="true">
+        <span>Menos pulsaciones</span>
+        <span class="zone-axis-mark">LTHR {{ t.lthr }} lpm</span>
+        <span>Más pulsaciones</span>
+      </p>
     } @else if (paceZones().length) {
       <p class="run-hint">Añade la FC media de los últimos 20' para ver también las zonas de FC.</p>
     }
@@ -99,7 +158,7 @@
     [attr.aria-expanded]="protocolOpen()"
     (click)="protocolOpen.set(!protocolOpen())"
   >
-    <span aria-hidden="true">{{ protocolOpen() ? '▾' : '▸' }}</span> Cómo se hace
+    <svg class="chev" appIcon="chevron"></svg> Cómo se hace
   </button>
   @if (protocolOpen()) {
     <ol class="run-protocol">
@@ -116,9 +175,7 @@
       [attr.aria-expanded]="historyOpen()"
       (click)="historyOpen.set(!historyOpen())"
     >
-      <span aria-hidden="true">{{ historyOpen() ? '▾' : '▸' }}</span> Historial ({{
-        tests().length
-      }})
+      <svg class="chev" appIcon="chevron"></svg> Historial ({{ tests().length }})
     </button>
     @if (historyOpen()) {
       <ul class="history-list">

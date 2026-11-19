@@ -4,7 +4,7 @@
   <h2 class="hx-name">
     {{ g.station }}
     @if (g.hasPB) {
-      <span class="pb-badge">✓ PB</span>
+      <span class="pb-badge"><svg appIcon="check"></svg> PB</span>
     }
   </h2>
   @if (g.paramLabel) {
@@ -12,15 +12,21 @@
       <svg [appIcon]="g.kind === 'distance' ? 'ruler' : 'weight'"></svg> {{ g.paramLabel }}
     </div>
   }
-  <div class="time-display">
-    <span class="best-label">Mejor marca</span>{{ g.best.totalSec | mmss }}
+  <div class="hx-best">
+    <div class="time-display">
+      <span class="best-label">Mejor marca</span>{{ g.best.totalSec | mmss }}
+    </div>
+    @if (trend().length > 1) {
+      <app-sparkline [values]="trend()" [invert]="true" [label]="trendLabel()" />
+    }
   </div>
   @if (g.bestSplit500 !== null) {
     <div class="hx-split">Ritmo {{ g.bestSplit500 | split500 }}</div>
   }
   @if (g.hasPB && g.improvement > 0) {
     <div class="card-date card-date--good">
-      ↓ Mejora: {{ g.improvement | mmss }} · {{ g.entries.length }} tests
+      <svg appIcon="trend-up"></svg> Mejora: {{ g.improvement | mmss }} ·
+      {{ g.entries.length }} tests
     </div>
   } @else {
     <div class="card-date">{{ g.entries.length }} test{{ g.entries.length === 1 ? '' : 's' }}</div>
@@ -32,9 +38,7 @@
     [attr.aria-expanded]="historyOpen()"
     (click)="historyOpen.set(!historyOpen())"
   >
-    <span aria-hidden="true">{{ historyOpen() ? '▾' : '▸' }}</span> Historial ({{
-      g.entries.length
-    }})
+    <svg class="chev" appIcon="chevron"></svg> Historial ({{ g.entries.length }})
   </button>
   @if (historyOpen()) {
     <ul class="history-list">

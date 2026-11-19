@@ -12,7 +12,7 @@
   </div>
 
   @if (!store.racesLoaded()) {
-    <app-empty-state icon="flag">Cargando…</app-empty-state>
+    <app-skeleton [count]="3" />
   } @else if (!cards().length) {
     <app-empty-state icon="flag"
       >Aún no has importado ninguna carrera.<br />Pega tu resultado oficial y verás todos tus tramos
@@ -22,39 +22,58 @@
     <app-summary-bar id="races-summary" [items]="summary()" />
 
     @if (evolution(); as chart) {
-      <div class="chart-card" id="races-evolution">
-        <div class="chart-head">
-          <h2 class="chart-title">Evolución</h2>
-          <span class="chart-note">Tiempo oficial por carrera · menos es mejor</span>
+      <div class="chart-grid chart-grid--pair">
+        <div class="chart-card" id="races-evolution">
+          <div class="chart-head">
+            <h2 class="chart-title">Evolución</h2>
+            <span class="chart-note">Tiempo oficial por carrera · menos es mejor</span>
+          </div>
+          <div class="chart-box chart-box--md">
+            <canvas [appChart]="chart" aria-label="Evolución del tiempo total por carrera"></canvas>
+          </div>
         </div>
-        <div class="chart-box chart-box--sm">
-          <canvas [appChart]="chart" aria-label="Evolución del tiempo total por carrera"></canvas>
-        </div>
+        @if (blocks(); as b) {
+          <div class="chart-card" id="races-blocks">
+            <div class="chart-head">
+              <h2 class="chart-title">De dónde viene la mejora</h2>
+              <span class="chart-note">Cada bloque frente a tu primera carrera</span>
+            </div>
+            <div class="chart-box chart-box--md">
+              <canvas
+                [appChart]="b"
+                aria-label="Diferencia de running, estaciones y Roxzone con la primera carrera"
+              ></canvas>
+            </div>
+          </div>
+        }
       </div>
     }
 
-    <ul class="seg-legend seg-legend--inline" aria-label="Leyenda de las barras">
-      <li>
-        <span class="swatch" [style.background]="colors.run"></span>
-        <span class="seg-legend-label">Running</span>
-      </li>
-      <li>
-        <span class="swatch" [style.background]="colors.station"></span>
-        <span class="seg-legend-label">Estaciones</span>
-      </li>
-      <li>
-        <span class="swatch" [style.background]="colors.roxzone"></span>
-        <span class="seg-legend-label">Roxzone</span>
-      </li>
-    </ul>
+    <div class="list-head">
+      <h2 class="block-title">Todas las carreras</h2>
+      <ul class="seg-legend seg-legend--inline" aria-label="Leyenda de las barras">
+        <li>
+          <span class="swatch" [style.background]="colors.run"></span>
+          <span class="seg-legend-label">Running</span>
+        </li>
+        <li>
+          <span class="swatch" [style.background]="colors.station"></span>
+          <span class="seg-legend-label">Estaciones</span>
+        </li>
+        <li>
+          <span class="swatch" [style.background]="colors.roxzone"></span>
+          <span class="seg-legend-label">Roxzone</span>
+        </li>
+      </ul>
+    </div>
 
-    <div class="race-grid" id="race-grid">
+    <div class="race-grid stagger" id="race-grid">
       @for (c of cards(); track c.race.id) {
         <a class="race-card" [class.pb]="c.isPB" [routerLink]="['/carreras', c.race.id]">
           <div class="race-card-top">
             <span class="race-date">{{ c.race.date | fdmy }}</span>
             @if (c.isPB) {
-              <span class="pb-badge">✓ PB</span>
+              <span class="pb-badge"><svg appIcon="check"></svg> PB</span>
             }
           </div>
           <h2 class="race-name">{{ c.race.event }}</h2>
@@ -83,6 +102,7 @@
             </div>
           }
           <app-segmented-bar [parts]="c.parts" [thin]="true" [legend]="false" />
+          <svg class="race-card-go" appIcon="arrow-right"></svg>
         </a>
       }
     </div>

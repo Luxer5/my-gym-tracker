@@ -10,7 +10,7 @@
   </div>
 
   @if (!store.racesLoaded()) {
-    <app-empty-state icon="timer">Cargando…</app-empty-state>
+    <app-skeleton variant="detail" />
   } @else if (race(); as r) {
     @let e = result()!;
     <div class="est-base">
@@ -27,7 +27,12 @@
     <div class="race-hero">
       <div class="hero-time">
         <span class="hero-label">Tiempo estimado</span>
-        <span class="hero-value" id="est-total">{{ total() | dur }}</span>
+        <span
+          class="hero-value"
+          id="est-total"
+          [appCountUp]="total()"
+          [countFormat]="fmtDuration"
+        ></span>
         <span
           class="hero-delta"
           id="est-delta"
@@ -66,6 +71,7 @@
           [max]="paceRange().max"
           [step]="paceRange().step"
           [value]="pace()"
+          [style.--fill]="fill(pace(), paceRange())"
           (input)="setRun($event)"
         />
         <span class="chart-note" id="est-run-total"
@@ -98,6 +104,7 @@
           [max]="roxRange().max"
           [step]="roxRange().step"
           [value]="e.rox"
+          [style.--fill]="fill(e.rox, roxRange())"
           (input)="setRox($event)"
         />
         <span class="chart-note">Entre cada running y su estación</span>
@@ -133,6 +140,7 @@
               [max]="s.range.max"
               [step]="s.range.step"
               [value]="s.value"
+              [style.--fill]="fill(s.value, s.range)"
               (input)="setStation(i, $event)"
             />
           </div>

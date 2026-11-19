@@ -15,9 +15,11 @@
     }
   </header>
 
-  <nav class="tabs" aria-label="Secciones">
+  <nav class="tabs" #nav aria-label="Secciones">
+    <span class="tab-pill" aria-hidden="true"></span>
     @for (s of sections; track s.key) {
       <a
+        #tab
         class="tab-btn"
         [routerLink]="['/', s.key]"
         routerLinkActive="active"
