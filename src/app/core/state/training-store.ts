@@ -2,7 +2,14 @@ import { DestroyRef, Injectable, computed, effect, inject, signal, untracked } f
 import { Subscription } from 'rxjs';
 import { AuthGateway } from '../auth/auth-gateway';
 import { TrainingRepository } from '../data/training-repository';
-import { Exercise, ExerciseWithRecords, HyroxRace, HyroxTest, LiftRecord } from '../models';
+import {
+  Exercise,
+  ExerciseWithRecords,
+  HyroxRace,
+  HyroxTest,
+  LiftRecord,
+  RunTest,
+} from '../models';
 
 // Un fallo de una suscripción (p. ej. permisos al cerrar sesión) no rompe la aplicación
 const onError = (e: unknown) =>
@@ -38,6 +45,10 @@ export class TrainingStore {
 
   readonly hyrox = signal<HyroxTest[]>([]);
   readonly hyroxLoaded = signal(false);
+
+  /** Tests de carrera (VAM, Jim Vance), del más reciente al más antiguo */
+  readonly runTests = signal<RunTest[]>([]);
+  readonly runTestsLoaded = signal(false);
 
   /** Carreras HYROX importadas, de la más reciente a la más antigua */
   readonly races = signal<HyroxRace[]>([]);
@@ -90,6 +101,13 @@ export class TrainingStore {
         },
         error: onError,
       }),
+      this.repo.watchRunTests().subscribe({
+        next: (list) => {
+          this.runTests.set(list);
+          this.runTestsLoaded.set(true);
+        },
+        error: onError,
+      }),
       this.repo.watchRaces().subscribe({
         next: (list) => {
           this.races.set(list);
@@ -137,5 +155,7 @@ export class TrainingStore {
     this.racesLoaded.set(false);
     this.hyrox.set([]);
     this.hyroxLoaded.set(false);
+    this.runTests.set([]);
+    this.runTestsLoaded.set(false);
   }
 }

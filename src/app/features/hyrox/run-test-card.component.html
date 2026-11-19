@@ -1,0 +1,154 @@
+@let i = info();
+<article class="hyrox-card run-card" [attr.aria-label]="i.name">
+  <div class="card-top">
+    <div>
+      <div class="hx-station">Test de carrera</div>
+      <h3 class="hx-name">{{ i.name }}</h3>
+      <div class="hx-meta"><svg appIcon="timer"></svg> {{ i.subtitle }}</div>
+    </div>
+    <button
+      type="button"
+      class="btn btn-ghost btn-sm"
+      [attr.aria-label]="'Registrar ' + i.name"
+      (click)="add.emit()"
+    >
+      + Registrar
+    </button>
+  </div>
+
+  @if (latest(); as t) {
+    <div class="time-display">
+      <span class="best-label">Último test · {{ t.date | fdmy }}</span
+      >{{ value(t) }}
+    </div>
+    @if (detail(t); as d) {
+      <div class="hx-split">{{ d }}</div>
+    }
+    @if (progress(); as p) {
+      <div class="card-date" [class.card-date--good]="p.better">{{ p.text }}</div>
+    }
+
+    @if (vamZones().length) {
+      <h4 class="zone-title">Zonas de entrenamiento</h4>
+      <table class="data-table zone-table">
+        <thead>
+          <tr>
+            <th scope="col">Zona</th>
+            <th scope="col" class="num">% VAM</th>
+            <th scope="col" class="num">Ritmo</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (z of vamZones(); track z.name) {
+            <tr>
+              <th scope="row">
+                <span class="zone-name">{{ z.name }}</span>
+              </th>
+              <td class="num">{{ pct(z.pct) }}</td>
+              <td class="num">{{ z.paceSec | pace }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (paceZones().length) {
+      <h4 class="zone-title">Zonas de ritmo (FTPa)</h4>
+      <table class="data-table zone-table" aria-label="Zonas de ritmo">
+        <tbody>
+          @for (z of paceZones(); track z.name) {
+            <tr>
+              <th scope="row">
+                <span class="zone-name">{{ z.name }}</span>
+                <span class="zone-label">&#32;{{ z.label }}</span>
+              </th>
+              <td class="num">{{ paceRange(z) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (hrZones().length) {
+      <h4 class="zone-title">Zonas de FC (LTHR)</h4>
+      <table class="data-table zone-table" aria-label="Zonas de FC">
+        <tbody>
+          @for (z of hrZones(); track z.name) {
+            <tr>
+              <th scope="row">
+                <span class="zone-name">{{ z.name }}</span>
+                <span class="zone-label">&#32;{{ z.label }}</span>
+              </th>
+              <td class="num">{{ hrRange(z) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else if (paceZones().length) {
+      <p class="run-hint">Añade la FC media de los últimos 20' para ver también las zonas de FC.</p>
+    }
+  } @else {
+    <p class="run-hint">
+      Aún no has registrado este test. Hazlo y apunta el resultado para ver tus zonas.
+    </p>
+  }
+
+  <button
+    type="button"
+    class="history-toggle"
+    [attr.aria-expanded]="protocolOpen()"
+    (click)="protocolOpen.set(!protocolOpen())"
+  >
+    <span aria-hidden="true">{{ protocolOpen() ? '▾' : '▸' }}</span> Cómo se hace
+  </button>
+  @if (protocolOpen()) {
+    <ol class="run-protocol">
+      @for (step of i.protocol; track $index) {
+        <li>{{ step }}</li>
+      }
+    </ol>
+  }
+
+  @if (tests().length) {
+    <button
+      type="button"
+      class="history-toggle"
+      [attr.aria-expanded]="historyOpen()"
+      (click)="historyOpen.set(!historyOpen())"
+    >
+      <span aria-hidden="true">{{ historyOpen() ? '▾' : '▸' }}</span> Historial ({{
+        tests().length
+      }})
+    </button>
+    @if (historyOpen()) {
+      <ul class="history-list">
+        @for (t of tests(); track t.id) {
+          <li class="history-entry">
+            <span class="history-val"
+              >{{ value(t) }}
+              @if (detail(t); as d) {
+                <span class="history-note"> · {{ d }}</span>
+              }
+            </span>
+            <span>
+              <span class="history-date"
+                >{{ t.date | fdmy }}
+                @if (t.note) {
+                  · {{ t.note }}
+                }
+              </span>
+              <button
+                type="button"
+                class="btn-danger"
+                [attr.aria-label]="'Eliminar ' + i.name + ' del ' + (t.date | fdmy)"
+                (click)="remove(t.id)"
+              >
+                <svg appIcon="x"></svg>
+              </button>
+            </span>
+          </li>
+        }
+      </ul>
+    }
+  }
+</article>

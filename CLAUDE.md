@@ -38,6 +38,7 @@ npx ng test --watch=false                  # unitarios (Vitest)
 npm run e2e                                # Playwright (demo en memoria, puerto 4300, escritorio y móvil)
 npm run test:rules                         # reglas en el emulador (Java 21)
 npm run capturas                           # capturas del README (docs/screenshots) con datos ficticios
+npm run iconos                             # iconos PNG/ICO (iOS, Android, manifest) desde public/favicon.svg
 npm run build
 npm run format
 ```

@@ -3,6 +3,8 @@ import {
   fmtDmy,
   fmtDuration,
   fmtGap,
+  fmtKmh,
+  fmtMinSec,
   fmtPace,
   fmtSplit500,
   fmtTime,
@@ -57,6 +59,13 @@ describe('format', () => {
     expect(fmtGap(-110)).toBe('1:50 más rápido');
     expect(fmtGap(175)).toBe('2:55 más lento');
     expect(fmtGap(0.2)).toBe('mismo tiempo');
+  });
+
+  it('fmtMinSec and fmtKmh', () => {
+    expect(fmtMinSec(271)).toBe('4:31');
+    expect(fmtMinSec(59.6)).toBe('1:00');
+    expect(fmtKmh(14)).toBe('14,0 km/h');
+    expect(fmtKmh(13.333)).toBe('13,3 km/h');
   });
 
   it('fmtPace', () => {

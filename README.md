@@ -17,6 +17,10 @@ entra con su cuenta de Google y solo ve sus datos.
 - **Hyrox**: tests por estación (SkiErg, RowErg, Sled Push/Pull, Farmer's Carry, Wall Balls…). Se
   agrupan por estación y distancia/peso; cada grupo muestra la mejor marca, la mejora desde el
   primer test y el historial. Estaciones con nombre libre («Otro»).
+- **Tests de carrera** (en Hyrox): Test VAM (máxima distancia en 6 minutos) y Test de Jim Vance de
+  30 minutos (ritmo medio, FC de los últimos 20' y, opcionalmente, potencia). Con el último test de
+  cada tipo calcula las zonas de entrenamiento con las mismas fórmulas que Hyprogram: del 65 al 95 %
+  de la VAM, y las zonas Z1–Z5c de ritmo y de FC del umbral funcional.
 - **Carreras**: importa tus resultados oficiales de HYROX desde tu ficha de
   [results.hyrox.com](https://results.hyrox.com/) con un toque en el marcador «Importar en GYM
   LOG» (o copiándola y pegándola). La app lee los 8 runs, las 8
@@ -61,6 +65,17 @@ El formulario cambia según la estación: distancia (SkiErg, RowErg, Running), p
 Carry, Lunges, Wall Balls) con valores habituales o uno escrito a mano, o nada.
 
 ![Nuevo test Hyrox](docs/screenshots/hyrox-test.png)
+
+Debajo, los tests de carrera. Cada tarjeta enseña el último resultado, la diferencia con el anterior,
+las zonas que salen de él, cómo se hace el test y el historial:
+
+- **Test VAM**: VAM (km/h) = km recorridos en 6' × 10; cada zona es el ritmo al 65, 70, 85, 90 y
+  95 % de la VAM.
+- **Test Jim Vance 30'**: el ritmo medio es el umbral (FTPa) y la FC media de los últimos 20' el
+  LTHR. Zonas de ritmo con los límites 129, 114, 105, 100, 96 y 90 % del FTPa, y de FC con 81, 89,
+  95, 99, 102 y 106 % del LTHR. La potencia (Stryd) se guarda pero no genera zonas.
+
+![Tests de carrera](docs/screenshots/hyrox-carrera.png)
 
 Todo lo que borra pide confirmación:
 
@@ -120,6 +135,7 @@ src/
     ├── domain/            lógica pura (sin Angular), cada fichero con su spec
     │   ├── records.ts     mejores marcas PR/RM, resumen y filtros de Gym
     │   ├── hyrox.ts       estaciones, agrupación por estación + parámetro, mejoras
+    │   ├── run-tests.ts   tests de carrera (VAM, Jim Vance 30'): zonas de ritmo y FC, progreso
     │   ├── race.ts        carreras: tramos, reparto, ritmo, conclusiones, comparaciones, PB
     │   ├── race-import.ts lectura del resultado oficial pegado (por etiquetas, tolerante)
     │   ├── race-forms.ts  formulario de revisión de una carrera
@@ -137,7 +153,7 @@ src/
         ├── login/         acceso con Google
         ├── shell/         cabecera, pestañas y pantalla activa
         ├── gym/           pantalla, tarjeta de ejercicio, formularios y GymActions
-        ├── hyrox/         pantalla, tarjeta de estación, formulario y HyroxActions
+        ├── hyrox/         pantalla, tarjetas de estación y de test de carrera, formularios y HyroxActions
         └── carreras/      listado, importación, ficha, configuración de gráficas y RaceActions
 ```
 
@@ -155,6 +171,8 @@ Sus colores están validados para el fondo oscuro, con separación suficiente ta
 users/{uid}/exercises/{id}              { name, category, unit: 'kg'|'lb', createdAt }
 users/{uid}/exercises/{id}/records/{id} { type: 'PR'|'1RM'|'3RM'|'5RM', value, date, note }
 users/{uid}/hyrox/{id}                  { station, param: número|null, totalSec, date, note }
+users/{uid}/runTests/{id}               { kind: 'vam'|'vance30', distanceM, paceSec, lthr, powerW
+                                          (número|null según el test), date, note }
 users/{uid}/races/{id}                  { event, date, division, ageGroup, athlete,
                                           runs: [8 × s], stations: [8 × s], roxzoneSec,
                                           totalSec, rankOverall, rankAgeGroup, note, createdAt }
@@ -183,6 +201,7 @@ npm run start:demo     # demo con datos de ejemplo en memoria (sin Firebase)
 | `npm run test:rules`        | Reglas de Firestore en el emulador                  |
 | `npm run build`             | Build de producción en `dist/gym-log/browser`       |
 | `npm run format`            | Prettier                                            |
+| `npm run iconos`            | Iconos PNG/ICO de la web a partir de `favicon.svg`  |
 
 ## Capturas
 

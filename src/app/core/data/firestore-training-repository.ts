@@ -26,14 +26,16 @@ import {
   NewHyroxRace,
   NewHyroxTest,
   NewLiftRecord,
+  NewRunTest,
+  RunTest,
 } from '../models';
-import { toExercise, toHyrox, toRace, toRecord } from './normalize';
+import { toExercise, toHyrox, toRace, toRecord, toRunTest } from './normalize';
 import { TrainingRepository } from './training-repository';
 
 /** Máximo de operaciones por lote de Firestore */
 const BATCH_LIMIT = 500;
 
-/** Datos del usuario en Firestore: users/{uid}/{exercises/{id}/records, hyrox, races} */
+/** Datos del usuario en Firestore: users/{uid}/{exercises/{id}/records, hyrox, runTests, races} */
 @Injectable()
 export class FirestoreTrainingRepository extends TrainingRepository {
   private readonly db = inject(FIRESTORE);
@@ -48,6 +50,8 @@ export class FirestoreTrainingRepository extends TrainingRepository {
     doc(this.db, 'users', this.auth.uid(), 'exercises', exId, 'records', recId);
   private hyroxCol = () => collection(this.db, 'users', this.auth.uid(), 'hyrox');
   private hyroxDoc = (id: string) => doc(this.db, 'users', this.auth.uid(), 'hyrox', id);
+  private runTestsCol = () => collection(this.db, 'users', this.auth.uid(), 'runTests');
+  private runTestDoc = (id: string) => doc(this.db, 'users', this.auth.uid(), 'runTests', id);
   private racesCol = () => collection(this.db, 'users', this.auth.uid(), 'races');
   private raceDoc = (id: string) => doc(this.db, 'users', this.auth.uid(), 'races', id);
 
@@ -72,6 +76,9 @@ export class FirestoreTrainingRepository extends TrainingRepository {
 
   watchHyrox = (): Observable<HyroxTest[]> =>
     this.watch(query(this.hyroxCol(), orderBy('date', 'desc')), toHyrox);
+
+  watchRunTests = (): Observable<RunTest[]> =>
+    this.watch(query(this.runTestsCol(), orderBy('date', 'desc')), toRunTest);
 
   watchRaces = (): Observable<HyroxRace[]> =>
     this.watch(query(this.racesCol(), orderBy('date', 'desc')), toRace);
@@ -117,5 +124,13 @@ export class FirestoreTrainingRepository extends TrainingRepository {
 
   deleteHyrox(id: string): Promise<void> {
     return deleteDoc(this.hyroxDoc(id));
+  }
+
+  async addRunTest(data: NewRunTest): Promise<string> {
+    return (await addDoc(this.runTestsCol(), data)).id;
+  }
+
+  deleteRunTest(id: string): Promise<void> {
+    return deleteDoc(this.runTestDoc(id));
   }
 }

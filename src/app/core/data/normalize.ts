@@ -1,4 +1,14 @@
-import { Exercise, HyroxRace, HyroxTest, LiftRecord, RECORD_TYPES, RecordType } from '../models';
+import {
+  Exercise,
+  HyroxRace,
+  HyroxTest,
+  LiftRecord,
+  RECORD_TYPES,
+  RUN_TEST_KINDS,
+  RecordType,
+  RunTest,
+  RunTestKind,
+} from '../models';
 
 /**
  * Documentos leídos de la base de datos → modelos de la app. Los datos antiguos (o escritos a mano)
@@ -49,6 +59,19 @@ export const toRace = (d: Raw): HyroxRace => ({
   rankAgeGroup: numOrNull(d['rankAgeGroup']),
   note: str(d['note']),
   createdAt: str(d['createdAt']),
+});
+
+export const toRunTest = (d: Raw): RunTest => ({
+  id: d.id,
+  kind: (RUN_TEST_KINDS as readonly string[]).includes(str(d['kind']))
+    ? (d['kind'] as RunTestKind)
+    : 'vam',
+  distanceM: numOrNull(d['distanceM']),
+  paceSec: numOrNull(d['paceSec']),
+  lthr: numOrNull(d['lthr']),
+  powerW: numOrNull(d['powerW']),
+  date: str(d['date']),
+  note: str(d['note']),
 });
 
 export const toHyrox = (d: Raw): HyroxTest => ({

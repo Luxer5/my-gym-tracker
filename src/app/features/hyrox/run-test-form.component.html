@@ -1,0 +1,110 @@
+<app-modal title="Test" [accent]="info().short" (closed)="closed.emit()">
+  <form id="run-test-form" novalidate (submit)="save($event)">
+    @if (kind() === 'vam') {
+      <div class="form-group">
+        <label class="form-label" for="rt-distance">Distancia en 6 minutos (m)</label>
+        <input
+          class="form-input"
+          id="rt-distance"
+          type="number"
+          inputmode="numeric"
+          min="0"
+          placeholder="1400"
+          [value]="form().distance"
+          (input)="patch({ distance: val($event) })"
+        />
+        <p class="form-help">
+          La VAM es la distancia en km × 10; las zonas van del 65 al 95 % de la VAM.
+        </p>
+      </div>
+    } @else {
+      <div class="form-group" role="group" aria-labelledby="rt-pace-label">
+        <span class="form-label" id="rt-pace-label">Ritmo medio de los 30' (por km)</span>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="rt-pace-min">Minutos</label>
+            <input
+              class="form-input"
+              id="rt-pace-min"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              placeholder="5"
+              [value]="form().paceMin"
+              (input)="patch({ paceMin: val($event) })"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="rt-pace-sec">Segundos</label>
+            <input
+              class="form-input"
+              id="rt-pace-sec"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              max="59"
+              placeholder="00"
+              [value]="form().paceSec"
+              (input)="patch({ paceSec: val($event) })"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="rt-lthr">FC media últimos 20' (lpm)</label>
+          <input
+            class="form-input"
+            id="rt-lthr"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            placeholder="Opcional"
+            [value]="form().lthr"
+            (input)="patch({ lthr: val($event) })"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="rt-power">Potencia media 30' (W)</label>
+          <input
+            class="form-input"
+            id="rt-power"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            placeholder="Opcional (Stryd)"
+            [value]="form().power"
+            (input)="patch({ power: val($event) })"
+          />
+        </div>
+      </div>
+    }
+
+    <div class="form-group">
+      <label class="form-label" for="rt-date">Fecha</label>
+      <input
+        class="form-input"
+        id="rt-date"
+        type="date"
+        [value]="form().date"
+        (input)="patch({ date: val($event) })"
+      />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="rt-note">Nota (opcional)</label>
+      <input
+        class="form-input"
+        id="rt-note"
+        maxlength="500"
+        placeholder="Pista, cinta, calor…"
+        [value]="form().note"
+        (input)="patch({ note: val($event) })"
+      />
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" (click)="closed.emit()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="saving()">Guardar test</button>
+    </div>
+  </form>
+</app-modal>

@@ -16,8 +16,27 @@
       }
     </div>
   }
+
+  <section class="run-tests" id="run-tests" aria-labelledby="run-tests-title">
+    <div class="block-head">
+      <h2 class="block-title" id="run-tests-title">Tests de carrera</h2>
+      <p class="block-note">Zonas de entrenamiento con el último test de cada tipo</p>
+    </div>
+    @if (!store.runTestsLoaded()) {
+      <app-empty-state icon="timer">Cargando…</app-empty-state>
+    } @else {
+      <div class="run-grid">
+        @for (k of runKinds; track k) {
+          <app-run-test-card [kind]="k" [tests]="runTests()[k]" (add)="addingRun.set(k)" />
+        }
+      </div>
+    }
+  </section>
 </section>
 
 @if (adding()) {
   <app-hyrox-form (closed)="adding.set(false)" />
+}
+@if (addingRun(); as k) {
+  <app-run-test-form [kind]="k" (closed)="addingRun.set(null)" />
 }

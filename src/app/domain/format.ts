@@ -52,11 +52,17 @@ export const fmtSplit500 = (sec: number): string => {
   return `${Math.floor(s / 60)}:${pad(s % 60)} /500 m`;
 };
 
-/** Ritmo por kilómetro: 271 s → 4:31 /km */
-export const fmtPace = (secPerKm: number): string => {
-  const s = Math.max(0, Math.round(secPerKm));
-  return `${Math.floor(s / 60)}:${pad(s % 60)} /km`;
+/** Minutos y segundos sin ceros delante: 271 s → 4:31 */
+export const fmtMinSec = (totalSec: number): string => {
+  const s = Math.max(0, Math.round(totalSec));
+  return `${Math.floor(s / 60)}:${pad(s % 60)}`;
 };
+
+/** Ritmo por kilómetro: 271 s → 4:31 /km */
+export const fmtPace = (secPerKm: number): string => `${fmtMinSec(secPerKm)} /km`;
+
+/** Velocidad con un decimal y coma: 14 → 14,0 km/h */
+export const fmtKmh = (kmh: number): string => `${kmh.toFixed(1).replace('.', ',')} km/h`;
 
 /**
  * Duración escrita por el usuario → segundos. Admite «4:12», «04:12», «1:21:15», «00:04:12»,

@@ -91,10 +91,11 @@ export async function until(cond: () => boolean, turns = 100): Promise<void> {
   if (!cond()) throw new Error('La condición no llegó a cumplirse');
 }
 
-/** Espera a que la sesión esté lista y los datos (ejercicios, Hyrox y carreras) cargados */
+/** Espera a que la sesión esté lista y los datos (ejercicios, Hyrox, tests de carrera y carreras) cargados */
 export async function waitForData(store: TrainingStore): Promise<void> {
   TestBed.inject(AuthGateway);
-  const loaded = () => store.exercisesLoaded() && store.hyroxLoaded() && store.racesLoaded();
+  const loaded = () =>
+    store.exercisesLoaded() && store.hyroxLoaded() && store.runTestsLoaded() && store.racesLoaded();
   for (let i = 0; i < 50 && !loaded(); i++) await settle(1);
   if (!store.exercisesLoaded()) throw new Error('Los datos no llegaron a cargarse');
   await settle();

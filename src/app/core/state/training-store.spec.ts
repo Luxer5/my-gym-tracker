@@ -62,8 +62,10 @@ describe('TrainingStore', () => {
     await settle();
     expect(ctx.store.exercises()).toEqual([]);
     expect(ctx.store.hyrox()).toEqual([]);
+    expect(ctx.store.runTests()).toEqual([]);
     expect(ctx.store.exercisesLoaded()).toBe(false);
     expect(ctx.store.hyroxLoaded()).toBe(false);
+    expect(ctx.store.runTestsLoaded()).toBe(false);
   });
 });
 

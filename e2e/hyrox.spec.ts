@@ -41,6 +41,36 @@ test.describe('Hyrox', () => {
     await expect(ski.locator('.time-display')).toContainText('03:48');
   });
 
+  test('tests de carrera: un VAM nuevo recalcula las zonas', async ({ app: page }) => {
+    const vam = page
+      .locator('app-run-test-card')
+      .filter({ has: page.getByRole('heading', { name: 'Test VAM', exact: true }) });
+    await expect(vam.locator('.time-display')).toContainText('1380 m');
+
+    await vam.getByRole('button', { name: 'Registrar Test VAM' }).click();
+    const dlg = page.getByRole('dialog');
+    await dlg.getByLabel('Distancia en 6 minutos (m)').fill('1.4');
+    await dlg.getByRole('button', { name: 'Guardar test' }).click();
+    await expect(page.locator('.toast--error')).toHaveText(
+      'La distancia va en metros (p. ej. 1400).',
+    );
+    await dlg.getByLabel('Distancia en 6 minutos (m)').fill('1400');
+    await dlg.getByRole('button', { name: 'Guardar test' }).click();
+    await expect(dlg).toBeHidden();
+
+    await expect(vam.locator('.time-display')).toContainText('1400 m');
+    await expect(vam.locator('.hx-split')).toHaveText('14,0 km/h · 4:17 /km');
+    await expect(vam.locator('.zone-table tbody tr').first()).toContainText('6:36 /km');
+
+    await vam.getByRole('button', { name: /Historial/ }).click();
+    await vam
+      .getByRole('button', { name: /Eliminar Test VAM/ })
+      .first()
+      .click();
+    await confirmDialog(page, 'Eliminar');
+    await expect(vam.locator('.time-display')).toContainText('1380 m');
+  });
+
   test('peso a mano y estación con nombre libre', async ({ app: page }) => {
     await page.getByRole('button', { name: '+ Nuevo test' }).click();
     let dlg = page.getByRole('dialog');

@@ -35,7 +35,10 @@ service cloud.firestore {
         // Carreras
         && textOk(d, 'event', 100) && textOk(d, 'division', 50) && textOk(d, 'ageGroup', 20)
         && textOk(d, 'athlete', 100) && listOk(d, 'runs', 8) && listOk(d, 'stations', 8)
-        && numOk(d, 'roxzoneSec') && numOk(d, 'rankOverall') && numOk(d, 'rankAgeGroup');
+        && numOk(d, 'roxzoneSec') && numOk(d, 'rankOverall') && numOk(d, 'rankAgeGroup')
+        // Tests de carrera
+        && textOk(d, 'kind', 20) && numOk(d, 'distanceM') && numOk(d, 'paceSec')
+        && numOk(d, 'lthr') && numOk(d, 'powerW');
     }
 
     function canWrite(uid, id) {
@@ -47,9 +50,10 @@ service cloud.firestore {
       allow read, delete: if isOwner(uid);
     }
 
-    // Ejercicios, tests Hyrox y carreras
+    // Ejercicios, tests Hyrox, tests de carrera y carreras
     match /users/{uid}/{col}/{id} {
-      allow create, update: if col in ['exercises', 'hyrox', 'races'] && canWrite(uid, id);
+      allow create, update: if col in ['exercises', 'hyrox', 'runTests', 'races']
+        && canWrite(uid, id);
     }
 
     // Registros (PR / RM) de cada ejercicio

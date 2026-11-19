@@ -10,6 +10,8 @@ import {
   NewHyroxRace,
   NewHyroxTest,
   NewLiftRecord,
+  NewRunTest,
+  RunTest,
 } from '../models';
 import { demoData } from './demo-data';
 import { TrainingRepository } from './training-repository';
@@ -27,6 +29,7 @@ const byDateDesc = <T extends { date: string }>(a: T, b: T) => b.date.localeComp
 export class MemoryTrainingRepository extends TrainingRepository {
   private readonly exercises$: BehaviorSubject<Exercise[]>;
   private readonly hyrox$: BehaviorSubject<HyroxTest[]>;
+  private readonly runTests$: BehaviorSubject<RunTest[]>;
   private readonly races$: BehaviorSubject<HyroxRace[]>;
   private readonly records = new Map<string, BehaviorSubject<LiftRecord[]>>();
   private seq = 0;
@@ -36,6 +39,7 @@ export class MemoryTrainingRepository extends TrainingRepository {
     const data = demoData();
     this.exercises$ = new BehaviorSubject(data.exercises);
     this.hyrox$ = new BehaviorSubject(data.hyrox);
+    this.runTests$ = new BehaviorSubject(data.runTests);
     this.races$ = new BehaviorSubject(data.races);
     for (const [id, list] of Object.entries(data.records))
       this.records.set(id, new BehaviorSubject(list));
@@ -58,6 +62,7 @@ export class MemoryTrainingRepository extends TrainingRepository {
   watchExercises = () => this.watch(this.exercises$, byCreated);
   watchRecords = (exerciseId: string) => this.watch(this.recordsOf(exerciseId), byDateDesc);
   watchHyrox = () => this.watch(this.hyrox$, byDateDesc);
+  watchRunTests = () => this.watch(this.runTests$, byDateDesc);
   watchRaces = () => this.watch(this.races$, byDateDesc);
 
   async addRace(data: NewHyroxRace): Promise<string> {
@@ -119,5 +124,17 @@ export class MemoryTrainingRepository extends TrainingRepository {
   async deleteHyrox(id: string): Promise<void> {
     await tick();
     this.hyrox$.next(this.hyrox$.value.filter((t) => t.id !== id));
+  }
+
+  async addRunTest(data: NewRunTest): Promise<string> {
+    await tick();
+    const id = this.newId();
+    this.runTests$.next([...this.runTests$.value, { id, ...clone(data) }]);
+    return id;
+  }
+
+  async deleteRunTest(id: string): Promise<void> {
+    await tick();
+    this.runTests$.next(this.runTests$.value.filter((t) => t.id !== id));
   }
 }

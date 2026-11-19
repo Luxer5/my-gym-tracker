@@ -9,6 +9,8 @@ import {
   NewHyroxRace,
   NewHyroxTest,
   NewLiftRecord,
+  NewRunTest,
+  RunTest,
 } from '../models';
 
 /**
@@ -23,6 +25,8 @@ export abstract class TrainingRepository {
   abstract watchRecords(exerciseId: string): Observable<LiftRecord[]>;
   /** Tests Hyrox, del más reciente al más antiguo */
   abstract watchHyrox(): Observable<HyroxTest[]>;
+  /** Tests de carrera (VAM, Jim Vance), del más reciente al más antiguo */
+  abstract watchRunTests(): Observable<RunTest[]>;
   /** Carreras HYROX, de la más reciente a la más antigua */
   abstract watchRaces(): Observable<HyroxRace[]>;
 
@@ -38,6 +42,8 @@ export abstract class TrainingRepository {
   // ── Hyrox ──
   abstract addHyrox(data: NewHyroxTest): Promise<string>;
   abstract deleteHyrox(id: string): Promise<void>;
+  abstract addRunTest(data: NewRunTest): Promise<string>;
+  abstract deleteRunTest(id: string): Promise<void>;
 
   // ── Carreras ──
   abstract addRace(data: NewHyroxRace): Promise<string>;

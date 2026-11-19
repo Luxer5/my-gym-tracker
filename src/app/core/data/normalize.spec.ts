@@ -1,4 +1,4 @@
-import { toExercise, toHyrox, toRace, toRecord } from './normalize';
+import { toExercise, toHyrox, toRace, toRecord, toRunTest } from './normalize';
 
 describe('normalize', () => {
   it('races: always 8 laps and 8 stations; wrong values become empty', () => {
@@ -63,5 +63,19 @@ describe('normalize', () => {
       date: '',
       note: '',
     });
+  });
+
+  it('run tests: unknown kind → VAM; missing or wrong numbers → null', () => {
+    expect(toRunTest({ id: 't', kind: 'vance30', paceSec: 347, lthr: '181' })).toEqual({
+      id: 't',
+      kind: 'vance30',
+      distanceM: null,
+      paceSec: 347,
+      lthr: null,
+      powerW: null,
+      date: '',
+      note: '',
+    });
+    expect(toRunTest({ id: 'u', kind: 'cooper', distanceM: 1400 }).kind).toBe('vam');
   });
 });

@@ -214,6 +214,12 @@ test.describe('README · escritorio', () => {
     await top(page);
     await shot('hyrox', { full: true });
 
+    // Tests de carrera: zonas del VAM y del de Jim Vance (datos ficticios de la demo)
+    await page
+      .locator('#run-tests')
+      .evaluate((el) => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
+    await shot('hyrox-carrera');
+
     // Nuevo test con peso a mano
     await page.getByRole('button', { name: '+ Nuevo test' }).click();
     await fillHyrox(page, {

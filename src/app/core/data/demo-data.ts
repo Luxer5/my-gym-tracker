@@ -1,10 +1,11 @@
-import { Exercise, HyroxRace, HyroxTest, LiftRecord } from '../models';
+import { Exercise, HyroxRace, HyroxTest, LiftRecord, RunTest } from '../models';
 
 export interface DemoData {
   exercises: Exercise[];
   /** Registros por id de ejercicio */
   records: Record<string, LiftRecord[]>;
   hyrox: HyroxTest[];
+  runTests: RunTest[];
   races: HyroxRace[];
 }
 
@@ -103,6 +104,38 @@ export const demoData = (): DemoData => ({
       note: '',
     },
     { id: 'h4', station: 'Wall Balls', param: 6, totalSec: 312, date: '2026-09-10', note: '' },
+  ],
+  runTests: [
+    {
+      id: 't1',
+      kind: 'vam',
+      distanceM: 1380,
+      paceSec: null,
+      lthr: null,
+      powerW: null,
+      date: '2026-09-15',
+      note: 'pista',
+    },
+    {
+      id: 't2',
+      kind: 'vam',
+      distanceM: 1320,
+      paceSec: null,
+      lthr: null,
+      powerW: null,
+      date: '2026-06-20',
+      note: '',
+    },
+    {
+      id: 't3',
+      kind: 'vance30',
+      distanceM: null,
+      paceSec: 352,
+      lthr: 176,
+      powerW: null,
+      date: '2026-08-28',
+      note: '',
+    },
   ],
   races: structuredClone(DEMO_RACES),
 });

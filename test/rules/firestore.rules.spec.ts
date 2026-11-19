@@ -23,6 +23,15 @@ const DOCS: Record<string, Record<string, unknown>> = {
   },
   'exercises/e1/records/r1': { type: 'PR', value: 140, date: '2026-10-07', note: '' },
   'hyrox/h1': { station: 'SkiErg', param: 1000, totalSec: 228, date: '2026-10-07', note: '' },
+  'runTests/t1': {
+    kind: 'vance30',
+    distanceM: null,
+    paceSec: 352,
+    lthr: 176,
+    powerW: null,
+    date: '2026-10-07',
+    note: '',
+  },
   'races/c1': {
     event: 'HYROX Madrid',
     date: '2026-04-18',
@@ -157,6 +166,18 @@ describe('Reglas de Firestore', () => {
       await assertFails(race({ event: 'x'.repeat(101) }));
       await assertFails(race({ division: 'x'.repeat(51) }));
       await assertFails(race({ rankOverall: '604' }));
+    });
+
+    it('tests de carrera: tipo de 20 caracteres como mucho y números (o null)', async () => {
+      const run = (patch: Record<string, unknown>) =>
+        setDoc(doc(as(ALICE), pathOf(ALICE, 'runTests/t2')), { ...DOCS['runTests/t1'], ...patch });
+      await assertSucceeds(run({ kind: 'vam', distanceM: 1400, paceSec: null, lthr: null }));
+      await assertSucceeds(run({ powerW: 260 }));
+      await assertFails(run({ kind: 'x'.repeat(21) }));
+      await assertFails(run({ paceSec: '5:52' }));
+      await assertFails(run({ lthr: '176' }));
+      await assertFails(run({ distanceM: '1400' }));
+      await assertFails(run({ powerW: [260] }));
     });
 
     it('demasiados campos', async () => {

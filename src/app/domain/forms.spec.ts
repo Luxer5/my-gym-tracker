@@ -10,6 +10,9 @@ import {
   formToExercisePatch,
   formToHyrox,
   formToRecord,
+  formToRunTest,
+  emptyRunTestForm,
+  RunTestForm,
 } from './forms';
 
 const NOW = new Date(2026, 9, 7, 10, 0);
@@ -150,6 +153,78 @@ describe('forms', () => {
       expect(defaultPreset('SkiErg')).toBe('500');
       expect(defaultPreset('Sled Push')).toBe('60');
       expect(defaultPreset('Otro')).toBe('');
+    });
+  });
+
+  describe('formToRunTest', () => {
+    const vam = (p: Partial<RunTestForm>) => ({ ...emptyRunTestForm('vam', NOW), ...p });
+    const vance = (p: Partial<RunTestForm>) => ({ ...emptyRunTestForm('vance30', NOW), ...p });
+
+    it('VAM: metres in 6 minutes', () => {
+      expect(formToRunTest(vam({ distance: '1400', note: ' pista ' }), NOW)).toEqual({
+        ok: true,
+        data: {
+          kind: 'vam',
+          distanceM: 1400,
+          paceSec: null,
+          lthr: null,
+          powerW: null,
+          date: '2026-10-07',
+          note: 'pista',
+        },
+      });
+    });
+
+    it('VAM: asks for the distance and catches kilometres typed by mistake', () => {
+      expect(formToRunTest(vam({}), NOW)).toEqual({
+        ok: false,
+        error: 'Introduce la distancia en metros.',
+      });
+      expect(formToRunTest(vam({ distance: '1,4' }), NOW)).toEqual({
+        ok: false,
+        error: 'La distancia va en metros (p. ej. 1400).',
+      });
+      expect(formToRunTest(vam({ distance: '3500' }), NOW).ok).toBe(false);
+    });
+
+    it('Jim Vance: pace per km; heart rate and power optional', () => {
+      expect(formToRunTest(vance({ paceMin: '5', paceSec: '47', lthr: '181' }), NOW)).toEqual({
+        ok: true,
+        data: {
+          kind: 'vance30',
+          distanceM: null,
+          paceSec: 347,
+          lthr: 181,
+          powerW: null,
+          date: '2026-10-07',
+          note: '',
+        },
+      });
+      const withPower = formToRunTest(vance({ paceMin: '5', paceSec: '0', power: '260' }), NOW);
+      expect(withPower.ok && withPower.data.powerW).toBe(260);
+    });
+
+    it('Jim Vance: validates pace, heart rate and power', () => {
+      expect(formToRunTest(vance({}), NOW)).toEqual({
+        ok: false,
+        error: 'Introduce el ritmo medio por km.',
+      });
+      expect(formToRunTest(vance({ paceMin: '5', paceSec: '75' }), NOW)).toEqual({
+        ok: false,
+        error: 'Los segundos van de 0 a 59.',
+      });
+      expect(formToRunTest(vance({ paceSec: '47' }), NOW)).toEqual({
+        ok: false,
+        error: 'El ritmo va por kilómetro (p. ej. 5:47).',
+      });
+      expect(formToRunTest(vance({ paceMin: '5', lthr: '300' }), NOW)).toEqual({
+        ok: false,
+        error: 'La FC media va de 60 a 240 lpm.',
+      });
+      expect(formToRunTest(vance({ paceMin: '5', power: '0' }), NOW)).toEqual({
+        ok: false,
+        error: 'La potencia va de 1 a 1000 W.',
+      });
     });
   });
 });

@@ -3,6 +3,7 @@
  *   exercises/{id}                 → Exercise
  *   exercises/{id}/records/{id}    → LiftRecord
  *   hyrox/{id}                     → HyroxTest
+ *   runTests/{id}                  → RunTest
  *   races/{id}                     → HyroxRace
  * Las fechas son ISO `YYYY-MM-DD` (día local de quien registra).
  */
@@ -78,6 +79,28 @@ export interface HyroxTest {
   note?: string;
 }
 export type NewHyroxTest = Omit<HyroxTest, 'id'>;
+
+// ── Tests de carrera (zonas de entrenamiento) ──
+
+/** vam = máxima distancia en 6 minutos; vance30 = test de Jim Vance de 30 minutos */
+export const RUN_TEST_KINDS = ['vam', 'vance30'] as const;
+export type RunTestKind = (typeof RUN_TEST_KINDS)[number];
+
+export interface RunTest {
+  id: string;
+  kind: RunTestKind;
+  /** VAM: metros recorridos en los 6 minutos; null en el test de Jim Vance */
+  distanceM: number | null;
+  /** Jim Vance: ritmo medio de los 30 minutos, en segundos por km (FTPa); null en el VAM */
+  paceSec: number | null;
+  /** Jim Vance: frecuencia cardiaca media de los últimos 20 minutos (LTHR); null si no se midió */
+  lthr: number | null;
+  /** Jim Vance: potencia media de los 30 minutos en W (rFTP, Stryd); null si no se midió */
+  powerW: number | null;
+  date: string;
+  note?: string;
+}
+export type NewRunTest = Omit<RunTest, 'id'>;
 
 // ── Carreras HYROX (resultados oficiales importados) ──
 

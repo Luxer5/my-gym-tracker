@@ -1909,6 +1909,80 @@ main {
   border-bottom-color: var(--line);
 }
 
+/* Tests de carrera (Hyrox): VAM y Jim Vance con sus zonas */
+.run-tests {
+  margin-top: 2.5rem;
+}
+.block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.block-title {
+  font-family: var(--font-head);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.block-note {
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+.run-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+.run-card .card-top {
+  margin-bottom: 0.4rem;
+}
+.run-card .hx-meta {
+  margin-bottom: 0;
+}
+.zone-title {
+  margin-top: 1.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.zone-table {
+  margin-top: 0.3rem;
+}
+.zone-table tbody th {
+  color: var(--text);
+}
+/* Los rangos («6:41 – 7:34 /km») no se parten: si falta sitio, baja la descripción de la zona */
+.zone-table .num {
+  white-space: nowrap;
+}
+.zone-name {
+  display: inline-block;
+  min-width: 2.75rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.zone-label {
+  font-size: 0.8rem;
+  color: var(--text-2);
+}
+.run-hint {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+.run-protocol {
+  margin: 0.5rem 0 0.25rem 1.2rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
 /* ── 14. MÓVIL ─────────────────────────────────────────────── */
 @media (max-width: 600px) {
   main {
@@ -1917,11 +1991,16 @@ main {
   .app-header {
     padding: 1rem;
   }
+  /* Píldora a lo ancho con las pestañas repartidas (sin el relleno de la navegación antigua) */
   .tabs {
-    padding: 1rem 1rem 0;
+    width: auto;
+    max-width: none;
+    margin: 0 1rem;
   }
   .tab-btn {
-    padding: 0.6rem 0.9rem;
+    flex: 1;
+    justify-content: center;
+    padding: 0.6rem 0.75rem;
     font-size: 0.9rem;
   }
   .tab-detail {

@@ -5,8 +5,10 @@ import {
   NewExercise,
   NewHyroxTest,
   NewLiftRecord,
+  NewRunTest,
   RECORD_TYPES,
   RecordType,
+  RunTestKind,
   WEIGHT_UNITS,
   WeightUnit,
 } from '../core/models';
@@ -153,6 +155,81 @@ export function formToHyrox(f: HyroxForm, now: Date = new Date()): FormResult<Ne
       totalSec: min * 60 + sec,
       date: f.date || todayIso(now),
       note: f.note.trim(),
+    },
+  };
+}
+
+// ── Test de carrera (VAM / Jim Vance 30') ──
+
+export interface RunTestForm {
+  kind: RunTestKind;
+  /** VAM: metros recorridos en 6 minutos */
+  distance: string;
+  /** Jim Vance: ritmo medio por km (minutos y segundos) */
+  paceMin: string;
+  paceSec: string;
+  /** Jim Vance: FC media de los últimos 20' (opcional) */
+  lthr: string;
+  /** Jim Vance: potencia media de los 30' (opcional) */
+  power: string;
+  date: string;
+  note: string;
+}
+
+export const emptyRunTestForm = (kind: RunTestKind, now: Date = new Date()): RunTestForm => ({
+  kind,
+  distance: '',
+  paceMin: '',
+  paceSec: '',
+  lthr: '',
+  power: '',
+  date: todayIso(now),
+  note: '',
+});
+
+/** Distancias admitidas en 6 minutos: por debajo, seguramente se ha escrito en km */
+const VAM_MIN_M = 200;
+const VAM_MAX_M = 3000;
+
+export function formToRunTest(f: RunTestForm, now: Date = new Date()): FormResult<NewRunTest> {
+  const base = { date: f.date || todayIso(now), note: f.note.trim() };
+
+  if (f.kind === 'vam') {
+    const d = num(f.distance);
+    if (d === undefined || d <= 0) return fail('Introduce la distancia en metros.');
+    if (d < VAM_MIN_M) return fail('La distancia va en metros (p. ej. 1400).');
+    if (d > VAM_MAX_M) return fail(`En 6 minutos no se pasa de ${VAM_MAX_M} m.`);
+    return {
+      ok: true,
+      data: { kind: 'vam', distanceM: d, paceSec: null, lthr: null, powerW: null, ...base },
+    };
+  }
+
+  const min = num(f.paceMin) ?? 0;
+  const sec = num(f.paceSec) ?? 0;
+  if (min < 0 || sec < 0 || !Number.isInteger(min) || !Number.isInteger(sec))
+    return fail('El ritmo no es válido.');
+  if (sec > 59) return fail('Los segundos van de 0 a 59.');
+  if (!min && !sec) return fail('Introduce el ritmo medio por km.');
+  const paceSec = min * 60 + sec;
+  if (paceSec < 120) return fail('El ritmo va por kilómetro (p. ej. 5:47).');
+
+  const lthr = num(f.lthr);
+  if (lthr !== undefined && (!Number.isInteger(lthr) || lthr < 60 || lthr > 240))
+    return fail('La FC media va de 60 a 240 lpm.');
+  const power = num(f.power);
+  if (power !== undefined && (power <= 0 || power > 1000))
+    return fail('La potencia va de 1 a 1000 W.');
+
+  return {
+    ok: true,
+    data: {
+      kind: 'vance30',
+      distanceM: null,
+      paceSec,
+      lthr: lthr ?? null,
+      powerW: power ?? null,
+      ...base,
     },
   };
 }
